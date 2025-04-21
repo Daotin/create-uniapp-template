@@ -1,0 +1,10 @@
+
+# 忽略以下文件和目录
+node_modules/
+/dist/
+/dev/
+/.DS_Store
+unpackage/
+ 
+# 忽略UniApp编译生成的小程序相关目录
+

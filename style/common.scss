@@ -1,0 +1,208 @@
+@import "./uview.theme.scss";
+
+.flex {
+  display: flex;
+}
+.items-center {
+  align-items: center;
+}
+.items-start {
+  align-items: flex-start;
+}
+.items-end {
+  align-items: flex-end;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.justify-around {
+  justify-content: space-around;
+}
+.justify-start {
+  justify-content: flex-start;
+}
+.justify-end {
+  justify-content: flex-end;
+}
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-around {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+.shrink-0 {
+  flex-shrink: 0;
+}
+.flex-row {
+  flex-direction: row;
+}
+.flex-col {
+  flex-direction: column;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.w-full {
+  width: 100%;
+}
+.h-full {
+  height: 100%;
+}
+
+/**********************************************************
+* 通用颜色
+*******************************************************/
+
+.blue,
+.theme,
+.primary {
+  color: $u-type-primary;
+}
+
+.warning {
+  color: $u-type-warning;
+}
+
+.green,
+.success {
+  color: $u-type-success;
+}
+
+.info,
+.gray {
+  color: $u-type-info;
+}
+
+.red,
+.error {
+  color: $u-type-error;
+}
+
+/**********************************************************
+* 通用样式
+*******************************************************/
+.common-page-container {
+  width: 100%;
+  height: 100%;
+  padding: 48rpx 32rpx;
+  &.has-btm-btn {
+    padding-bottom: 236rpx;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+.common-card-box {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+.common-btm-btn {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 70rpx 32rpx;
+  z-index: 100;
+  display: flex;
+  background: #F7F9FB;
+
+  button {
+    flex: 1;
+    &:nth-of-type(2) {
+      margin-left: 32rpx;
+    }
+  }
+}
+
+// 字体大小 f12 --> f48
+@mixin font($i) {
+  @if $i <= 48 {
+    .f#{$i} {
+      font-size: $i + 0rpx;
+    }
+    @include font($i + 2);
+  }
+}
+
+@include font(12);
+
+// 通用 margin 混合宏
+@mixin margin($type, $i) {
+  @if $i <= 200 {
+    @if $type == top {
+      .mt-#{$i} {
+        margin-top: $i + 0rpx;
+      }
+    } @else if $type == bottom {
+      .mb-#{$i} {
+        margin-bottom: $i + 0rpx;
+      }
+    } @else if $type == left {
+      .ml-#{$i} {
+        margin-left: $i + 0rpx;
+      }
+    } @else if $type == right {
+      .mr-#{$i} {
+        margin-right: $i + 0rpx;
+      }
+    }
+    @include margin($type, $i + 2);
+  }
+}
+
+// 生成各种边距类
+@include margin(top, 12);
+@include margin(bottom, 12);
+@include margin(left, 12);
+@include margin(right, 12);
+
+// 通用 padding 混合宏
+@mixin padding($type, $i) {
+  @if $i <= 200 {
+    @if $type == top {
+      .pt-#{$i} {
+        padding-top: $i + 0rpx;
+      }
+    } @else if $type == bottom {
+      .pb-#{$i} {
+        padding-bottom: $i + 0rpx;
+      }
+    } @else if $type == left {
+      .pl-#{$i} {
+        padding-left: $i + 0rpx;
+      }
+    } @else if $type == right {
+      .pr-#{$i} {
+        padding-right: $i + 0rpx;
+      }
+    }
+    @include padding($type, $i + 2);
+  }
+}
+
+// 生成各种边距类
+@include padding(top, 12);
+@include padding(bottom, 12);
+@include padding(left, 12);
+@include padding(right, 12);

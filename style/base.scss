@@ -1,0 +1,78 @@
+// @font-face {
+//   font-family: SourceHanSansCN;
+//   src: url(../font/KaiGenGothicSC-Regular.woff2);
+//   font-display: swap;
+//   font-weight: normal;
+// }
+// @font-face {
+//   font-family: SourceHanSansCN;
+//   src: url(../font/KaiGenGothicSC-Bold.woff2);
+//   font-display: swap;
+//   font-weight: bold;
+// }
+
+// page {
+//   // font-family: "SourceHanSansCN", "Microsoft YaHei", "微软雅黑", "Helvetica Neue", Helvetica, "PingFang SC",
+//   //   "Hiragino Sans GB", Arial, sans-serif;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+//   margin: 0;
+//   padding: 0;
+
+//   box-sizing: border-box;
+//   // font-size: 32rpx;
+//   font-weight: 400;
+//   overflow: hidden;
+//   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+//   will-change: color, background-color, border-color;
+//   view {
+//     color: #333;
+//   }
+// }
+
+button {
+	height: 96rpx;
+	line-height: 96rpx;
+	border-radius: 10rpx;
+	font-size: 32rpx;
+	font-weight: 400;
+
+	&[type='primary'] {
+		background-color: #17a1ff !important;
+	}
+
+	&[type='warn'] {
+		color: #ee0a24;
+		background-color: #ffffff;
+		border: 1px solid #ee0a24;
+	}
+
+	// &:active {
+	//   background-color: #17a1ff !important;
+	// }
+	// &:hover,
+	// &:focus {
+	//   background-color: #17a1ff !important;
+	// }
+}
+
+// 滚动条整体宽度
+::-webkit-scrollbar {
+	// width: 6px;
+	// height: 6px;
+	display: none;
+}
+// 滚动条样式
+::-webkit-scrollbar-thumb {
+	// border-radius: 6px;
+	// background-color: rgba(66, 71, 120, 0.9);
+	// box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.03);
+}
+// 滚动条滑槽样式
+::-webkit-scrollbar-track {
+	// background-color: rgba(66, 71, 120, 0.1);
+	// border-radius: 8px;
+}
+::-webkit-scrollbar-corner {
+	// background-color: rgba(66, 71, 120, 0.1);
+}
