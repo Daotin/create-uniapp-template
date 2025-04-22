@@ -21,6 +21,9 @@ const store = new Vuex.Store({
 	},
 	getters: {
 		userId: state => state.demo.userId,
+		nickName: state => state.demo.nickName,
+		avatarUrl: state => state.demo.avatarUrl,
+		isLogin: state => state.demo.isLogin,
 	},
 })
 
