@@ -1,6 +1,7 @@
 <script>
 import { systemInfo } from '@/utils/system-info.js'
 import { mapActions, mapGetters } from 'vuex'
+import uniIdPageInit from '@/uni_modules/uni-id-pages/init.js'
 export default {
 	computed: {
 		...mapGetters(['userId']),
@@ -22,16 +23,33 @@ export default {
 		console.log('isIPhoneX:', this.globalData.isIPhoneX)
 		console.log('safeAreaHeight:', this.globalData.safeAreaHeight)
 
-		if (typeof document !== 'undefined' && document.documentElement) {
-			document.documentElement.style.setProperty('--nav-bar-height', `${this.globalData.navHeight}rpx`)
-			document.documentElement.style.setProperty('--safe-area-height', `${this.globalData.safeAreaHeight}rpx`)
-			console.log('css变量设置成功')
-		} else {
-			console.warn('css变量设置失败')
-		}
+		// 初始化uni-id-pages
+		await uniIdPageInit()
 	},
 	onShow: function () {
 		console.log('App Show')
+
+		uni.$on('uni-id-pages-login-success', () => {
+			console.log('==== 登录成功 ====')
+      this.$showToast.success('登录成功')
+
+      setTimeout(() => {
+        uni.switchTab({
+          url: '/pages/about/index',
+        })
+      }, 1000);
+		})
+
+		uni.$on('uni-id-pages-logout', () => {
+			console.log('==== 退出登录 ====')
+			this.$showToast.success('退出登录')
+
+			setTimeout(() => {
+				uni.switchTab({
+					url: '/pages/about/index',
+				})
+			}, 1000)
+		})
 	},
 	onHide: function () {
 		console.log('App Hide')
