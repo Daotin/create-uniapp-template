@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI画廊 - 创作</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            padding-bottom: 70px;
+        }
+        .navbar {
+            height: 44px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            position: relative;
+            z-index: 50;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        }
+        .style-tag {
+            display: inline-block;
+            padding: 6px 14px;
+            margin: 0 5px 10px 0;
+            border-radius: 20px;
+            background-color: #f1f1f1;
+            font-size: 12px;
+            color: #606266;
+            transition: all 0.3s;
+        }
+        .style-tag.active {
+            background-color: #e1f1ff;
+            color: #2979ff;
+        }
+        .prompt-textarea {
+            width: 100%;
+            min-height: 100px;
+            border: 1px solid #e4e7ed;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .prompt-textarea:focus {
+            border-color: #2979ff;
+        }
+        .generate-button {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #2979ff, #5e7eff);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 12px 0;
+            border-radius: 12px;
+            border: none;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(41, 121, 255, 0.2);
+            transition: transform 0.2s;
+        }
+        .generate-button:active {
+            transform: scale(0.98);
+        }
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #909399;
+        }
+        .tab-item.active {
+            color: #2979ff;
+        }
+        .tab-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        .create-button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2979ff, #5e7eff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(41, 121, 255, 0.3);
+            position: relative;
+            top: -15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <div class="text-lg font-semibold">创建图片</div>
+        <div>
+            <i class="fas fa-question-circle text-gray-400"></i>
+        </div>
+    </div>
+    
+    <!-- 创作表单 -->
+    <div class="p-4">
+        <!-- 提示词输入 -->
+        <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">输入提示词</label>
+            <textarea class="prompt-textarea" placeholder="尝试描述你想要创建的图片，例如：'一只在雨中漫步的猫，动漫风格，高清，细节丰富'"></textarea>
+        </div>
+        
+        <!-- 风格选择 -->
+        <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">选择风格</label>
+            <div>
+                <div class="style-tag active">写实</div>
+                <div class="style-tag">动漫</div>
+                <div class="style-tag">油画</div>
+                <div class="style-tag">水彩</div>
+                <div class="style-tag">素描</div>
+                <div class="style-tag">像素</div>
+                <div class="style-tag">照片</div>
+                <div class="style-tag">3D渲染</div>
+            </div>
+        </div>
+        
+        <!-- 常用提示词示例 -->
+        <div class="mb-5">
+            <div class="flex justify-between items-center mb-2">
+                <label class="text-sm font-medium text-gray-700">常用提示词</label>
+                <span class="text-xs text-blue-500">全部 ></span>
+            </div>
+            <div class="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+                <div class="mb-1">• 高清，精致，逼真，4K，细节丰富</div>
+                <div class="mb-1">• 彩色，阳光，柔和，明亮</div>
+                <div class="mb-1">• 梦幻，魔法，奇幻，科幻</div>
+                <div>• 电影风格，摄影作品，专业照片</div>
+            </div>
+        </div>
+        
+        <!-- 生成按钮 -->
+        <div class="mt-6">
+            <button class="generate-button">
+                <i class="fas fa-magic mr-2"></i> 开始创作
+            </button>
+        </div>
+        
+        <!-- 生成中状态示例（默认隐藏） -->
+        <div class="mt-10 hidden">
+            <div class="flex flex-col items-center justify-center py-6">
+                <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <div class="text-sm text-gray-600">AI绘画中，需要约15秒...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部选项卡 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="tab-icon fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item active">
+            <div class="create-button text-white">
+                <i class="fas fa-plus"></i>
+            </div>
+        </div>
+        <div class="tab-item">
+            <i class="tab-icon fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI画廊 - 我的</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            padding-bottom: 70px;
+        }
+        .navbar {
+            height: 44px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            position: relative;
+            z-index: 50;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        }
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+            padding: 0 20px;
+        }
+        .login-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .login-subtitle {
+            font-size: 14px;
+            color: #606266;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .login-button {
+            width: 100%;
+            background: linear-gradient(135deg, #2979ff, #5e7eff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(41, 121, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 16px;
+            background-color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .nickname {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .menu-list {
+            width: 100%;
+            background-color: white;
+            border-radius: 12px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #606266;
+        }
+        .arrow {
+            color: #c0c4cc;
+        }
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #909399;
+        }
+        .tab-item.active {
+            color: #2979ff;
+        }
+        .tab-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        .create-button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2979ff, #5e7eff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(41, 121, 255, 0.3);
+            position: relative;
+            top: -15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <div class="text-lg font-semibold">我的</div>
+    </div>
+    
+    <!-- 未登录状态 -->
+    <div class="login-container">
+        <div class="login-title">欢迎使用AI画廊</div>
+        <div class="login-subtitle">登录后可以保存你的创作，分享你的灵感</div>
+        <button class="login-button">
+            <i class="fab fa-weixin mr-2"></i> 微信一键登录
+        </button>
+        <div class="text-xs text-gray-400 mt-5">
+            点击登录按钮将跳转到uni-id-pages登录页面
+        </div>
+    </div>
+    
+    <!-- 已登录状态（默认隐藏） -->
+    <div class="hidden">
+        <!-- 用户信息 -->
+        <div class="user-info">
+            <div class="avatar">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="用户头像">
+            </div>
+            <div class="nickname">用户昵称</div>
+        </div>
+        
+        <!-- 菜单列表 -->
+        <div class="menu-list mx-4">
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <div>修改个人资料</div>
+                </div>
+                <div class="arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <div>我的创作</div>
+                </div>
+                <div class="arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div>设置</div>
+                </div>
+                <div class="arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="menu-item">
+                <div class="flex items-center">
+                    <div class="menu-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="text-red-500">退出登录</div>
+                </div>
+                <div class="arrow">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部选项卡 -->
+    <div class="tab-bar">
+        <div class="tab-item">
+            <i class="tab-icon fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item">
+            <div class="create-button text-white">
+                <i class="fas fa-plus"></i>
+            </div>
+        </div>
+        <div class="tab-item active">
+            <i class="tab-icon fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+</body>
+</html> 
