@@ -17,7 +17,6 @@ export async function confirm(content = '', title = '提示', ...args) {
 			return Promise.reject(res)
 		}
 	} catch (err) {
-		console.error(err)
 		return Promise.reject(err)
 	}
 }
@@ -39,7 +38,6 @@ export async function alert(content = '', title = '提示', ...args) {
 			return Promise.reject(res)
 		}
 	} catch (err) {
-		console.error(err)
 		return Promise.reject(err)
 	}
 }
