@@ -1,0 +1,41 @@
+{
+  "bsonType": "object",
+  "required": ["user_id", "prompt", "url", "create_time"],
+  "permission": {
+    "read": true,
+    "create": "auth.uid != null",
+    "update": "doc.user_id == auth.uid",
+    "delete": "doc.user_id == auth.uid"
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "user_id": {
+      "bsonType": "string",
+      "description": "创建用户ID",
+      "foreignKey": "uni-id-users._id"
+    },
+    "prompt": {
+      "bsonType": "string",
+      "description": "生成图片的提示词",
+      "maxLength": 1000
+    },
+    "file_id": {
+      "bsonType": "string",
+      "description": "云存储中的文件ID"
+    },
+    "url": {
+      "bsonType": "string",
+      "description": "图片访问地址",
+      "pattern": "^https?://\\S+$"
+    },
+    "create_time": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "defaultValue": {
+        "$env": "now"
+      }
+    }
+  }
+} 
