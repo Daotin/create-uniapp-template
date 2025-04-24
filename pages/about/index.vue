@@ -1,32 +1,80 @@
 <template>
-	<view class="my-page h-full flex flex-col items-center">
-		<template v-if="hasLogin">
-			<!-- 登录成功后显示简单的用户信息和入口 -->
-			<view class="user-info">
+	<view class="profile-page">
+		<!-- 未登录状态 -->
+		<template v-if="!hasLogin">
+			<view class="login-container">
+				<view class="login-title">欢迎使用AI画廊</view>
+				<view class="login-subtitle">登录后可以保存你的创作，分享你的灵感</view>
+				<u-button type="primary" shape="circle" size="large" @click="handleLogin">
+					<template v-slot:default>
+						<u-icon name="weixin-fill" color="#ffffff" size="24" style="margin-right: 10rpx;"></u-icon>微信一键登录
+					</template>
+				</u-button>
+				<view class="text-xs text-gray-400 mt-5">
+					点击登录按钮将跳转到uni-id-pages登录页面
+				</view>
+			</view>
+		</template>
+		
+		<!-- 已登录状态 -->
+		<template v-else>
+			<!-- 用户信息 -->
+			<view class="user-info-section">
 				<view class="avatar-wrapper" @click="goToUserInfo">
 					<image class="avatar" :src="userInfo.avatar || defaultAvatar" mode="aspectFill"></image>
 				</view>
 				<view class="nickname" @click="goToUserInfo">{{ userInfo.nickname || '点击设置昵称' }}</view>
 			</view>
 			
-			<!-- 其他可能的"我的"页面功能入口 -->
+			<!-- 菜单列表 -->
 			<view class="menu-list">
 				<view class="menu-item" @click="goToUserInfo">
-					<text>修改个人资料</text>
-					<text class="arrow">></text>
+					<view class="flex items-center">
+						<view class="menu-icon">
+							<u-icon name="account-fill" color="#606266" size="24"></u-icon>
+						</view>
+						<view>修改个人资料</view>
+					</view>
+					<view class="arrow">
+						<u-icon name="arrow-right" color="#c0c4cc" size="24"></u-icon>
+					</view>
+				</view>
+				<view class="menu-item" @click="goToMyCreations">
+					<view class="flex items-center">
+						<view class="menu-icon">
+							<u-icon name="photo" color="#606266" size="24"></u-icon>
+						</view>
+						<view>我的创作</view>
+					</view>
+					<view class="arrow">
+						<u-icon name="arrow-right" color="#c0c4cc" size="24"></u-icon>
+					</view>
+				</view>
+				<view class="menu-item" @click="goToSettings">
+					<view class="flex items-center">
+						<view class="menu-icon">
+							<u-icon name="setting" color="#606266" size="24"></u-icon>
+						</view>
+						<view>设置</view>
+					</view>
+					<view class="arrow">
+						<u-icon name="arrow-right" color="#c0c4cc" size="24"></u-icon>
+					</view>
 				</view>
 				<view class="menu-item" @click="handleLogout">
-					<text style="color: red;">退出登录</text>
-					<text class="arrow">></text>
+					<view class="flex items-center">
+						<view class="menu-icon">
+							<u-icon name="minus-circle" color="#fa3534" size="24"></u-icon>
+						</view>
+						<view class="text-red">退出登录</view>
+					</view>
+					<view class="arrow">
+						<u-icon name="arrow-right" color="#c0c4cc" size="24"></u-icon>
+					</view>
 				</view>
-				<!-- 可以添加更多菜单项 -->
 			</view>
 		</template>
-		<template v-else>
-			<view class="login-container">
-				<u-button type="primary" @click="handleLogin" size="large">去登录</u-button>
-			</view>
-		</template>
+		
 	</view>
 </template>
 
@@ -34,6 +82,7 @@
 import storage from '@/utils/storage.js'
 import { mutations as uniIdMutations } from '@/uni_modules/uni-id-pages/common/store.js'
 import { confirm } from '@/utils/toast.js'
+
 export default {
 	data() {
 		return {
@@ -95,65 +144,140 @@ export default {
 				url: '/uni_modules/uni-id-pages/pages/userinfo/userinfo'
 			})
 		},
+		goToMyCreations() {
+			uni.showToast({
+				title: '我的创作功能开发中',
+				icon: 'none'
+			})
+		},
+		goToSettings() {
+			uni.showToast({
+				title: '设置功能开发中',
+				icon: 'none'
+			})
+		},
 		async handleLogout() {
 			await confirm('确认退出登录？')
 			await uniIdMutations.logout()
 			this.hasLogin = false
+			this.userInfo = {}
 		},
 	}
 }
 </script>
 
 <style lang="scss">
-.my-page {
-	padding: 30rpx;
+.profile-page {
+	background-color: #f8f8f8;
+	min-height: 100vh;
+	
+	.navbar {
+		height: 88rpx;
+		background-color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 32rpx;
+		position: relative;
+		z-index: 50;
+		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+	}
 	
 	.login-container {
 		display: flex;
+		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		height: 80vh;
+		height: 70vh;
+		padding: 0 40rpx;
+		
+		.login-title {
+			font-size: 48rpx;
+			font-weight: bold;
+			margin-bottom: 32rpx;
+		}
+		
+		.login-subtitle {
+			font-size: 28rpx;
+			color: #606266;
+			margin-bottom: 60rpx;
+			text-align: center;
+		}
+		
+		.mt-5 {
+			margin-top: 20rpx;
+		}
+		
+		.text-xs {
+			font-size: 24rpx;
+		}
+		
+		.text-gray-400 {
+			color: #909399;
+		}
 	}
 	
-	.user-info {
+	.user-info-section {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding: 40rpx 0;
+		padding: 80rpx 0;
 		
 		.avatar-wrapper {
-			margin-bottom: 20rpx;
+			margin-bottom: 32rpx;
 		}
 		
 		.avatar {
-			width: 150rpx;
-			height: 150rpx;
+			width: 160rpx;
+			height: 160rpx;
 			border-radius: 50%;
+			object-fit: cover;
+			background-color: #f1f1f1;
 		}
 		
 		.nickname {
-			font-size: 32rpx;
+			font-size: 36rpx;
 			font-weight: bold;
 			color: #333;
-			margin-top: 10rpx;
 		}
 	}
 	
 	.menu-list {
-		width: 100%;
-		background-color: #ffffff;
-		border-radius: 12rpx;
-		margin-top: 30rpx;
+		background-color: white;
+		border-radius: 24rpx;
+		margin: 0 32rpx;
+		overflow: hidden;
 		
 		.menu-item {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-			padding: 30rpx;
-			border-bottom: 1rpx solid #eee;
+			padding: 32rpx;
+			border-bottom: 1px solid #f1f1f1;
 			
-			.arrow {
-				color: #999;
+			&:last-child {
+				border-bottom: none;
+			}
+			
+			.menu-icon {
+				width: 48rpx;
+				height: 48rpx;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-right: 24rpx;
+			}
+			
+			.text-red {
+				color: #fa3534;
+			}
+			
+			.flex {
+				display: flex;
+			}
+			
+			.items-center {
+				align-items: center;
 			}
 		}
 	}

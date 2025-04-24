@@ -8,8 +8,13 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "首页",
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "AI画廊"
+			}
+		},
+		{
+			"path": "pages/create/index",
+			"style": {
+				"navigationBarTitleText": "创建图片"
 			}
 		},
 		{
@@ -128,8 +133,8 @@
 		}
 	],
 	"tabBar": {
-		"color": "#969799",
-		"selectedColor": "#17A1FF",
+		"color": "#909399",
+		"selectedColor": "#2979ff",
 		"borderStyle": "black",
 		"backgroundColor": "#ffffff",
 		"list": [
@@ -149,12 +154,9 @@
 	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "AI画廊",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},
-	"uniIdRouter": {
-		// "loginPage": "/pages/about/index"
-		// "uniIdRedirectUrl": "/pages/about/index"
-	}
+	"uniIdRouter": {}
 }
