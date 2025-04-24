@@ -1,9 +1,11 @@
 <template>
 	<view class="my-page h-full flex flex-col items-center justify-center">
 		<template v-if="hasLogin">
-			<text>我的</text>
-			<!-- 这里可以添加已登录用户看到的内容 -->
-
+			<view class="user-info-box">
+				<image class="avatar" src="/static/avatar.jpg" mode="aspectFill"></image>
+				<view class="nickname">{{nickname}}</view>
+			</view>
+			
 			<view class="logout-text" @click="handleLogout">注销登录</view>
 		</template>
 		<template v-else>
@@ -21,6 +23,7 @@ export default {
 	data() {
 		return {
 			hasLogin: false,
+			nickname: '',
 		}
 	},
 	onShow() {
@@ -34,9 +37,19 @@ export default {
 				const token = storage.getItem('uni_id_token')
 				const userInfo = storage.getItem('uni-id-pages-userInfo')
 				this.hasLogin = Boolean(token && userInfo)
+				
+				if (this.hasLogin) {
+					// 生成随机昵称
+					this.generateNickname()
+				}
 			} catch (e) {
 				this.hasLogin = false
 			}
+		},
+		generateNickname() {
+			// 生成8位随机数
+			const randomNum = Math.floor(10000000 + Math.random() * 90000000)
+			this.nickname = `微信用户_${randomNum}`
 		},
 		handleLogin() {
 			uni.navigateTo({
@@ -55,6 +68,26 @@ export default {
 <style lang="scss">
 .my-page {
 	padding: 20rpx;
+	
+	.user-info-box {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		
+		.avatar {
+			width: 150rpx;
+			height: 150rpx;
+			border-radius: 50%;
+			margin-bottom: 20rpx;
+		}
+		
+		.nickname {
+			font-size: 32rpx;
+			font-weight: bold;
+			color: #333;
+		}
+	}
+	
 	.logout-text {
 		position: absolute;
 		bottom: 20rpx;
