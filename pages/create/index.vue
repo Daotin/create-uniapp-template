@@ -57,12 +57,6 @@
 					开始创作
 				</u-button>
 			</view>
-			
-			<!-- 生成中状态 -->
-			<view class="generating-status" v-if="generating">
-				<u-loading mode="circle" size="60"></u-loading>
-				<view class="generating-text">AI绘画中，需要约15秒...</view>
-			</view>
 		</view>
 		
 		<!-- 帮助弹窗 -->
@@ -82,10 +76,15 @@
 </template>
 
 <script>
+import storage from '@/utils/storage.js'
+
+// 确保uniCloud已初始化
+console.log('uniCloud可用状态:', !!uniCloud)
+
 export default {
 	data() {
 		return {
-			prompt: '',
+			prompt: '一只小猫',
 			styleOptions: [
 				{ id: 'realistic', name: '写实', text: '写实风格，高度逼真' },
 				{ id: 'anime', name: '动漫', text: '动漫风格，二次元' },
@@ -98,22 +97,32 @@ export default {
 			],
 			selectedStyle: 'realistic',
 			generating: false,
-			showHelpPopup: false
+			showHelpPopup: false,
+			// 云对象实例
+			aiGalleryObj: null
 		}
 	},
 	onLoad() {
-		
+		// 导入云对象
+		this.aiGalleryObj = uniCloud.importObject('ai-gallery', {
+			// customUI: false, // 使用系统默认UI
+			// loadingOptions: { 
+			// 	title: '处理中...', 
+			// 	mask: true 
+			// },
+			// errorOptions: {
+			// 	type: 'toast', // 使用toast显示错误，不阻断用户操作
+			// 	retry: false // 不显示重试按钮
+			// }
+		})
 	},
 	methods: {
 		selectStyle(styleId) {
 			this.selectedStyle = styleId
 		},
-		generateImage() {
+		async generateImage() {
 			if (!this.prompt.trim()) {
-				uni.showToast({
-					title: '请输入提示词',
-					icon: 'none'
-				})
+				this.$showToast.none('请输入提示词')
 				return
 			}
 			
@@ -127,23 +136,46 @@ export default {
 			// 开始生成
 			this.generating = true
 			
-			// 模拟生成过程
-			setTimeout(() => {
+			// 打印提示词，便于调试
+			console.log('正在生成图片，提示词:', fullPrompt)
+			
+			// 直接调用云对象方法
+			try {
+				const result = await this.aiGalleryObj.generateImage(fullPrompt)
+				console.log('图片生成结果:', result)
 				this.generating = false
 				
-				// 跳转到结果页（实际实现时需要传递生成的图片 ID 或 URL）
-				uni.showToast({
-					title: '图片生成成功',
-					icon: 'success'
-				})
-				
-				// 延迟返回首页并刷新
-				setTimeout(() => {
-					uni.switchTab({
-						url: '/pages/index/index'
-					})
-				}, 1500)
-			}, 3000)
+				if (result?.success) {
+					this.$showToast.success('图片生成成功')
+					
+					// 在本地保存生成的图片信息
+					try {
+						let historyImages = storage.getItem('ai_generated_images') || []
+						historyImages.unshift({
+							id: result.imageId,
+							url: result.url,
+							prompt: fullPrompt,
+							createTime: new Date().toISOString()
+						})
+						storage.setItem('ai_generated_images', historyImages)
+						
+					} catch (e) {
+						console.error('保存历史记录失败', e)
+					}
+					
+					// 延迟返回首页并刷新
+					setTimeout(() => {
+						uni.navigateTo({
+							url: `/pages/create/preview?id=${result.imageId}`
+						})
+					}, 1500)
+				}
+			} catch (err) {
+				this.generating = false
+				console.error('生成图片失败vue:', err)
+				// 显示详细错误信息
+				this.$showToast.error('图片生成失败')
+			}
 		},
 		showHelp() {
 			this.showHelpPopup = true
@@ -225,19 +257,6 @@ export default {
 	
 	.button-area {
 		margin-top: 60rpx;
-	}
-	
-	.generating-status {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		margin-top: 80rpx;
-		
-		.generating-text {
-			font-size: 28rpx;
-			color: #606266;
-			margin-top: 24rpx;
-		}
 	}
 	
 	.help-popup {

@@ -1,0 +1,217 @@
+<template>
+  <view class="preview-container">
+    <view class="image-wrapper">
+      <image 
+        v-if="imageUrl" 
+        :src="imageUrl" 
+        mode="aspectFit" 
+        class="preview-image"
+      ></image>
+      <view v-else class="loading-wrapper">
+        <u-loading mode="circle" size="60"></u-loading>
+        <text class="loading-text">加载中...</text>
+      </view>
+    </view>
+    
+    <view class="info-section">
+      <view class="prompt-section">
+        <view class="section-title">提示词</view>
+        <view class="prompt-text">{{ prompt }}</view>
+      </view>
+      
+      <view class="buttons">
+        <u-button 
+          type="primary" 
+          size="medium" 
+          @click="saveImage"
+        >保存到相册</u-button>
+        <u-button 
+          type="default" 
+          size="medium" 
+          @click="goBack"
+        >返回</u-button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import storage from '@/utils/storage.js'
+export default {
+  data() {
+    return {
+      imageId: '',
+      imageUrl: '',
+      prompt: ''
+    }
+  },
+  onLoad(options) {
+    if (options.id) {
+      this.loadImageData(options.id)
+    } else {
+      uni.showToast({
+        title: '图片数据无效',
+        icon: 'none'
+      })
+      setTimeout(() => {
+        uni.navigateBack()
+      }, 1500)
+    }
+  },
+  methods: {
+    // 加载图片数据
+    loadImageData(imageId) {
+      try {
+        const historyImages = storage.getItem('ai_generated_images') || []
+        const image = historyImages.find(img => img.id === imageId)
+        
+        if (image) {
+          this.imageId = image.id
+          this.imageUrl = image.url
+          this.prompt = image.prompt
+        } else {
+          throw new Error('图片不存在')
+        }
+      } catch (error) {
+        uni.showToast({
+          title: '加载图片失败',
+          icon: 'none'
+        })
+        setTimeout(() => {
+          uni.navigateBack()
+        }, 1500)
+      }
+    },
+    
+    // 保存图片到相册
+    saveImage() {
+      if (!this.imageUrl) {
+        uni.showToast({
+          title: '图片未加载完成',
+          icon: 'none'
+        })
+        return
+      }
+      
+      uni.showLoading({
+        title: '保存中...'
+      })
+      
+      uni.downloadFile({
+        url: this.imageUrl,
+        success: (res) => {
+          if (res.statusCode === 200) {
+            uni.saveImageToPhotosAlbum({
+              filePath: res.tempFilePath,
+              success: () => {
+                uni.hideLoading()
+                uni.showToast({
+                  title: '已保存到相册',
+                  icon: 'success'
+                })
+              },
+              fail: (err) => {
+                uni.hideLoading()
+                console.error('保存失败', err)
+                uni.showToast({
+                  title: '保存失败，请检查权限',
+                  icon: 'none'
+                })
+              }
+            })
+          } else {
+            uni.hideLoading()
+            uni.showToast({
+              title: '下载图片失败',
+              icon: 'none'
+            })
+          }
+        },
+        fail: () => {
+          uni.hideLoading()
+          uni.showToast({
+            title: '下载图片失败',
+            icon: 'none'
+          })
+        }
+      })
+    },
+    
+    // 返回上一页
+    goBack() {
+      uni.navigateBack()
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.preview-container {
+  background-color: #f8f8f8;
+  min-height: 100vh;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  
+  .image-wrapper {
+    width: 100%;
+    height: 750rpx;
+    background-color: #fff;
+    border-radius: 20rpx;
+    margin-bottom: 30rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    
+    .preview-image {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .loading-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      
+      .loading-text {
+        margin-top: 20rpx;
+        font-size: 28rpx;
+        color: #606266;
+      }
+    }
+  }
+  
+  .info-section {
+    background-color: #fff;
+    border-radius: 20rpx;
+    padding: 30rpx;
+    
+    .prompt-section {
+      margin-bottom: 40rpx;
+      
+      .section-title {
+        font-size: 28rpx;
+        font-weight: 500;
+        color: #303133;
+        margin-bottom: 16rpx;
+      }
+      
+      .prompt-text {
+        font-size: 26rpx;
+        color: #606266;
+        line-height: 1.5;
+      }
+    }
+    
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      
+      .u-button {
+        width: 45%;
+      }
+    }
+  }
+}
+</style> 

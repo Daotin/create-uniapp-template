@@ -18,6 +18,12 @@
 			}
 		},
 		{
+			"path": "pages/create/preview",
+			"style": {
+				"navigationBarTitleText": "图片预览"
+			}
+		},
+		{
 			"path": "pages/about/index",
 			"style": {
 				"navigationBarTitleText": "我的"
