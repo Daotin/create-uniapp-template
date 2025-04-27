@@ -36,17 +36,28 @@
 </template>
 
 <script>
-import storage from '@/utils/storage.js'
 export default {
   data() {
     return {
       imageId: '',
       imageUrl: '',
-      prompt: ''
+      prompt: '',
+      // 云对象实例
+      aiGalleryObj: null
     }
   },
   onLoad(options) {
+    // 导入云对象
+    this.aiGalleryObj = uniCloud.importObject('ai-gallery', {
+      customUI: false,
+      loadingOptions: { 
+        title: '加载中...', 
+        mask: true 
+      }
+    })
+    
     if (options.id) {
+      this.imageId = options.id
       this.loadImageData(options.id)
     } else {
       uni.showToast({
@@ -60,26 +71,23 @@ export default {
   },
   methods: {
     // 加载图片数据
-    loadImageData(imageId) {
+    async loadImageData(imageId) {
       try {
-        const historyImages = storage.getItem('ai_generated_images') || []
-        const image = historyImages.find(img => img.id === imageId)
+        const result = await this.aiGalleryObj.getImageDetail({
+          imageId: imageId
+        })
         
-        if (image) {
-          this.imageId = image.id
-          this.imageUrl = image.url
-          this.prompt = image.prompt
+        if (result.success && result.data) {
+          const imageData = result.data
+          this.imageId = imageData._id
+          this.imageUrl = imageData.url
+          this.prompt = imageData.prompt
         } else {
-          throw new Error('图片不存在')
+          throw new Error('获取图片数据失败')
         }
       } catch (error) {
-        uni.showToast({
-          title: '加载图片失败',
-          icon: 'none'
-        })
-        setTimeout(() => {
-          uni.navigateBack()
-        }, 1500)
+        console.error('加载图片失败:', error)
+        this.$showToast.error('加载图片失败')
       }
     },
     

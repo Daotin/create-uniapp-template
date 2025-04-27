@@ -1,12 +1,8 @@
 const uniID = require('uni-id-common')
 
 function throwError(errCode, errMsg) {
-	throw new Error(
-		JSON.stringify({
-			errCode,
-			errMsg,
-		}),
-	)
+  const err = { errCode, errMsg }
+  throw new Error(JSON.stringify(err))
 }
 
 module.exports = {
@@ -27,7 +23,12 @@ module.exports = {
 		// 检查用户登录状态
 		const auth = await this.uniID.checkToken(this.context.uniIdToken)
 		if (auth.code) {
-			throwError(auth.code, auth.message || '身份验证失败，请重新登录')
+      throwError(auth.code, auth.message || '身份验证失败，请重新登录')
+      setTimeout(() => {
+        uni.switchTab({
+          url: '/pages/about/index',
+        })
+      }, 1000)
 		}
 		this.context.currentUser = auth.uid
 	},
@@ -58,8 +59,8 @@ module.exports = {
 		// 创建任务
 		const createTaskUrl = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis'
 		const requestData = {
-			model: 'wanx2.1-t2i-turbo',
-			// model: 'wanx2.1-t2i-plus',
+			// model: 'wanx2.1-t2i-turbo',
+			model: 'wanx2.1-t2i-plus',
 			input: {
 				prompt: prompt,
 			},
@@ -317,5 +318,31 @@ module.exports = {
 			console.error('删除图片失败:', error)
 			throwError('DELETE_FAILED', '删除图片失败')
 		}
-	},
+  },
+  
+  /**
+   * 获取图片详情
+   * @param {Object} params 包含imageId
+   * @returns {Promise} 返回图片详情
+   */
+  async getImageDetail(params) {
+    const imageId = params?.imageId
+    const db = uniCloud.database()
+
+    try {
+      const result = await db.collection('images').doc(imageId).get()
+      
+      if (result.data.length === 0) {
+        throwError('IMAGE_NOT_FOUND', '图片不存在')
+      }
+
+      return {
+        success: true,
+        data: result.data[0],
+      }
+    } catch (error) {
+      console.error('获取图片详情失败:', error)
+      throwError('QUERY_FAILED', '获取图片详情失败')
+    }
+  }
 }

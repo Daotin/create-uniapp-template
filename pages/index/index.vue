@@ -3,25 +3,25 @@
 		<!-- 瀑布流内容 -->
 		<u-waterfall v-model="flowList" ref="uWaterfall">
 			<template v-slot:left="{ leftList }">
-				<view v-for="(item, index) in leftList" :key="index" class="waterfall-item">
+				<view v-for="(item, index) in leftList" :key="index" class="waterfall-item" @click="goToPreview(item)">
 					<u-lazy-load threshold="-450" border-radius="10" :image="item.url" :index="index"></u-lazy-load>
 					<view class="item-footer">
-						<image :src="item.avatar" class="avatar" mode="aspectFill"></image>
+						<image :src="item.avatarUrl" class="avatar" mode="aspectFill"></image>
 						<view class="user-info">
-							<view class="username">{{ item.username }}</view>
-							<view class="date">{{ item.date }}</view>
+							<view class="username">{{ item.nickname }}</view>
+							<view class="date">{{ item.create_time }}</view>
 						</view>
 					</view>
 				</view>
 			</template>
 			<template v-slot:right="{ rightList }">
-				<view v-for="(item, index) in rightList" :key="index" class="waterfall-item">
+				<view v-for="(item, index) in rightList" :key="index" class="waterfall-item" @click="goToPreview(item)">
 					<u-lazy-load threshold="-450" border-radius="10" :image="item.url" :index="index"></u-lazy-load>
 					<view class="item-footer">
-						<image :src="item.avatar" class="avatar" mode="aspectFill"></image>
+						<image :src="item.avatarUrl" class="avatar" mode="aspectFill"></image>
 						<view class="user-info">
-							<view class="username">{{ item.username }}</view>
-							<view class="date">{{ item.date }}</view>
+							<view class="username">{{ item.nickname }}</view>
+							<view class="date">{{ item.create_time }}</view>
 						</view>
 					</view>
 				</view>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { formatDate } from '@/utils/date.js'
+import dayjs from 'dayjs'
 
 export default {
 	data() {
@@ -49,10 +49,34 @@ export default {
 			loadStatus: 'loadmore',
 			page: 1,
 			limit: 10,
+			// 云对象实例
+			aiGalleryObj: null,
 		}
 	},
 	onLoad() {
+		// 导入云对象
+		this.aiGalleryObj = uniCloud.importObject('ai-gallery', {
+			customUI: false,
+			loadingOptions: {
+				title: '加载中...',
+				mask: true,
+			},
+			errorOptions: {
+				type: 'toast',
+				retry: false,
+			},
+		})
+
 		this.getImageList()
+	},
+	onPullDownRefresh() {
+		this.page = 1
+		this.flowList = []
+		this.$refs.uWaterfall.clear()
+		this.getImageList()
+		setTimeout(() => {
+			uni.stopPullDownRefresh()
+		}, 1000)
 	},
 	onReachBottom() {
 		if (this.loadStatus !== 'nomore') {
@@ -62,36 +86,77 @@ export default {
 		}
 	},
 	methods: {
-		// 模拟获取图片列表
-		async getImageList() {
-			// 模拟异步请求
+		// 获取头像URL
+		getAvatarUrl(creator) {
+			if (creator && creator.avatar_file && creator.avatar_file.url) {
+				return creator.avatar_file.url
+			}
+			return '/static/avatar.jpg'
+		},
+
+		// 获取用户昵称
+		getNickname(creator) {
+			if (creator && creator.nickname) {
+				return creator.nickname
+			}
+			return '用户'
+		},
+
+		// 获取格式化日期
+		getFormatDate(date) {
+			return dayjs(date).format('YYYY-MM-DD') || '--'
+		},
+
+		goToPreview(item) {
 			setTimeout(() => {
-				// 模拟数据
-				const mockData = []
-				for (let i = 0; i < 10; i++) {
-					const randomHeight = Math.floor(Math.random() * 300) + 300
-					mockData.push({
-						id: this.flowList.length + i,
-						url: `https://picsum.photos/400/${randomHeight}?random=${this.flowList.length + i}`,
-						avatar: `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'women' : 'men'}/${Math.floor(
-							Math.random() * 100,
-						)}.jpg`,
-						username: ['张小明', '王大力', '李小花', '陈小帅', '赵大山'][Math.floor(Math.random() * 5)],
-						date: formatDate(new Date(new Date().getTime() - Math.floor(Math.random() * 10000000000)), 'yyyy-MM-dd'),
-					})
-				}
+				uni.navigateTo({
+					url: `/pages/create/preview?id=${item._id}`,
+				})
+			}, 100)
+		},
+		// 获取图片列表
+		async getImageList() {
+			try {
+				this.loadStatus = 'loading'
 
-				// 添加到瀑布流
-				this.flowList = [...this.flowList, ...mockData]
+				// 直接调用云对象
+				const result = await this.aiGalleryObj.getPublicImages({
+					page: this.page,
+					limit: this.limit,
+				})
 
-				// 更新加载状态
-				if (this.page >= 3) {
-					this.loadStatus = 'nomore'
+				if (result.success && result.data) {
+					// 添加到瀑布流
+					this.flowList = [...this.flowList, ...result.data]
+
+					console.log('flowList==>', this.flowList)
+
+					if (this.flowList.length) {
+						this.flowList.forEach(item => {
+							item.avatarUrl = this.getAvatarUrl(item.creator)
+							item.nickname = this.getNickname(item.creator)
+							item.create_time = this.getFormatDate(item.create_time)
+						})
+					}
+
+					// 更新加载状态
+					if (result.data.length < this.limit) {
+						this.loadStatus = 'nomore'
+					} else {
+						this.loadStatus = 'loadmore'
+					}
 				} else {
 					this.loadStatus = 'loadmore'
+					this.$showToast.none('获取图片列表失败')
 				}
-			}, 1000)
+			} catch (error) {
+				console.error('获取图片列表失败:', error)
+				// console.log(JSON.parse(error.message))
+				this.loadStatus = 'loadmore'
+				this.$showToast.none(error.message)
+			}
 		},
+
 		// 跳转到创作页
 		goToCreate() {
 			uni.navigateTo({

@@ -76,11 +76,6 @@
 </template>
 
 <script>
-import storage from '@/utils/storage.js'
-
-// 确保uniCloud已初始化
-console.log('uniCloud可用状态:', !!uniCloud)
-
 export default {
 	data() {
 		return {
@@ -148,27 +143,12 @@ export default {
 				if (result?.success) {
 					this.$showToast.success('图片生成成功')
 					
-					// 在本地保存生成的图片信息
-					try {
-						let historyImages = storage.getItem('ai_generated_images') || []
-						historyImages.unshift({
-							id: result.imageId,
-							url: result.url,
-							prompt: fullPrompt,
-							createTime: new Date().toISOString()
-						})
-						storage.setItem('ai_generated_images', historyImages)
-						
-					} catch (e) {
-						console.error('保存历史记录失败', e)
-					}
-					
-					// 延迟返回首页并刷新
+					// 直接跳转到预览页面，不需要本地存储
 					setTimeout(() => {
 						uni.navigateTo({
 							url: `/pages/create/preview?id=${result.imageId}`
 						})
-					}, 1500)
+					}, 100)
 				}
 			} catch (err) {
 				this.generating = false

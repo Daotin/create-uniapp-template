@@ -33,22 +33,22 @@ export default {
 			console.log('==== 登录成功 ====')
       this.$showToast.success('登录成功')
 
-      setTimeout(() => {
-        uni.switchTab({
-          url: '/pages/about/index',
-        })
-      }, 1000);
+      // setTimeout(() => {
+      //   uni.switchTab({
+      //     url: '/pages/about/index',
+      //   })
+      // }, 1000);
 		})
 
 		uni.$on('uni-id-pages-logout', () => {
 			console.log('==== 退出登录 ====')
 			this.$showToast.success('退出登录')
 
-			setTimeout(() => {
-				uni.switchTab({
-					url: '/pages/about/index',
-				})
-			}, 1000)
+			// setTimeout(() => {
+			// 	uni.switchTab({
+			// 		url: '/pages/about/index',
+			// 	})
+			// }, 1000)
 		})
 	},
 	onHide: function () {
