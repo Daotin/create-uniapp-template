@@ -94,16 +94,11 @@ export default {
     // 保存图片到相册
     saveImage() {
       if (!this.imageUrl) {
-        uni.showToast({
-          title: '图片未加载完成',
-          icon: 'none'
-        })
+        this.$showToast.none('图片未加载完成')
         return
       }
-      
-      uni.showLoading({
-        title: '保存中...'
-      })
+
+      this.$showLoading('保存中...')
       
       uni.downloadFile({
         url: this.imageUrl,
@@ -112,35 +107,23 @@ export default {
             uni.saveImageToPhotosAlbum({
               filePath: res.tempFilePath,
               success: () => {
-                uni.hideLoading()
-                uni.showToast({
-                  title: '已保存到相册',
-                  icon: 'success'
-                })
+                this.$hideLoading()
+                this.$showToast.success('已保存到相册')
               },
               fail: (err) => {
                 uni.hideLoading()
                 console.error('保存失败', err)
-                uni.showToast({
-                  title: '保存失败，请检查权限',
-                  icon: 'none'
-                })
+                this.$showToast.error('保存失败，请检查权限')
               }
             })
           } else {
             uni.hideLoading()
-            uni.showToast({
-              title: '下载图片失败',
-              icon: 'none'
-            })
+            this.$showToast.error('下载图片失败')
           }
         },
         fail: () => {
           uni.hideLoading()
-          uni.showToast({
-            title: '下载图片失败',
-            icon: 'none'
-          })
+          this.$showToast.error('下载图片失败')
         }
       })
     },
