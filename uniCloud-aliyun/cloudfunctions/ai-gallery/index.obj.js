@@ -35,10 +35,23 @@ module.exports = {
 
 	/**
 	 * 生成图片
-	 * @param {String} prompt 提示词
+	 * @param {Object} params 包含提示词和图片参数
+	 * @param {String} params.prompt 提示词
+	 * @param {String} params.size 图片尺寸，例如：'1024*1024'
 	 * @returns {Promise} 返回生成结果
 	 */
-	async generateImage(prompt) {
+	async generateImage(params) {
+		// 支持直接传入字符串作为提示词，兼容旧版调用方式
+		let prompt, size
+		
+		if (typeof params === 'string') {
+			prompt = params
+			size = '1024*1024' // 默认尺寸
+		} else {
+			prompt = params.prompt
+			size = params.size || '1024*1024'
+		}
+		
 		if (!prompt) {
 			throwError('PARAM_ERROR', '提示词不能为空')
 		}
@@ -65,7 +78,7 @@ module.exports = {
 				prompt: prompt,
 			},
 			parameters: {
-				size: '1024*1024',
+				size: size,
 				n: 1,
 			},
 		}
@@ -157,6 +170,7 @@ module.exports = {
 				prompt: prompt,
 				file_id: uploadResult.fileID,
 				url: uploadResult.fileID,
+				size: size,
 				create_time: new Date(),
 			}
 

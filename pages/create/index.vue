@@ -19,7 +19,7 @@
 			
 			<!-- 风格选择 -->
 			<view class="form-item">
-				<view class="label">选择风格</view>
+				<view class="label">选择风格 (可选)</view>
 				<view class="style-tags">
 					<view 
 						v-for="(style, index) in styleOptions" 
@@ -28,6 +28,20 @@
 						:class="{ active: selectedStyle === style.id }"
 						@click="selectStyle(style.id)"
 					>{{ style.name }}</view>
+				</view>
+			</view>
+			
+			<!-- 图片比例选择 -->
+			<view class="form-item">
+				<view class="label">图片比例</view>
+				<view class="ratio-tags">
+					<view 
+						v-for="(ratio, index) in ratioOptions" 
+						:key="index"
+						class="ratio-tag"
+						:class="{ active: selectedRatio === ratio.value }"
+						@click="selectRatio(ratio.value)"
+					>{{ ratio.name }}</view>
 				</view>
 			</view>
 			
@@ -90,7 +104,15 @@ export default {
 				{ id: 'photo', name: '照片', text: '摄影风格，真实照片效果' },
 				{ id: '3d', name: '3D渲染', text: '3D渲染风格，立体感强' },
 			],
-			selectedStyle: 'realistic',
+			selectedStyle: null, // 默认不选择风格
+			ratioOptions: [
+				{ value: '1:1', name: '1:1', width: 1024, height: 1024 },
+				{ value: '16:9', name: '16:9', width: 1344, height: 768 },
+				{ value: '9:16', name: '9:16', width: 768, height: 1344 },
+				{ value: '4:3', name: '4:3', width: 1152, height: 864 },
+				{ value: '3:4', name: '3:4', width: 864, height: 1152 },
+			],
+			selectedRatio: '1:1', // 默认1:1比例
 			generating: false,
 			showHelpPopup: false,
 			// 云对象实例
@@ -113,7 +135,15 @@ export default {
 	},
 	methods: {
 		selectStyle(styleId) {
-			this.selectedStyle = styleId
+			// 如果点击的是当前已选中的风格，则取消选择
+			if (this.selectedStyle === styleId) {
+				this.selectedStyle = null
+			} else {
+				this.selectedStyle = styleId
+			}
+		},
+		selectRatio(ratio) {
+			this.selectedRatio = ratio
 		},
 		async generateImage() {
 			if (!this.prompt.trim()) {
@@ -122,21 +152,31 @@ export default {
 			}
 			
 			// 获取选中的风格文本
-			const selectedStyleObj = this.styleOptions.find(item => item.id === this.selectedStyle)
-			const styleText = selectedStyleObj ? selectedStyleObj.text : ''
+			let styleText = ''
+			if (this.selectedStyle) {
+				const selectedStyleObj = this.styleOptions.find(item => item.id === this.selectedStyle)
+				styleText = selectedStyleObj ? `，${selectedStyleObj.text}` : ''
+			}
 			
 			// 组合完整提示词
-			const fullPrompt = `${this.prompt.trim()}，${styleText}`
+			const fullPrompt = `${this.prompt.trim()}${styleText}`
+			
+			// 获取选中的比例
+			const ratio = this.ratioOptions.find(item => item.value === this.selectedRatio)
+			const size = ratio ? `${ratio.width}*${ratio.height}` : '1024*1024'
 			
 			// 开始生成
 			this.generating = true
 			
 			// 打印提示词，便于调试
-			console.log('正在生成图片，提示词:', fullPrompt)
+			console.log('正在生成图片，提示词:', fullPrompt, '比例:', size)
 			
 			// 直接调用云对象方法
 			try {
-				const result = await this.aiGalleryObj.generateImage(fullPrompt)
+				const result = await this.aiGalleryObj.generateImage({
+					prompt: fullPrompt,
+					size: size
+				})
 				console.log('图片生成结果:', result)
 				this.generating = false
 				
@@ -191,12 +231,12 @@ export default {
 		}
 	}
 
-	.style-tags {
+	.style-tags, .ratio-tags {
 		display: flex;
 		flex-wrap: wrap;
 	}
 	
-	.style-tag {
+	.style-tag, .ratio-tag {
 		display: inline-block;
 		padding: 12rpx 28rpx;
 		margin: 0 10rpx 20rpx 0;
@@ -207,7 +247,7 @@ export default {
 		transition: all 0.3s;
 	}
 	
-	.style-tag.active {
+	.style-tag.active, .ratio-tag.active {
 		background-color: #e1f1ff;
 		color: #2979ff;
 	}
