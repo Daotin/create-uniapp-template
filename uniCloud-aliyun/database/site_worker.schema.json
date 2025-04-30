@@ -1,0 +1,56 @@
+{
+  "bsonType": "object",
+  "required": ["siteId", "workerId", "createTime", "updateTime"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": true
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "siteId": {
+      "bsonType": "string",
+      "title": "工地ID",
+      "description": "工地ID（关联sites._id）",
+      "foreignKey": "sites._id"
+    },
+    "workerId": {
+      "bsonType": "string",
+      "title": "工人ID",
+      "description": "工人ID（关联workers._id）",
+      "foreignKey": "workers._id"
+    },
+    "createTime": {
+      "bsonType": "timestamp",
+      "title": "创建时间",
+      "description": "创建时间",
+      "defaultValue": {
+        "$env": "now"
+      }
+    },
+    "updateTime": {
+      "bsonType": "timestamp",
+      "title": "更新时间",
+      "description": "更新时间",
+      "defaultValue": {
+        "$env": "now"
+      }
+    }
+  },
+  "index": [{
+    "IndexName": "site_worker_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "siteId",
+        "Direction": "1"
+      }, {
+        "Name": "workerId",
+        "Direction": "1"
+      }],
+      "MgoIsUnique": true
+    }
+  }]
+} 
