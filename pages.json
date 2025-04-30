@@ -148,6 +148,12 @@
           "style": {
             "navigationBarTitleText": "工地详情"
           }
+        },
+        {
+          "path": "workers",
+          "style": {
+            "navigationBarTitleText": "工人管理"
+          }
         }
       ]
     },
