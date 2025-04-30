@@ -38,12 +38,10 @@ module.exports = {
   /**
    * 获取工地列表
    * @param {String} keyword - 搜索关键词
-   * @param {Number} page - 页码
-   * @param {Number} pageSize - 每页数量
-   * @returns {Object} 包含工地列表和分页信息
+   * @returns {Object} 包含工地列表
    */
   async getSiteList(params) {
-    const { keyword = '', page = 1, pageSize = 20 } = params;
+    const { keyword = '' } = params;
     const user_id = this.context.uid;
     const sitesCollection = db.collection('sites');
     
@@ -55,16 +53,12 @@ module.exports = {
       whereCondition.name = new RegExp(keyword, 'i');
     }
     
-    // 计算总数
-    const countResult = await sitesCollection.where(whereCondition).count();
-    const total = countResult.total;
+    console.log('查询条件:', whereCondition);
     
-    // 查询数据
+    // 查询数据，不再使用分页
     const list = await sitesCollection
       .where(whereCondition)
       .orderBy('createTime', 'desc')
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
       .get()
       .then(res => res.data);
     
@@ -72,10 +66,7 @@ module.exports = {
       code: 0,
       message: '获取成功',
       data: {
-        list,
-        total,
-        page,
-        pageSize
+        list
       }
     };
   },
@@ -289,12 +280,10 @@ module.exports = {
    * 获取工地工人列表
    * @param {String} siteId - 工地ID
    * @param {String} keyword - 搜索关键词
-   * @param {Number} page - 页码
-   * @param {Number} pageSize - 每页数量
-   * @returns {Object} 包含工人列表和分页信息
+   * @returns {Object} 包含工人列表
    */
   async getSiteWorkers(params) {
-    const { siteId, keyword = '', page = 1, pageSize = 20 } = params;
+    const { siteId, keyword = '' } = params;
     const user_id = this.context.uid;
     
     if (!siteId) {
@@ -324,17 +313,11 @@ module.exports = {
       });
     }
     
-    // 计算总数
-    const countResult = await aggregateQuery.count('total').end();
-    const total = countResult.data.length > 0 ? countResult.data[0].total : 0;
-    
-    // 查询数据
+    // 查询数据，不再使用分页
     const result = await aggregateQuery
       .sort({
         'workerInfo.createTime': -1
       })
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
       .project({
         _id: '$workerInfo._id',
         name: '$workerInfo.name',
@@ -346,14 +329,13 @@ module.exports = {
       })
       .end();
     
+    console.log('工地工人查询结果:', result.data.length);
+    
     return {
       code: 0,
       message: '获取成功',
       data: {
-        list: result.data,
-        total,
-        page,
-        pageSize
+        list: result.data
       }
     };
   },
@@ -362,12 +344,10 @@ module.exports = {
    * 获取可以添加到工地的工人列表
    * @param {String} siteId - 工地ID
    * @param {String} keyword - 搜索关键词
-   * @param {Number} page - 页码
-   * @param {Number} pageSize - 每页数量
-   * @returns {Object} 包含可添加的工人列表和分页信息
+   * @returns {Object} 包含可添加的工人列表
    */
   async getAvailableWorkers(params) {
-    const { siteId, keyword = '', page = 1, pageSize = 20 } = params;
+    const { siteId, keyword = '' } = params;
     const user_id = this.context.uid;
     
     if (!siteId) {
@@ -397,29 +377,22 @@ module.exports = {
       whereCondition.name = new RegExp(keyword, 'i');
     }
     
-    // 计算总数
-    const countResult = await db.collection('workers')
-      .where(whereCondition)
-      .count();
-    const total = countResult.total;
+    console.log('可添加工人查询条件:', whereCondition);
     
-    // 查询数据
+    // 查询数据，不再使用分页
     const list = await db.collection('workers')
       .where(whereCondition)
       .orderBy('createTime', 'desc')
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
       .get()
       .then(res => res.data);
+    
+    console.log('可添加工人数量:', list.length);
     
     return {
       code: 0,
       message: '获取成功',
       data: {
-        list,
-        total,
-        page,
-        pageSize
+        list
       }
     };
   },

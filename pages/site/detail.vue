@@ -35,9 +35,9 @@
 
 		<!-- 工地工人列表 -->
 		<view class="info-card">
-			<view class="card-header" @click="goSiteWorkers">
+			<view class="card-header">
 				<view>工地工人 ({{ workerCount || 0 }}人)</view>
-				<view class="view-all">
+				<view class="view-all" @click="goSiteWorkers">
 					<text>查看全部</text>
 					<u-icon name="arrow-right" color="#2979ff" size="14"></u-icon>
 				</view>
@@ -52,9 +52,17 @@
 						<view class="worker-hours">累计工时: 计算中</view>
 					</view>
 				</view>
+				<view class="add-worker" @click="goAddWorker">
+					<u-icon name="plus" color="#2979ff" size="22"></u-icon>
+					<text>添加工人</text>
+				</view>
 			</view>
 			<view class="card-empty" v-else>
 				<u-empty mode="data" text="暂无工人数据"></u-empty>
+				<view class="add-worker-empty" @click="goAddWorker">
+					<u-icon name="plus" color="#2979ff" size="22"></u-icon>
+					<text>添加工人</text>
+				</view>
 			</view>
 		</view>
 
@@ -109,6 +117,13 @@ export default {
 				uni.navigateBack()
 			}, 1500)
 		}
+		
+		// 监听工地详情刷新事件
+		uni.$on('refreshSiteDetail', this.refresh)
+	},
+	onUnload() {
+		// 移除事件监听
+		uni.$off('refreshSiteDetail')
 	},
 	methods: {
 		// 获取工地详情
@@ -212,8 +227,10 @@ export default {
 		
 		// 跳转到工地工人列表页面
 		goSiteWorkers() {
-			// 暂不实现，等待后续开发
-			this.$showToast.success('工地工人列表功能开发中')
+			// 跳转到工地工人管理页面
+			uni.navigateTo({
+				url: `/pages/site/workers?id=${this.siteId}&name=${encodeURIComponent(this.site.name)}`
+			})
 		},
 		
 		// 跳转到记工时页面
@@ -232,6 +249,20 @@ export default {
 		goWorkHourStats() {
 			// 暂不实现，等待后续开发
 			this.$showToast.success('工时统计功能开发中')
+		},
+
+		// 跳转到添加工人页面
+		goAddWorker() {
+			// 跳转到工地工人管理页面并默认打开添加工人选项卡
+			uni.navigateTo({
+				url: `/pages/site/workers?id=${this.siteId}&name=${encodeURIComponent(this.site.name)}&tab=1`
+			})
+		},
+
+		// 刷新页面数据
+		refresh() {
+			this.getSiteDetail()
+			this.getSiteWorkers()
 		}
 	},
 	onShow() {
@@ -388,6 +419,30 @@ export default {
 			font-size: 28rpx;
 			color: #646566;
 			line-height: 1.5;
+		}
+		
+		.add-worker {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 24rpx 32rpx;
+			border-top: 1rpx solid #ebedf0;
+			
+			.u-icon {
+				margin-right: 8rpx;
+			}
+		}
+		
+		.add-worker-empty {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 40rpx;
+			border-top: 1rpx solid #ebedf0;
+			
+			.u-icon {
+				margin-right: 8rpx;
+			}
 		}
 	}
 
