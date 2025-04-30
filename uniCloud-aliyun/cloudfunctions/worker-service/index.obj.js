@@ -37,12 +37,10 @@ module.exports = {
   /**
    * 获取工人列表
    * @param {String} keyword - 搜索关键词
-   * @param {Number} page - 页码
-   * @param {Number} pageSize - 每页数量
-   * @returns {Object} 包含工人列表和分页信息
+   * @returns {Object} 包含工人列表
    */
   async getWorkerList(params) {
-    const { keyword = '', page = 1, pageSize = 20 } = params;
+    const { keyword = '' } = params;
     const user_id = this.context.uid;
     const workersCollection = db.collection('workers');
     
@@ -54,16 +52,12 @@ module.exports = {
       whereCondition.name = new RegExp(keyword, 'i');
     }
     
-    // 计算总数
-    const countResult = await workersCollection.where(whereCondition).count();
-    const total = countResult.total;
+    console.log('查询条件:', whereCondition);
     
-    // 查询数据
+    // 查询数据，不再使用分页
     const list = await workersCollection
       .where(whereCondition)
       .orderBy('createTime', 'desc')
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
       .get()
       .then(res => res.data);
     
@@ -71,10 +65,7 @@ module.exports = {
       code: 0,
       message: '获取成功',
       data: {
-        list,
-        total,
-        page,
-        pageSize
+        list
       }
     };
   },

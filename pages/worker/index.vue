@@ -6,7 +6,7 @@
 		</view>
 
 		<!-- 列表内容 -->
-		<scroll-view scroll-y class="content" @scrolltolower="loadMore" refresher-enabled @refresherrefresh="onRefresh" :refresher-triggered="refreshTriggered">
+		<scroll-view scroll-y class="content" refresher-enabled @refresherrefresh="onRefresh" :refresher-triggered="refreshTriggered">
 			<u-empty v-if="list.length === 0 && !loading" text="暂无工人数据" mode="list"></u-empty>
 			
 			<view v-else>
@@ -21,11 +21,6 @@
 					<view class="right-icon">
 						<u-icon name="arrow-right" color="#969799" size="18"></u-icon>
 					</view>
-				</view>
-				
-				<!-- 加载更多状态 -->
-				<view class="load-more">
-					<u-loadmore :status="loadMoreStatus" :loading-text="loadingText" :loadmore-text="loadMoreText" :nomore-text="noMoreText"></u-loadmore>
 				</view>
 			</view>
 		</scroll-view>
@@ -45,14 +40,7 @@ export default {
 		return {
 			keyword: '', // 搜索关键词
 			list: [], // 工人列表
-			page: 1, // 当前页码
-			pageSize: 15, // 每页条数
-			total: 0, // 总条数
 			loading: false, // 加载状态
-			loadMoreStatus: 'loading', // 加载状态：loading-加载中 nomore-没有更多 loadmore-加载更多
-			loadingText: '正在加载', // 加载中的提示文字
-			loadMoreText: '点击或上拉加载更多', // 加载更多的提示文字
-			noMoreText: '没有更多了', // 没有更多的提示文字
 			refreshTriggered: false, // 下拉刷新状态
 		}
 	},
@@ -75,36 +63,24 @@ export default {
 		async getWorkerList() {
 			try {
 				this.loading = true
-				console.log('请求参数:', { keyword: this.keyword, page: this.page, pageSize: this.pageSize })
+				console.log('请求参数:', { keyword: this.keyword })
 				
 				// 直接调用云对象
 				const workerService = uniCloud.importObject('worker-service')
 				const res = await workerService.getWorkerList({
-					keyword: this.keyword,
-					page: this.page,
-					pageSize: this.pageSize
+					keyword: this.keyword
 				})
 				
 				console.log('工人列表返回:', res)
 				
 				if (res.code === 0) {
-					// 如果是第一页，直接替换列表，否则追加
-					if (this.page === 1) {
-						this.list = res.data.list
-					} else {
-						this.list = [...this.list, ...res.data.list]
-					}
-					this.total = res.data.total
-					
-					// 更新加载状态
-					this.loadMoreStatus = this.list.length >= this.total ? 'nomore' : 'loadmore'
+					this.list = res.data.list
 				} else {
 					this.$showToast.none(res.message || '获取工人列表失败')
 				}
 			} catch (e) {
 				console.error('获取工人列表异常:', e)
 				this.$showToast.none('获取工人列表失败，请重试')
-				this.loadMoreStatus = 'loadmore'
 			} finally {
 				this.loading = false
 				uni.stopPullDownRefresh()
@@ -114,22 +90,11 @@ export default {
 		
 		// 搜索工人
 		searchWorkers() {
-			this.page = 1
-			this.getWorkerList()
-		},
-		
-		// 加载更多
-		loadMore() {
-			if (this.loadMoreStatus === 'nomore' || this.loading) return
-			
-			this.page++
-			this.loadMoreStatus = 'loading'
 			this.getWorkerList()
 		},
 		
 		// 刷新列表
 		refresh() {
-			this.page = 1
 			this.getWorkerList()
 		},
 		
@@ -207,10 +172,6 @@ export default {
 		.right-icon {
 			padding-left: 20rpx;
 		}
-	}
-	
-	.load-more {
-		padding: 30rpx 0;
 	}
 	
 	.fab-box {
