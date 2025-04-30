@@ -159,16 +159,16 @@ export default {
 .worker-add {
 	min-height: 100vh;
 	background-color: #f7f8fa;
-	padding-bottom: 120px; // 为底部按钮留出空间
+	padding-bottom: 240rpx; // 为底部按钮留出空间
 	
 	.form-group {
 		background: #fff;
-		margin-top: 12px;
-		padding: 0 12px;
+		margin-top: 24rpx;
+		padding: 0 24rpx;
 	}
 	
 	/deep/ .u-form-item {
-		min-height: 50px;
+		min-height: 100rpx;
 	}
 	
 	.bottom-box {
@@ -176,15 +176,15 @@ export default {
 		left: 0;
 		bottom: 0;
 		width: 100%;
-		padding: 10px 15px;
+		padding: 20rpx 30rpx;
 		background-color: #fff;
-		box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+		box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
 		z-index: 9;
 		box-sizing: border-box;
 		
 		.u-button {
 			width: 100%;
-			height: 44px;
+			height: 88rpx;
 		}
 	}
 }

@@ -164,65 +164,65 @@ export default {
 	flex-direction: column;
 	
 	.search-box {
-		padding: 10px 16px;
+		padding: 20rpx 32rpx;
 		background-color: #fff;
-		border-bottom: 1px solid #ebedf0;
+		border-bottom: 1rpx solid #ebedf0;
 	}
 	
 	.content {
 		flex: 1;
-		height: calc(100vh - 58px); // 减去搜索框高度
-		padding-bottom: 80px; // 为底部按钮留出空间
+		height: calc(100vh - 116rpx); // 减去搜索框高度
+		padding-bottom: 160rpx; // 为底部按钮留出空间
 	}
 	
 	.list-item {
 		display: flex;
-		padding: 12px 16px;
+		padding: 24rpx 32rpx;
 		background-color: #fff;
 		align-items: center;
-		margin-bottom: 1px;
+		margin-bottom: 2rpx;
 		
 		.avatar-box {
-			margin-right: 12px;
+			margin-right: 24rpx;
 		}
 		
 		.info {
 			flex: 1;
 			
 			.name {
-				font-size: 16px;
+				font-size: 32rpx;
 				font-weight: 500;
 				color: #323233;
 				line-height: 1.4;
 			}
 			
 			.phone {
-				font-size: 12px;
+				font-size: 24rpx;
 				color: #969799;
 				line-height: 1.4;
-				margin-top: 4px;
+				margin-top: 8rpx;
 			}
 		}
 		
 		.right-icon {
-			padding-left: 10px;
+			padding-left: 20rpx;
 		}
 	}
 	
 	.load-more {
-		padding: 15px 0;
+		padding: 30rpx 0;
 	}
 	
 	.fab-box {
 		position: fixed;
-		right: 20px;
-		bottom: 30px;
+		right: 40rpx;
+		bottom: 60rpx;
 		z-index: 9;
 		
 		/deep/ .u-btn {
-			width: 50px;
-			height: 50px;
-			box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+			width: 100rpx;
+			height: 100rpx;
+			box-shadow: 0 8rpx 24rpx rgba(24, 144, 255, 0.4);
 		}
 	}
 }

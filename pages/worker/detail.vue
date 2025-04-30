@@ -157,73 +157,73 @@ export default {
 .worker-detail {
 	min-height: 100vh;
 	background-color: #f7f8fa;
-	padding-bottom: 20px;
+	padding-bottom: 40rpx;
 
 	.worker-header {
 		background-color: #fff;
-		padding: 20px;
+		padding: 40rpx;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		margin-bottom: 12px;
+		margin-bottom: 24rpx;
 
 		.worker-name {
-			font-size: 18px;
+			font-size: 36rpx;
 			font-weight: 500;
-			margin-top: 12px;
-			margin-bottom: 6px;
+			margin-top: 24rpx;
+			margin-bottom: 12rpx;
 			color: #323233;
 		}
 
 		.worker-phone {
-			font-size: 14px;
+			font-size: 28rpx;
 			color: #969799;
 		}
 	}
 
 	.info-group {
 		background: #fff;
-		margin-bottom: 12px;
+		margin-bottom: 24rpx;
 
 		.info-title {
-			padding: 12px 16px;
+			padding: 24rpx 32rpx;
 			color: #969799;
-			font-size: 14px;
-			border-bottom: 1px solid #ebedf0;
+			font-size: 28rpx;
+			border-bottom: 1rpx solid #ebedf0;
 		}
 
 		.info-content {
-			padding: 0 16px;
+			padding: 0 32rpx;
 		}
 
 		.info-item {
 			display: flex;
-			padding: 12px 0;
-			border-bottom: 1px solid #ebedf0;
+			padding: 24rpx 0;
+			border-bottom: 1rpx solid #ebedf0;
 
 			&:last-child {
 				border-bottom: none;
 			}
 
 			.info-label {
-				width: 80px;
+				width: 160rpx;
 				color: #646566;
-				font-size: 14px;
+				font-size: 28rpx;
 			}
 
 			.info-value {
 				flex: 1;
-				font-size: 14px;
+				font-size: 28rpx;
 				color: #323233;
 			}
 		}
 	}
 
 	.action-buttons {
-		margin: 20px 16px;
+		margin: 40rpx 24rpx;
 
 		.u-button {
-			margin-bottom: 12px;
+			margin-bottom: 24rpx;
 		}
 	}
 }
