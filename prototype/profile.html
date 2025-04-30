@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>我的</title>
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+		<style>
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+				background-color: #f7f8fa;
+				color: #323233;
+				height: 100vh;
+				display: flex;
+				flex-direction: column;
+			}
+			.nav-bar {
+				height: 44px;
+				background: linear-gradient(to right, #2979ff, #188fff);
+				color: white;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;
+				font-size: 16px;
+				font-weight: 500;
+			}
+			.user-panel {
+				background: linear-gradient(to right, #2979ff, #188fff);
+				padding: 20px 16px;
+				display: flex;
+				align-items: center;
+				color: white;
+			}
+			.avatar-large {
+				width: 60px;
+				height: 60px;
+				border-radius: 50%;
+				background-color: white;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-right: 16px;
+				position: relative;
+			}
+			.avatar-image {
+				width: 56px;
+				height: 56px;
+				border-radius: 50%;
+				overflow: hidden;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 24px;
+				font-weight: bold;
+				color: #2979ff;
+				background-color: #f7f8fa;
+			}
+			.user-info {
+				flex: 1;
+			}
+			.user-name {
+				font-size: 18px;
+				font-weight: 500;
+				margin-bottom: 4px;
+			}
+			.user-id {
+				font-size: 12px;
+				opacity: 0.8;
+			}
+			.menu-group {
+				background: #fff;
+				margin-top: 12px;
+				border-radius: 8px;
+				overflow: hidden;
+			}
+			.menu-item {
+				height: 54px;
+				display: flex;
+				align-items: center;
+				padding: 0 16px;
+				border-bottom: 1px solid #ebedf0;
+			}
+			.menu-item:last-child {
+				border-bottom: none;
+			}
+			.menu-icon {
+				width: 24px;
+				margin-right: 12px;
+				color: #2979ff;
+				font-size: 20px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.menu-text {
+				flex: 1;
+				font-size: 16px;
+				color: #323233;
+			}
+			.menu-arrow {
+				color: #c8c9cc;
+			}
+			.tab-bar {
+				display: flex;
+				height: 50px;
+				background-color: #fff;
+				border-top: 1px solid #ebedf0;
+				position: fixed;
+				bottom: 0;
+				width: 100%;
+			}
+			.tab-item {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				font-size: 12px;
+				color: #646566;
+			}
+			.tab-item.active {
+				color: #2979ff;
+			}
+			.icon {
+				font-size: 18px;
+				margin-bottom: 4px;
+			}
+			.content {
+				flex: 1;
+				padding: 12px;
+				overflow-y: auto;
+				padding-bottom: 60px;
+			}
+			.btn-login {
+				background: linear-gradient(to right, #07c160, #10ad7a);
+				color: white;
+				height: 44px;
+				border-radius: 4px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin-top: 20px;
+			}
+			.wechat-icon {
+				font-size: 20px;
+				margin-right: 8px;
+			}
+			.section-title {
+				font-size: 14px;
+				color: #969799;
+				padding: 0 4px;
+				margin: 24px 0 12px;
+			}
+			.badge {
+				background-color: #ee0a24;
+				color: #fff;
+				font-size: 12px;
+				height: 16px;
+				min-width: 16px;
+				line-height: 16px;
+				text-align: center;
+				border-radius: 8px;
+				padding: 0 4px;
+				margin-left: 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="nav-bar">我的</div>
+
+		<div class="content">
+			<div class="user-panel">
+				<div class="avatar-large">
+					<div class="avatar-image">王</div>
+				</div>
+				<div class="user-info">
+					<div class="user-name">王工长</div>
+					<div class="user-id">ID: 12345678</div>
+				</div>
+			</div>
+
+			<div class="section-title">数据中心</div>
+			<div class="menu-group">
+				<div class="menu-item">
+					<div class="menu-icon">🏢</div>
+					<div class="menu-text">我的工地</div>
+					<div class="menu-arrow">3个 ></div>
+				</div>
+				<div class="menu-item">
+					<div class="menu-icon">👷</div>
+					<div class="menu-text">我的工人</div>
+					<div class="menu-arrow">15人 ></div>
+				</div>
+				<div class="menu-item">
+					<div class="menu-icon">⏱️</div>
+					<div class="menu-text">工时记录</div>
+					<div class="menu-arrow">></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-bar">
+			<div class="tab-item">
+				<div class="icon">🏢</div>
+				<div>工地</div>
+			</div>
+			<div class="tab-item">
+				<div class="icon">👷</div>
+				<div>工人</div>
+			</div>
+			<div class="tab-item">
+				<div class="icon">⏱️</div>
+				<div>工时</div>
+			</div>
+			<div class="tab-item">
+				<div class="icon">📊</div>
+				<div>统计</div>
+			</div>
+			<div class="tab-item active">
+				<div class="icon">👤</div>
+				<div>我的</div>
+			</div>
+		</div>
+	</body>
+</html>

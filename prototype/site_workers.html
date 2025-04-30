@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>工地工人管理</title>
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+		<style>
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+				background-color: #f7f8fa;
+				color: #323233;
+				height: 100vh;
+				display: flex;
+				flex-direction: column;
+			}
+			.nav-bar {
+				height: 44px;
+				background: linear-gradient(to right, #2979ff, #188fff);
+				color: white;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;
+				font-size: 16px;
+				font-weight: 500;
+			}
+			.back-icon {
+				position: absolute;
+				left: 16px;
+				font-size: 16px;
+			}
+			.search-box {
+				padding: 10px 16px;
+				background-color: #fff;
+				border-bottom: 1px solid #ebedf0;
+			}
+			.search-input {
+				background-color: #f7f8fa;
+				border-radius: 16px;
+				padding: 8px 12px 8px 36px;
+				width: 100%;
+				position: relative;
+				border: 1px solid #dcdee0;
+				font-size: 14px;
+			}
+			.search-icon {
+				position: absolute;
+				left: 28px;
+				top: 19px;
+				color: #969799;
+			}
+			.list-header {
+				padding: 10px 16px;
+				font-size: 14px;
+				color: #969799;
+				background-color: #fff;
+				border-bottom: 1px solid #ebedf0;
+			}
+			.list-item {
+				display: flex;
+				padding: 12px 16px;
+				border-bottom: 1px solid #ebedf0;
+				background-color: #fff;
+				align-items: center;
+			}
+			.avatar {
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				background-color: #188fff;
+				color: white;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-weight: bold;
+				margin-right: 12px;
+			}
+			.info {
+				flex: 1;
+			}
+			.name {
+				font-size: 16px;
+				font-weight: 500;
+				line-height: 22px;
+				color: #323233;
+			}
+			.phone {
+				font-size: 12px;
+				color: #969799;
+				line-height: 18px;
+			}
+			.action-btn {
+				padding: 4px 8px;
+				border-radius: 4px;
+				font-size: 12px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.btn-add {
+				background-color: #2979ff;
+				color: white;
+			}
+			.btn-remove {
+				border: 1px solid #ee0a24;
+				color: #ee0a24;
+			}
+			.tab-bar {
+				display: flex;
+				height: 44px;
+				background-color: #fff;
+				border-bottom: 1px solid #ebedf0;
+			}
+			.tab-item {
+				flex: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 14px;
+				color: #646566;
+				position: relative;
+			}
+			.tab-item.active {
+				color: #2979ff;
+				font-weight: 500;
+			}
+			.tab-item.active:after {
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 20px;
+				height: 3px;
+				background-color: #2979ff;
+				border-radius: 1.5px;
+			}
+			.content {
+				flex: 1;
+				overflow-y: auto;
+			}
+			.list-section {
+				margin-bottom: 12px;
+			}
+			.bottom-bar {
+				padding: 16px;
+				background: #fff;
+				position: fixed;
+				bottom: 0;
+				width: 100%;
+				box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+				display: flex;
+				gap: 12px;
+			}
+			.btn-save {
+				background: linear-gradient(to right, #2979ff, #188fff);
+				color: white;
+				border: none;
+				border-radius: 4px;
+				padding: 10px 0;
+				font-size: 16px;
+				flex: 1;
+				text-align: center;
+				display: block;
+			}
+			.btn-cancel {
+				background: #f7f8fa;
+				color: #646566;
+				border: none;
+				border-radius: 4px;
+				padding: 10px 0;
+				font-size: 16px;
+				flex: 1;
+				text-align: center;
+				display: block;
+			}
+			.workspace {
+				padding-bottom: 80px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="nav-bar">
+			<div class="back-icon">←</div>
+			<div>工地工人管理</div>
+		</div>
+
+		<div class="tab-bar">
+			<div class="tab-item active">工地工人</div>
+			<div class="tab-item">添加工人</div>
+		</div>
+
+		<div class="content">
+			<div class="workspace">
+				<!-- 工地工人列表 -->
+				<div class="list-section">
+					<div class="list-header">翡翠城小区二期工程 - 已有工人 (15人)</div>
+
+					<div class="list-item">
+						<div class="avatar">张</div>
+						<div class="info">
+							<div class="name">张三</div>
+							<div class="phone">13800138000</div>
+						</div>
+						<button class="action-btn btn-remove">移除</button>
+					</div>
+
+					<div class="list-item">
+						<div class="avatar">李</div>
+						<div class="info">
+							<div class="name">李四</div>
+							<div class="phone">13900139000</div>
+						</div>
+						<button class="action-btn btn-remove">移除</button>
+					</div>
+				</div>
+
+				<!-- 可添加工人列表 -->
+				<div class="list-section" style="display: none">
+					<div class="search-box relative">
+						<i class="search-icon">🔍</i>
+						<input type="text" class="search-input" placeholder="搜索工人姓名" />
+					</div>
+
+					<div class="list-header">可选工人</div>
+
+					<div class="list-item">
+						<div class="avatar">孙</div>
+						<div class="info">
+							<div class="name">孙七</div>
+							<div class="phone">13400134000</div>
+						</div>
+						<button class="action-btn btn-add">添加</button>
+					</div>
+
+					<div class="list-item">
+						<div class="avatar">周</div>
+						<div class="info">
+							<div class="name">周八</div>
+							<div class="phone">13300133000</div>
+						</div>
+						<button class="action-btn btn-add">添加</button>
+					</div>
+
+					<div class="list-item">
+						<div class="avatar">吴</div>
+						<div class="info">
+							<div class="name">吴九</div>
+							<div class="phone">13200132000</div>
+						</div>
+						<button class="action-btn btn-add">添加</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="bottom-bar">
+			<button class="btn-cancel">取消</button>
+			<button class="btn-save">确认</button>
+		</div>
+	</body>
+</html>
