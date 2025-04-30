@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# 全局规则
+
+- 所有的回答和代码中的文案，均使用简体中文
+- 当前是windows操作系统，请使用Windows系统的相关命令 
+- 代码中适当位置加入console.log打印日志，方便定位问题
+- 每个模块开发之前，先阅读开发进度 [task.md](mdc:docs/task.md) 和开发记录 [chat-log.md](mdc:docs/chat-log.md)，然后制定详细的开发计划，等我确认后再开始编写具体代码
+- 每个模块开发完成后提醒我进行测试，必须测试完成后才能进行下一个模块开发
