@@ -12,7 +12,7 @@
 				<text class="card-text">工人管理</text>
 			</view>
 			
-			<view class="card-item">
+			<view class="card-item" @click="goToSiteList">
 				<u-icon name="home" color="#19be6b" size="32"></u-icon>
 				<text class="card-text">工地管理</text>
 			</view>
@@ -57,6 +57,12 @@ export default {
 		goToWorkerList() {
 			uni.navigateTo({
 				url: '/pages/worker/index'
+			})
+		},
+		// 跳转到工地列表
+		goToSiteList() {
+			uni.navigateTo({
+				url: '/pages/site/index'
 			})
 		}
 	},

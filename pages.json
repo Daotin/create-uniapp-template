@@ -17,25 +17,6 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
-		},
-		{
-			"path": "pages/worker/index",
-			"style": {
-				"navigationBarTitleText": "工人管理",
-				"enablePullDownRefresh": true
-			}
-		},
-		{
-			"path": "pages/worker/add",
-			"style": {
-				"navigationBarTitleText": "添加工人"
-			}
-		},
-		{
-			"path": "pages/worker/detail",
-			"style": {
-				"navigationBarTitleText": "工人详情"
-			}
 		}
 	],
 	"subPackages": [
@@ -144,7 +125,57 @@
 					}
 				}
 			]
-		}
+		},
+    // 工地模块分包
+    {
+      "root": "pages/site",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "工地管理",
+            "enablePullDownRefresh": true
+          }
+        },
+        {
+          "path": "add",
+          "style": {
+            "navigationBarTitleText": "添加工地"
+          }
+        },
+        {
+          "path": "detail",
+          "style": {
+            "navigationBarTitleText": "工地详情"
+          }
+        }
+      ]
+    },
+    // 工人模块分包
+    {
+      "root": "pages/worker",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "工人管理",
+            "enablePullDownRefresh": true
+          }
+        },
+        {
+          "path": "add",
+          "style": {
+            "navigationBarTitleText": "添加工人"
+          }
+        },
+        {
+          "path": "detail",
+          "style": {
+            "navigationBarTitleText": "工人详情"
+          }
+        }
+      ]
+    }
 	],
 	"tabBar": {
 		"color": "#969799",

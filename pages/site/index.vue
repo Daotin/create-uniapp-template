@@ -1,0 +1,250 @@
+<template>
+	<view class="site-list">
+		<!-- 搜索框 -->
+		<view class="search-box">
+			<u-search v-model="keyword" placeholder="搜索工地名称" :show-action="false" @custom="searchSites" @search="searchSites" shape="round" bg-color="#f7f8fa"></u-search>
+		</view>
+
+		<!-- 列表内容 -->
+		<scroll-view scroll-y class="content" @scrolltolower="loadMore" refresher-enabled @refresherrefresh="onRefresh" :refresher-triggered="refreshTriggered">
+			<u-empty v-if="list.length === 0 && !loading" text="暂无工地数据" mode="list"></u-empty>
+			
+			<view v-else>
+				<view v-for="(item, index) in list" :key="index" class="list-item" @click="goDetail(item._id)">
+					<view class="item-header">
+						<view class="site-name">{{item.name}}</view>
+					</view>
+					<view class="item-content">
+						<view class="info-row" v-if="item.address">
+							<view class="info-icon">
+								<u-icon name="map" color="#969799" size="16"></u-icon>
+							</view>
+							<view class="info-text">{{item.address}}</view>
+						</view>
+						<view class="info-row" v-if="item.remark">
+							<view class="info-icon">
+								<u-icon name="file-text" color="#969799" size="16"></u-icon>
+							</view>
+							<view class="info-text">{{item.remark}}</view>
+						</view>
+					</view>
+				</view>
+				
+				<!-- 加载更多状态 -->
+				<view class="load-more">
+					<u-loadmore :status="loadMoreStatus" :loading-text="loadingText" :loadmore-text="loadMoreText" :nomore-text="noMoreText"></u-loadmore>
+				</view>
+			</view>
+		</scroll-view>
+
+		<!-- 添加按钮 -->
+		<view class="fab-box">
+			<u-button type="primary" size="mini" shape="circle" @click="goAdd">
+				<u-icon name="plus" color="#FFFFFF" size="24"></u-icon>
+			</u-button>
+		</view>
+	</view>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			keyword: '', // 搜索关键词
+			list: [], // 工地列表
+			page: 1, // 当前页码
+			pageSize: 15, // 每页条数
+			total: 0, // 总条数
+			loading: false, // 加载状态
+			loadMoreStatus: 'loading', // 加载状态：loading-加载中 nomore-没有更多 loadmore-加载更多
+			loadingText: '正在加载', // 加载中的提示文字
+			loadMoreText: '点击或上拉加载更多', // 加载更多的提示文字
+			noMoreText: '没有更多了', // 没有更多的提示文字
+			refreshTriggered: false, // 下拉刷新状态
+		}
+	},
+	onLoad() {
+		this.getSiteList()
+	},
+	onShow() { 
+		// 如果从新增页或详情页返回，刷新列表
+		uni.$on('needRefresh', this.getSiteList)
+	},
+	onUnload() {
+		// 移除事件监听
+		uni.$off('needRefresh')
+	},
+	onPullDownRefresh() {
+		this.refresh()
+	},
+	methods: {
+		// 获取工地列表
+		async getSiteList() {
+			try {
+				this.loading = true
+				console.log('请求参数:', { keyword: this.keyword, page: this.page, pageSize: this.pageSize })
+				
+				// 直接调用云对象
+				const siteService = uniCloud.importObject('site-service')
+				const res = await siteService.getSiteList({
+					keyword: this.keyword,
+					page: this.page,
+					pageSize: this.pageSize
+				})
+				
+				console.log('工地列表返回:', res)
+				
+				if (res.code === 0) {
+					// 如果是第一页，直接替换列表，否则追加
+					if (this.page === 1) {
+						this.list = res.data.list
+					} else {
+						this.list = [...this.list, ...res.data.list]
+					}
+					this.total = res.data.total
+					
+					// 更新加载状态
+					this.loadMoreStatus = this.list.length >= this.total ? 'nomore' : 'loadmore'
+				} else {
+					this.$showToast.none(res.message || '获取工地列表失败')
+				}
+			} catch (e) {
+				console.error('获取工地列表异常:', e)
+				this.$showToast.none('获取工地列表失败，请重试')
+				this.loadMoreStatus = 'loadmore'
+			} finally {
+				this.loading = false
+				uni.stopPullDownRefresh()
+				this.refreshTriggered = false
+			}
+		},
+		
+		// 搜索工地
+		searchSites() {
+			this.page = 1
+			this.getSiteList()
+		},
+		
+		// 加载更多
+		loadMore() {
+			if (this.loadMoreStatus === 'nomore' || this.loading) return
+			
+			this.page++
+			this.loadMoreStatus = 'loading'
+			this.getSiteList()
+		},
+		
+		// 刷新列表
+		refresh() {
+			this.page = 1
+			this.getSiteList()
+		},
+		
+		// scroll-view下拉刷新
+		onRefresh() {
+			this.refreshTriggered = true
+			this.refresh()
+		},
+		
+		// 跳转到详情页
+		goDetail(id) {
+			uni.navigateTo({
+				url: `/pages/site/detail?id=${id}`
+			})
+		},
+		
+		// 跳转到添加页
+		goAdd() {
+			uni.navigateTo({
+				url: '/pages/site/add'
+			})
+		}
+	}
+}
+</script>
+
+<style lang="scss" scoped>
+.site-list {
+	min-height: 100vh;
+	background-color: #f7f8fa;
+	display: flex;
+	flex-direction: column;
+	
+	.search-box {
+		padding: 20rpx 32rpx;
+		background-color: #fff;
+		border-bottom: 1rpx solid #ebedf0;
+	}
+	
+	.content {
+		flex: 1;
+		height: calc(100vh - 116rpx); // 减去搜索框高度
+		padding-bottom: 160rpx; // 为底部按钮留出空间
+		padding: 24rpx;
+	}
+	
+	.list-item {
+		background-color: #fff;
+		margin-bottom: 24rpx;
+		border-radius: 16rpx;
+		overflow: hidden;
+		box-shadow: 0 4rpx 24rpx rgba(100, 101, 102, 0.08);
+		
+		.item-header {
+			background-color: #2979ff;
+			color: white;
+			padding: 20rpx 32rpx;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			
+			.site-name {
+				font-size: 32rpx;
+				font-weight: 500;
+			}
+		}
+		
+		.item-content {
+			padding: 24rpx 32rpx;
+			
+			.info-row {
+				display: flex;
+				margin-bottom: 16rpx;
+				align-items: center;
+				
+				&:last-child {
+					margin-bottom: 0;
+				}
+				
+				.info-icon {
+					margin-right: 16rpx;
+					color: #969799;
+					font-size: 28rpx;
+				}
+				
+				.info-text {
+					font-size: 28rpx;
+					color: #646566;
+				}
+			}
+		}
+	}
+	
+	.load-more {
+		padding: 30rpx 0;
+	}
+	
+	.fab-box {
+		position: fixed;
+		right: 40rpx;
+		bottom: 60rpx;
+		z-index: 9;
+		
+		/deep/ .u-btn {
+			width: 100rpx;
+			height: 100rpx;
+			box-shadow: 0 8rpx 24rpx rgba(24, 144, 255, 0.4);
+		}
+	}
+}
+</style> 
