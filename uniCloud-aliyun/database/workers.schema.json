@@ -1,11 +1,11 @@
 {
   "bsonType": "object",
-  "required": ["name", "createTime", "updateTime"],
+  "required": ["name", "user_id", "createTime", "updateTime"],
   "permission": {
-    "read": true,
-    "create": true,
-    "update": true,
-    "delete": true
+    "read": "doc.user_id == auth.uid",
+    "create": "auth.uid != null",
+    "update": "doc.user_id == auth.uid",
+    "delete": "doc.user_id == auth.uid"
   },
   "properties": {
     "_id": {
@@ -33,6 +33,12 @@
       "description": "备注信息",
       "trim": "both"
     },
+    "user_id": {
+      "bsonType": "string",
+      "title": "创建者用户ID",
+      "description": "创建者用户ID",
+      "foreignKey": "uni-id-users._id"
+    },
     "createTime": {
       "bsonType": "timestamp",
       "title": "创建时间",
@@ -49,5 +55,25 @@
         "$env": "now"
       }
     }
-  }
+  },
+  "index": [{
+    "IndexName": "user_id_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }]
+    }
+  }, {
+    "IndexName": "user_id_name_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }, {
+        "Name": "name",
+        "Direction": "1"
+      }]
+    }
+  }]
 } 

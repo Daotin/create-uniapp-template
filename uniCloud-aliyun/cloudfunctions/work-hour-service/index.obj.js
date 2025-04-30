@@ -5,7 +5,33 @@ const $ = db.command.aggregate;
 
 module.exports = {
   _before: async function () {
-    // 通用前置处理
+    // 获取客户端信息和token
+    const clientInfo = this.getClientInfo();
+    const token = this.getUniIdToken();
+    
+    if (!token) {
+      throw new Error('用户未登录，请先登录');
+    }
+    
+    // 校验token
+    const uniIDCommon = require('uni-id-common');
+    const uniID = uniIDCommon.createInstance({
+      clientInfo
+    });
+    
+    // 校验token
+    const checkTokenRes = await uniID.checkToken(token);
+    if (checkTokenRes.errCode) {
+      throw new Error('登录状态无效，请重新登录');
+    }
+    
+    // 将用户ID存入上下文
+    this.context = {
+      uid: checkTokenRes.uid,
+      role: checkTokenRes.role,
+      permission: checkTokenRes.permission
+    };
+    
     this.startTime = Date.now();
   },
 
@@ -53,9 +79,26 @@ module.exports = {
     const workHoursCollection = db.collection('work_hours');
     const now = new Date();
     let workDate = new Date(date);
+    const user_id = this.context.uid; // 获取当前用户ID
 
     // 修改模式
     if (_id) {
+      // 检查记录是否存在且属于当前用户
+      const existRecord = await workHoursCollection
+        .where({
+          _id,
+          user_id
+        })
+        .get()
+        .then(res => res.data[0]);
+        
+      if (!existRecord) {
+        return {
+          code: -1,
+          message: '记录不存在或您无权修改'
+        };
+      }
+      
       // 修改单条记录
       const updateData = {
         siteId,
@@ -89,16 +132,19 @@ module.exports = {
         };
       }
 
-      // 校验工地是否存在
+      // 校验工地是否存在且属于当前用户
       const siteExists = await db.collection('sites')
-        .doc(siteId)
+        .where({
+          _id: siteId,
+          user_id
+        })
         .get()
         .then(res => res.data.length > 0);
 
       if (!siteExists) {
         return {
           code: -1,
-          message: '工地不存在'
+          message: '工地不存在或您无权操作'
         };
       }
 
@@ -106,7 +152,8 @@ module.exports = {
       const siteWorkerRelations = await db.collection('site_worker')
         .where({
           siteId,
-          workerId: dbCmd.in(workerIds)
+          workerId: dbCmd.in(workerIds),
+          user_id
         })
         .get()
         .then(res => res.data);
@@ -131,7 +178,8 @@ module.exports = {
         date: workDate,
         hours: Number(hours),
         createTime: now,
-        updateTime: now
+        updateTime: now,
+        user_id // 添加用户ID
       }));
 
       const insertResult = await workHoursCollection.add(insertData);
@@ -139,7 +187,8 @@ module.exports = {
       // 查询新增后的完整数据
       const newRecords = await workHoursCollection
         .where({
-          _id: dbCmd.in(insertResult.ids)
+          _id: dbCmd.in(insertResult.ids),
+          user_id
         })
         .get()
         .then(res => res.data);
@@ -167,9 +216,12 @@ module.exports = {
    */
   async getWorkHourList(params) {
     const { siteId, workerId, startDate, endDate, page = 1, pageSize = 20 } = params;
+    const user_id = this.context.uid; // 获取当前用户ID
 
     // 构建查询条件
-    const whereCondition = {};
+    const whereCondition = {
+      user_id // 添加用户ID条件
+    };
     if (siteId) whereCondition.siteId = siteId;
     if (workerId) whereCondition.workerId = workerId;
 
@@ -226,7 +278,8 @@ module.exports = {
         createTime: 1,
         updateTime: 1,
         siteName: '$siteInfo.name',
-        workerName: '$workerInfo.name'
+        workerName: '$workerInfo.name',
+        user_id: 1
       })
       .end();
 
@@ -249,6 +302,7 @@ module.exports = {
    */
   async deleteWorkHour(params) {
     const { workHourId } = params;
+    const user_id = this.context.uid; // 获取当前用户ID
 
     if (!workHourId) {
       return {
@@ -257,16 +311,19 @@ module.exports = {
       };
     }
 
-    // 检查记录是否存在
+    // 检查记录是否存在且属于当前用户
     const recordExists = await db.collection('work_hours')
-      .doc(workHourId)
+      .where({
+        _id: workHourId,
+        user_id
+      })
       .get()
       .then(res => res.data.length > 0);
 
     if (!recordExists) {
       return {
         code: -1,
-        message: '工时记录不存在'
+        message: '工时记录不存在或您无权删除'
       };
     }
 
@@ -289,9 +346,12 @@ module.exports = {
    */
   async getWorkHourStats(params) {
     const { siteId, workerId, startDate, endDate } = params;
+    const user_id = this.context.uid; // 获取当前用户ID
 
     // 构建查询条件
-    const matchCondition = {};
+    const matchCondition = {
+      user_id // 添加用户ID条件
+    };
     if (siteId) matchCondition.siteId = siteId;
     if (workerId) matchCondition.workerId = workerId;
 

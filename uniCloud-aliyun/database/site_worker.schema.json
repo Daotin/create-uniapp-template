@@ -1,11 +1,11 @@
 {
   "bsonType": "object",
-  "required": ["siteId", "workerId", "createTime", "updateTime"],
+  "required": ["siteId", "workerId", "user_id", "createTime", "updateTime"],
   "permission": {
-    "read": true,
-    "create": true,
-    "update": true,
-    "delete": true
+    "read": "doc.user_id == auth.uid",
+    "create": "auth.uid != null",
+    "update": "doc.user_id == auth.uid",
+    "delete": "doc.user_id == auth.uid"
   },
   "properties": {
     "_id": {
@@ -22,6 +22,12 @@
       "title": "工人ID",
       "description": "工人ID（关联workers._id）",
       "foreignKey": "workers._id"
+    },
+    "user_id": {
+      "bsonType": "string",
+      "title": "创建者用户ID",
+      "description": "创建者用户ID",
+      "foreignKey": "uni-id-users._id"
     },
     "createTime": {
       "bsonType": "timestamp",
@@ -41,13 +47,46 @@
     }
   },
   "index": [{
-    "IndexName": "site_worker_index",
+    "IndexName": "user_id_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }]
+    }
+  }, {
+    "IndexName": "user_id_site_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }, {
+        "Name": "siteId",
+        "Direction": "1"
+      }]
+    }
+  }, {
+    "IndexName": "user_id_worker_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }, {
+        "Name": "workerId",
+        "Direction": "1"
+      }]
+    }
+  }, {
+    "IndexName": "site_worker_unique_index",
     "MgoKeySchema": {
       "MgoIndexKeys": [{
         "Name": "siteId",
         "Direction": "1"
       }, {
         "Name": "workerId",
+        "Direction": "1"
+      }, {
+        "Name": "user_id",
         "Direction": "1"
       }],
       "MgoIsUnique": true

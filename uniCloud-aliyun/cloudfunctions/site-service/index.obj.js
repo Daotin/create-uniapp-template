@@ -4,8 +4,34 @@ const dbCmd = db.command;
 
 module.exports = {
   _before: async function () {
-    // 通用前置处理
-    // 这里可以获取客户信息、进行权限校验等
+    // 获取客户端信息和token
+    const clientInfo = this.getClientInfo();
+    const token = this.getUniIdToken();
+    
+    if (!token) {
+      throw new Error('用户未登录，请先登录');
+    }
+    
+    // 校验token
+    const uniIDCommon = require('uni-id-common');
+    const uniID = uniIDCommon.createInstance({
+      clientInfo
+    });
+    
+    // 校验token
+    const checkTokenRes = await uniID.checkToken(token);
+    if (checkTokenRes.errCode) {
+      throw new Error('登录状态无效，请重新登录');
+    }
+    
+    // 将用户ID存入上下文
+    this.context = {
+      uid: checkTokenRes.uid,
+      role: checkTokenRes.role,
+      permission: checkTokenRes.permission
+    };
+    
+    // 记录开始时间，用于性能分析
     this.startTime = Date.now();
   },
 
@@ -18,10 +44,13 @@ module.exports = {
    */
   async getSiteList(params) {
     const { keyword = '', page = 1, pageSize = 20 } = params;
+    const user_id = this.context.uid;
     const sitesCollection = db.collection('sites');
     
-    // 构建查询条件
-    let whereCondition = {};
+    // 构建查询条件，添加用户ID限制
+    let whereCondition = {
+      user_id // 添加用户ID筛选条件
+    };
     if (keyword) {
       whereCondition.name = new RegExp(keyword, 'i');
     }
@@ -61,6 +90,7 @@ module.exports = {
    */
   async saveSite(params) {
     const { _id, name, address, remark } = params;
+    const user_id = this.context.uid;
     
     // 参数校验
     if (!name) {
@@ -75,6 +105,15 @@ module.exports = {
     
     // 新增或修改
     if (_id) {
+      // 修改前检查是否为当前用户创建的数据
+      const existingSite = await sitesCollection.doc(_id).get();
+      if (!existingSite.data.length || existingSite.data[0].user_id !== user_id) {
+        return {
+          code: -1,
+          message: '无权操作此数据'
+        };
+      }
+      
       // 修改
       const updateData = {
         name,
@@ -98,6 +137,7 @@ module.exports = {
       // 新增
       const insertData = {
         name,
+        user_id, // 添加用户ID
         createTime: now,
         updateTime: now
       };
@@ -125,6 +165,7 @@ module.exports = {
    */
   async deleteSite(params) {
     const { siteId } = params;
+    const user_id = this.context.uid;
     
     if (!siteId) {
       return {
@@ -136,9 +177,31 @@ module.exports = {
     // 事务操作
     const transaction = await db.startTransaction();
     try {
+      // 检查工地是否存在且属于当前用户
+      const siteInfo = await transaction.collection('sites')
+        .doc(siteId)
+        .get()
+        .then(res => res.data[0]);
+      
+      if (!siteInfo) {
+        await transaction.rollback();
+        return {
+          code: -1,
+          message: '工地不存在'
+        };
+      }
+      
+      if (siteInfo.user_id !== user_id) {
+        await transaction.rollback();
+        return {
+          code: -1,
+          message: '无权操作此数据'
+        };
+      }
+      
       // 1. 检查工地是否关联有工人
       const workerCount = await transaction.collection('site_worker')
-        .where({ siteId })
+        .where({ siteId, user_id })
         .count()
         .then(res => res.total);
       
@@ -152,7 +215,7 @@ module.exports = {
       
       // 2. 检查工地是否有工时记录
       const workHourCount = await transaction.collection('work_hours')
-        .where({ siteId })
+        .where({ siteId, user_id })
         .count()
         .then(res => res.total);
       
@@ -191,6 +254,7 @@ module.exports = {
    */
   async getSiteDetail(params) {
     const { siteId } = params;
+    const user_id = this.context.uid;
     
     if (!siteId) {
       return {
@@ -200,14 +264,17 @@ module.exports = {
     }
     
     const siteInfo = await db.collection('sites')
-      .doc(siteId)
+      .where({
+        _id: siteId,
+        user_id
+      })
       .get()
       .then(res => res.data[0]);
     
     if (!siteInfo) {
       return {
         code: -1,
-        message: '工地不存在'
+        message: '工地不存在或无权查看'
       };
     }
     
@@ -228,6 +295,7 @@ module.exports = {
    */
   async getSiteWorkers(params) {
     const { siteId, keyword = '', page = 1, pageSize = 20 } = params;
+    const user_id = this.context.uid;
     
     if (!siteId) {
       return {
@@ -240,7 +308,7 @@ module.exports = {
     const $ = db.command.aggregate;
     const aggregateQuery = db.collection('site_worker')
       .aggregate()
-      .match({ siteId })
+      .match({ siteId, user_id }) // 添加用户ID限制
       .lookup({
         from: 'workers',
         localField: 'workerId',
@@ -300,6 +368,7 @@ module.exports = {
    */
   async getAvailableWorkers(params) {
     const { siteId, keyword = '', page = 1, pageSize = 20 } = params;
+    const user_id = this.context.uid;
     
     if (!siteId) {
       return {
@@ -308,15 +377,18 @@ module.exports = {
       };
     }
     
-    // 查询已关联此工地的工人ID
+    // 查询用户创建的、且已关联此工地的工人ID
     const relatedWorkerIds = await db.collection('site_worker')
-      .where({ siteId })
+      .where({ siteId, user_id }) // 添加用户ID限制
       .field({ workerId: true })
       .get()
       .then(res => res.data.map(item => item.workerId));
     
     // 构建查询条件
-    let whereCondition = {};
+    let whereCondition = {
+      user_id // 添加用户ID限制
+    };
+    
     if (relatedWorkerIds.length > 0) {
       whereCondition._id = dbCmd.nin(relatedWorkerIds);
     }
@@ -360,6 +432,7 @@ module.exports = {
    */
   async addWorkersToSite(params) {
     const { siteId, workerId } = params;
+    const user_id = this.context.uid;
     
     if (!siteId) {
       return {
@@ -384,23 +457,27 @@ module.exports = {
       };
     }
     
-    // 校验工地是否存在
+    // 校验工地是否存在且属于当前用户
     const siteExists = await db.collection('sites')
-      .doc(siteId)
+      .where({
+        _id: siteId,
+        user_id
+      })
       .get()
       .then(res => res.data.length > 0);
     
     if (!siteExists) {
       return {
         code: -1,
-        message: '工地不存在'
+        message: '工地不存在或无权操作'
       };
     }
     
-    // 校验工人是否存在
+    // 校验工人是否存在且属于当前用户
     const workersExist = await db.collection('workers')
       .where({
-        _id: dbCmd.in(workerIds)
+        _id: dbCmd.in(workerIds),
+        user_id
       })
       .get()
       .then(res => res.data);
@@ -408,7 +485,7 @@ module.exports = {
     if (workersExist.length !== workerIds.length) {
       return {
         code: -1,
-        message: '部分工人不存在'
+        message: '部分工人不存在或无权操作'
       };
     }
     
@@ -417,7 +494,8 @@ module.exports = {
     const existingRelations = await db.collection('site_worker')
       .where({
         siteId,
-        workerId: dbCmd.in(workerIds)
+        workerId: dbCmd.in(workerIds),
+        user_id
       })
       .get()
       .then(res => res.data);
@@ -436,6 +514,7 @@ module.exports = {
     const insertData = newWorkerIds.map(workerId => ({
       siteId,
       workerId,
+      user_id, // 添加用户ID
       createTime: now,
       updateTime: now
     }));
@@ -459,6 +538,7 @@ module.exports = {
    */
   async removeWorkerFromSite(params) {
     const { siteId, workerId } = params;
+    const user_id = this.context.uid;
     
     if (!siteId) {
       return {
@@ -483,11 +563,12 @@ module.exports = {
       };
     }
     
-    // 查询要删除的关联记录
+    // 查询要删除的关联记录，确保只能删除自己的数据
     const relationRecords = await db.collection('site_worker')
       .where({
         siteId,
-        workerId: dbCmd.in(workerIds)
+        workerId: dbCmd.in(workerIds),
+        user_id // 添加用户ID限制
       })
       .get()
       .then(res => res.data);
@@ -495,7 +576,7 @@ module.exports = {
     if (relationRecords.length === 0) {
       return {
         code: -1,
-        message: '未找到指定的关联关系'
+        message: '未找到指定的关联关系或无权操作'
       };
     }
     
@@ -504,7 +585,8 @@ module.exports = {
       const workHourCount = await db.collection('work_hours')
         .where({
           siteId,
-          workerId: worker.workerId
+          workerId: worker.workerId,
+          user_id
         })
         .count()
         .then(res => res.total);
@@ -521,7 +603,8 @@ module.exports = {
     const relationIds = relationRecords.map(item => item._id);
     await db.collection('site_worker')
       .where({
-        _id: dbCmd.in(relationIds)
+        _id: dbCmd.in(relationIds),
+        user_id // 添加用户ID限制
       })
       .remove();
     

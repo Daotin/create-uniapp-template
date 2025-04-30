@@ -1,11 +1,11 @@
 {
   "bsonType": "object",
-  "required": ["siteId", "workerId", "date", "hours", "createTime", "updateTime"],
+  "required": ["siteId", "workerId", "date", "hours", "user_id", "createTime", "updateTime"],
   "permission": {
-    "read": true,
-    "create": true,
-    "update": true,
-    "delete": true
+    "read": "doc.user_id == auth.uid",
+    "create": "auth.uid != null",
+    "update": "doc.user_id == auth.uid",
+    "delete": "doc.user_id == auth.uid"
   },
   "properties": {
     "_id": {
@@ -35,6 +35,12 @@
       "minimum": 0,
       "maximum": 24
     },
+    "user_id": {
+      "bsonType": "string",
+      "title": "创建者用户ID",
+      "description": "创建者用户ID",
+      "foreignKey": "uni-id-users._id"
+    },
     "createTime": {
       "bsonType": "timestamp",
       "title": "创建时间",
@@ -53,9 +59,53 @@
     }
   },
   "index": [{
+    "IndexName": "user_id_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }]
+    }
+  }, {
+    "IndexName": "user_id_site_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }, {
+        "Name": "siteId",
+        "Direction": "1"
+      }]
+    }
+  }, {
+    "IndexName": "user_id_worker_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }, {
+        "Name": "workerId",
+        "Direction": "1"
+      }]
+    }
+  }, {
+    "IndexName": "user_id_date_index",
+    "MgoKeySchema": {
+      "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }, {
+        "Name": "date",
+        "Direction": "1"
+      }]
+    }
+  }, {
     "IndexName": "work_hours_index",
     "MgoKeySchema": {
       "MgoIndexKeys": [{
+        "Name": "user_id",
+        "Direction": "1"
+      }, {
         "Name": "siteId",
         "Direction": "1"
       }, {

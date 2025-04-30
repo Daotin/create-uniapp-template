@@ -4,7 +4,33 @@ const dbCmd = db.command;
 
 module.exports = {
   _before: async function () {
-    // 通用前置处理
+    // 获取客户端信息和token
+    const clientInfo = this.getClientInfo();
+    const token = this.getUniIdToken();
+    
+    if (!token) {
+      throw new Error('用户未登录，请先登录');
+    }
+    
+    // 校验token
+    const uniIDCommon = require('uni-id-common');
+    const uniID = uniIDCommon.createInstance({
+      clientInfo
+    });
+    
+    // 校验token
+    const checkTokenRes = await uniID.checkToken(token);
+    if (checkTokenRes.errCode) {
+      throw new Error('登录状态无效，请重新登录');
+    }
+    
+    // 将用户ID存入上下文
+    this.context = {
+      uid: checkTokenRes.uid,
+      role: checkTokenRes.role,
+      permission: checkTokenRes.permission
+    };
+    
     this.startTime = Date.now();
   },
 
@@ -17,10 +43,13 @@ module.exports = {
    */
   async getWorkerList(params) {
     const { keyword = '', page = 1, pageSize = 20 } = params;
+    const user_id = this.context.uid;
     const workersCollection = db.collection('workers');
     
-    // 构建查询条件
-    let whereCondition = {};
+    // 构建查询条件，添加用户ID限制
+    let whereCondition = {
+      user_id
+    };
     if (keyword) {
       whereCondition.name = new RegExp(keyword, 'i');
     }
@@ -60,6 +89,7 @@ module.exports = {
    */
   async saveWorker(params) {
     const { _id, name, phone, remark } = params;
+    const user_id = this.context.uid;
     
     // 参数校验
     if (!name) {
@@ -82,6 +112,21 @@ module.exports = {
     
     // 新增或修改
     if (_id) {
+      // 修改前检查是否为当前用户创建的数据
+      const existingWorker = await workersCollection
+        .where({
+          _id,
+          user_id
+        })
+        .get();
+      
+      if (!existingWorker.data.length) {
+        return {
+          code: -1,
+          message: '工人不存在或无权操作'
+        };
+      }
+      
       // 修改
       const updateData = {
         name,
@@ -105,6 +150,7 @@ module.exports = {
       // 新增
       const insertData = {
         name,
+        user_id, // 添加用户ID
         createTime: now,
         updateTime: now
       };
@@ -132,6 +178,7 @@ module.exports = {
    */
   async deleteWorker(params) {
     const { workerId } = params;
+    const user_id = this.context.uid;
     
     if (!workerId) {
       return {
@@ -143,9 +190,26 @@ module.exports = {
     // 使用事务处理
     const transaction = await db.startTransaction();
     try {
+      // 检查工人是否存在且属于当前用户
+      const workerInfo = await transaction.collection('workers')
+        .where({
+          _id: workerId,
+          user_id
+        })
+        .get()
+        .then(res => res.data[0]);
+      
+      if (!workerInfo) {
+        await transaction.rollback();
+        return {
+          code: -1,
+          message: '工人不存在或无权操作'
+        };
+      }
+      
       // 1. 检查工人是否关联了工地
       const siteWorkerCount = await transaction.collection('site_worker')
-        .where({ workerId })
+        .where({ workerId, user_id })
         .count()
         .then(res => res.total);
       
@@ -159,7 +223,7 @@ module.exports = {
       
       // 2. 检查工人是否有工时记录
       const workHourCount = await transaction.collection('work_hours')
-        .where({ workerId })
+        .where({ workerId, user_id })
         .count()
         .then(res => res.total);
       
@@ -172,7 +236,12 @@ module.exports = {
       }
       
       // 3. 删除工人
-      await transaction.collection('workers').doc(workerId).remove();
+      await transaction.collection('workers')
+        .where({
+          _id: workerId,
+          user_id
+        })
+        .remove();
       
       // 提交事务
       await transaction.commit();
@@ -198,6 +267,7 @@ module.exports = {
    */
   async getWorkerDetail(params) {
     const { workerId } = params;
+    const user_id = this.context.uid;
     
     if (!workerId) {
       return {
@@ -207,14 +277,17 @@ module.exports = {
     }
     
     const workerInfo = await db.collection('workers')
-      .doc(workerId)
+      .where({
+        _id: workerId,
+        user_id
+      })
       .get()
       .then(res => res.data[0]);
     
     if (!workerInfo) {
       return {
         code: -1,
-        message: '工人不存在'
+        message: '工人不存在或无权查看'
       };
     }
     
