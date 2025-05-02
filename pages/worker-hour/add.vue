@@ -46,7 +46,7 @@
 		</view>
 
 		<!-- 选择工人部分 -->
-		<view class="worker-section">
+		<view class="worker-section" v-if="!isEdit">
 			<view class="section-title">选择工人（已选 {{ selectedWorkers.length }} 人）</view>
 
 			<view class="worker-list">
@@ -81,7 +81,11 @@
 
 		<!-- 底部按钮 -->
 		<view class="footer">
-			<u-button type="primary" :loading="submitting" @click="handleSubmit">保存记录</u-button>
+			<view class="button-group" v-if="isEdit">
+				<u-button type="error" :loading="submitting" @click="handleDelete">删除记录</u-button>
+				<u-button type="primary" :loading="submitting" @click="handleSubmit">保存修改</u-button>
+			</view>
+			<u-button v-else type="primary" :loading="submitting" @click="handleSubmit">保存记录</u-button>
 		</view>
 
 		<!-- 工地选择弹窗 -->
@@ -103,6 +107,10 @@ import dayjs from 'dayjs'
 export default {
 	data() {
 		return {
+			// 编辑模式标识
+			isEdit: false,
+			recordId: '',
+
 			// 工地相关
 			siteId: '',
 			siteInfo: {},
@@ -131,13 +139,34 @@ export default {
 	},
 	onLoad(option) {
 		// 如果有参数传入，进行初始化
-		if (option.siteId) {
+		if (option._id) {
+			// 编辑模式
+			this.isEdit = true
+			this.recordId = option._id
 			this.siteId = option.siteId
+			this.date = option.date
+
+			// 计算工时单位和值
+			const hours = parseFloat(option.hours)
+			if (hours % 8 === 0) {
+				this.timeUnit = 1 // 按天
+				this.hoursValue = String(hours / 8)
+			} else {
+				this.timeUnit = 2 // 按小时
+				this.hoursValue = String(hours)
+			}
+
+			// 设置选中的工人
+			if (option.workerId) {
+				this.selectedWorkerIds = [option.workerId]
+			}
 		}
 
-		// 初始化日期为今天
-		const today = new Date()
-		this.date = dayjs(today).format('YYYY-MM-DD')
+		// 初始化日期为今天（如果没有传入日期）
+		if (!this.date) {
+			const today = new Date()
+			this.date = dayjs(today).format('YYYY-MM-DD')
+		}
 
 		// 加载数据
 		this.loadData()
@@ -213,8 +242,12 @@ export default {
 
 			this.loading = true
 			this.workerList = []
-			this.selectedWorkerIds = []
-			this.selectedWorkers = []
+
+			// 编辑模式下保留已选工人
+			if (!this.isEdit) {
+				this.selectedWorkerIds = []
+				this.selectedWorkers = []
+			}
 			this.workerSelected = {}
 
 			try {
@@ -232,8 +265,15 @@ export default {
 
 					// 初始化工人选择状态
 					this.workerList.forEach(worker => {
-						this.$set(this.workerSelected, worker._id, false)
+						// 编辑模式下，设置已选工人的选中状态
+						const isSelected = this.isEdit ? this.selectedWorkerIds.includes(worker._id) : false
+						this.$set(this.workerSelected, worker._id, isSelected)
 					})
+
+					// 编辑模式下，更新已选工人列表
+					if (this.isEdit) {
+						this.updateSelectedWorkers()
+					}
 				} else {
 					throw new Error(res.message || '获取工人列表失败')
 				}
@@ -299,6 +339,54 @@ export default {
 			this.selectedWorkers = this.workerList.filter(worker => this.selectedWorkerIds.includes(worker._id))
 		},
 
+		// 处理删除
+		handleDelete() {
+			uni.showModal({
+				title: '删除确认',
+				content: '确定要删除这条工时记录吗？',
+				confirmColor: '#fa3534',
+				success: async res => {
+					if (res.confirm) {
+						await this.deleteWorkHour(this.recordId)
+					}
+				},
+			})
+		},
+
+		// 删除工时记录
+		async deleteWorkHour(workHourId) {
+			this.$showLoading('删除中...')
+			this.submitting = true
+
+			try {
+				// 导入工时服务云对象
+				const workHourService = uniCloud.importObject('work-hour-service')
+
+				// 调用删除方法
+				const res = await workHourService.deleteWorkHour({ workHourId })
+
+				if (res.code === 0) {
+					this.$showToast.success('删除成功')
+
+					if (this.isEdit) {
+						uni.$emit('needRefresh')
+					}
+					// 返回上一页
+					setTimeout(() => {
+						uni.navigateBack()
+					}, 500)
+				} else {
+					throw new Error(res.message || '删除失败')
+				}
+			} catch (e) {
+				console.log('删除工时记录失败:', e)
+				this.$showToast.error(e.message || '删除失败')
+			} finally {
+				this.$hideLoading()
+				this.submitting = false
+			}
+		},
+
 		// 保存工时记录
 		async handleSubmit() {
 			// 表单验证
@@ -328,9 +416,14 @@ export default {
 
 				let params = {
 					siteId: this.siteId,
-					workerId: this.selectedWorkerIds.join(','),
+					workerId: this.isEdit ? this.selectedWorkerIds[0] : this.selectedWorkerIds.join(','),
 					date: this.date,
 					hours: hours,
+				}
+
+				// 编辑模式添加记录ID
+				if (this.isEdit) {
+					params._id = this.recordId
 				}
 
 				console.log('保存工时参数:', params)
@@ -347,6 +440,10 @@ export default {
 					this.$hideLoading()
 					// 显示成功提示
 					this.$showToast.none(`记录成功`)
+
+					if (this.isEdit) {
+						uni.$emit('needRefresh')
+					}
 
 					// 返回上一页
 					setTimeout(() => {
@@ -478,5 +575,14 @@ export default {
 	right: 0;
 	z-index: 100;
 	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.button-group {
+	display: flex;
+	gap: 20rpx;
+
+	.u-button {
+		flex: 1;
+	}
 }
 </style>

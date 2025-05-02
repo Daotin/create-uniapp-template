@@ -1,8 +1,403 @@
 <template>
-	<view class="index">工时记录列表</view>
+	<view class="container">
+		<!-- 使用自定义筛选组件 -->
+		<advanced-filter :defaultSiteId="siteId" @search="loadWorkHourList"></advanced-filter>
+
+		<!-- 工时记录列表 -->
+		<view class="work-hour-list" v-if="workHourGroups.length > 0">
+			<view class="date-group" v-for="group in workHourGroups" :key="group.date">
+				<view class="date-header">{{ group.dateText }}</view>
+				<view class="records">
+					<view
+						class="record-item"
+						v-for="item in group.records"
+						:key="item._id"
+						@click="handleItemClick(item)"
+						@longpress="handleItemLongPress(item)">
+						<view class="record-header">
+							<text class="site-name">{{ item.siteName }}</text>
+							<text class="record-time">{{ formatTime(item.createTime) }}</text>
+						</view>
+						<view class="worker-info">
+							<view class="avatar">{{ item.workerName.substring(0, 1) }}</view>
+							<text class="worker-name">{{ item.workerName }}</text>
+							<text class="hours">{{ formatHours(item.hours) }}</text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<!-- 空状态 -->
+		<view class="empty-wrapper" v-if="workHourGroups.length === 0">
+			<u-empty mode="data" text="暂无工时记录"></u-empty>
+		</view>
+
+		<!-- 操作菜单 -->
+		<u-action-sheet :list="actionList" v-model="showActionSheet" @click="handleActionClick"></u-action-sheet>
+
+		<!-- 悬浮按钮 -->
+		<view class="fab" @click="goToAddWorkHour">
+			<text class="fab-icon">+</text>
+		</view>
+	</view>
 </template>
-<style>
-.index {
-	color: red;
+
+<script>
+import dayjs from 'dayjs'
+
+export default {
+	data() {
+		return {
+			siteId: '',
+			// 筛选条件
+			filterParams: {
+				selectedSite: {},
+				selectedWorkers: [],
+				startDate: '',
+				endDate: '',
+			},
+
+			// 列表数据
+			workHourList: [],
+			workHourGroups: [],
+
+			// 记录操作
+			showActionSheet: false,
+			currentRecord: null,
+			actionList: [
+				{
+					text: '删除记录',
+					color: '#fa3534',
+				},
+			],
+		}
+	},
+
+	onLoad(option) {
+		// 加载工时记录数据
+		// setTimeout(() => {
+		// 	this.loadWorkHourList()
+		// }, 500)
+		if (option.siteId) {
+			this.siteId = option.siteId
+		}
+	},
+
+	onShow() {
+		// 如果从新增页返回，刷新列表
+		uni.$on('needRefresh', this.loadWorkHourList)
+	},
+
+	methods: {
+		// 加载工时记录列表
+		async loadWorkHourList(params) {
+			// 如果从筛选组件传入了参数，则使用传入的参数
+			if (params) {
+				this.filterParams = params
+			}
+
+			this.$showLoading()
+			this.workHourList = []
+			this.workHourGroups = []
+
+			try {
+				// 导入工时服务云对象
+				const workHourService = uniCloud.importObject('work-hour-service')
+
+				// 构建请求参数
+				const requestParams = {
+					siteId: this.filterParams.selectedSite?._id || '',
+					workerId: this.filterParams.selectedWorkers?.map(worker => worker._id).join(','),
+					startDate: this.filterParams.startDate,
+					endDate: this.filterParams.endDate,
+				}
+
+				console.log('请求参数:', requestParams)
+
+				if (!requestParams.siteId || !requestParams.workerId || !requestParams.startDate || !requestParams.endDate) {
+					this.$showToast.none('请求参数不正确')
+					return
+				}
+
+				// 请求数据
+				const res = await workHourService.getWorkHourList(requestParams)
+				console.log('工时记录列表返回:', res)
+
+				if (res.code === 0) {
+					this.workHourList = res.data.list
+
+					// 按日期分组处理数据
+					this.groupWorkHourByDate()
+				} else {
+					throw new Error(res.message || '获取工时记录失败')
+				}
+			} catch (e) {
+				console.log('加载工时记录失败:', e)
+				uni.showToast({
+					title: '加载工时记录失败',
+					icon: 'none',
+				})
+			} finally {
+				this.$hideLoading()
+			}
+		},
+
+		// 按日期分组处理数据
+		groupWorkHourByDate() {
+			// 创建日期映射
+			const dateMap = new Map()
+
+			// 将数据按日期分组
+			this.workHourList.forEach(item => {
+				const dateStr = dayjs(item.date).format('YYYY-MM-DD')
+
+				if (!dateMap.has(dateStr)) {
+					const today = dayjs().format('YYYY-MM-DD')
+					const yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD')
+
+					let dateText = dayjs(dateStr).format('YYYY年M月D日')
+					if (dateStr === today) {
+						dateText += '（今天）'
+					} else if (dateStr === yesterday) {
+						dateText += '（昨天）'
+					}
+
+					dateMap.set(dateStr, {
+						date: dateStr,
+						dateText,
+						records: [],
+					})
+				}
+
+				dateMap.get(dateStr).records.push(item)
+			})
+
+			// 转换为数组并按日期排序
+			this.workHourGroups = Array.from(dateMap.values()).sort((a, b) => {
+				return new Date(b.date) - new Date(a.date)
+			})
+		},
+
+		// 长按工时记录项
+		handleItemLongPress(item) {
+			this.currentRecord = item
+			this.showActionSheet = true
+		},
+
+		// 点击操作菜单项
+		async handleActionClick(index) {
+			if (!this.currentRecord) return
+
+			if (index === 0) {
+				// 删除记录
+				// 确认删除
+				uni.showModal({
+					title: '删除确认',
+					content: '确定要删除这条工时记录吗？',
+					confirmColor: '#fa3534',
+					success: async res => {
+						if (res.confirm) {
+							await this.deleteWorkHour(this.currentRecord._id)
+						}
+					},
+				})
+			}
+		},
+
+		// 删除工时记录
+		async deleteWorkHour(workHourId) {
+			uni.showLoading({
+				title: '删除中...',
+			})
+
+			try {
+				// 导入工时服务云对象
+				const workHourService = uniCloud.importObject('work-hour-service')
+
+				// 调用删除方法
+				const res = await workHourService.deleteWorkHour({ workHourId })
+				console.log('删除工时记录返回:', res)
+
+				if (res.code === 0) {
+					uni.showToast({
+						title: '删除成功',
+						icon: 'success',
+					})
+
+					// 重新加载数据
+					this.loadWorkHourList()
+				} else {
+					throw new Error(res.message || '删除失败')
+				}
+			} catch (e) {
+				console.log('删除工时记录失败:', e)
+				uni.showToast({
+					title: e.message || '删除失败',
+					icon: 'none',
+				})
+			} finally {
+				uni.hideLoading()
+			}
+		},
+
+		// 跳转到添加工时页面
+		goToAddWorkHour() {
+			uni.navigateTo({
+				url: '/pages/worker-hour/add',
+			})
+		},
+
+		// 格式化创建时间
+		formatTime(time) {
+			if (!time) return ''
+			return dayjs(time).format('HH:mm')
+		},
+
+		// 格式化工时
+		formatHours(hours) {
+			if (hours === undefined || hours === null) return ''
+
+			// 如果可以被8整除，显示为天数
+			if (hours % 8 === 0) {
+				const days = hours / 8
+				return `${days}天`
+			}
+
+			return `${hours}小时`
+		},
+
+		// 点击工时记录项
+		handleItemClick(item) {
+			uni.navigateTo({
+				url: `/pages/worker-hour/add?_id=${item._id}&siteId=${item.siteId}&workerId=${item.workerId}&date=${dayjs(
+					item.date,
+				).format('YYYY-MM-DD')}&hours=${item.hours}`,
+			})
+		},
+	},
+}
+</script>
+
+<style lang="scss" scoped>
+.container {
+	background-color: #f7f8fa;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.work-hour-list {
+	padding-bottom: 120rpx;
+}
+
+.loading-wrapper,
+.empty-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 60rpx 0;
+}
+
+.loading-text,
+.empty-text {
+	margin-top: 20rpx;
+	font-size: 28rpx;
+	color: #909399;
+}
+
+.date-group {
+	margin-bottom: 20rpx;
+}
+
+.date-header {
+	padding: 20rpx 30rpx;
+	font-size: 28rpx;
+	color: #969799;
+}
+
+.records {
+	background-color: #ffffff;
+}
+
+.record-item {
+	padding: 24rpx 30rpx;
+	border-bottom: 1px solid #ebedf0;
+}
+
+.record-item:last-child {
+	border-bottom: none;
+}
+
+.record-header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 16rpx;
+}
+
+.site-name {
+	flex: 1;
+	font-size: 32rpx;
+	font-weight: 500;
+	color: #323233;
+}
+
+.record-time {
+	font-size: 24rpx;
+	color: #969799;
+}
+
+.worker-info {
+	display: flex;
+	align-items: center;
+}
+
+.avatar {
+	width: 60rpx;
+	height: 60rpx;
+	border-radius: 50%;
+	background-color: #2979ff;
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	margin-right: 16rpx;
+	font-size: 24rpx;
+}
+
+.worker-name {
+	font-size: 28rpx;
+	color: #323233;
+	margin-right: 16rpx;
+}
+
+.hours {
+	font-size: 28rpx;
+	color: #2979ff;
+	font-weight: 500;
+}
+
+.fab {
+	position: fixed;
+	right: 30rpx;
+	bottom: 50rpx;
+	width: 100rpx;
+	height: 100rpx;
+	border-radius: 50%;
+	background-color: #2979ff;
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 8rpx 24rpx rgba(41, 121, 255, 0.4);
+	font-size: 48rpx;
+	z-index: 10;
+}
+
+.fab-icon {
+	font-size: 48rpx;
+	font-weight: bold;
 }
 </style>
