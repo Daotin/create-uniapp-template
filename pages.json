@@ -126,82 +126,87 @@
 				}
 			]
 		},
-    // 工地模块分包
-    {
-      "root": "pages/site",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "工地管理",
-            "enablePullDownRefresh": true
-          }
-        },
-        {
-          "path": "add",
-          "style": {
-            "navigationBarTitleText": "添加工地"
-          }
-        },
-        {
-          "path": "detail",
-          "style": {
-            "navigationBarTitleText": "工地详情"
-          }
-        },
-        {
-          "path": "workers",
-          "style": {
-            "navigationBarTitleText": "工人管理"
-          }
-        }
-      ]
-    },
-    // 工人模块分包
-    {
-      "root": "pages/worker",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "工人管理",
-            "enablePullDownRefresh": true
-          }
-        },
-        {
-          "path": "add",
-          "style": {
-            "navigationBarTitleText": "添加工人"
-          }
-        },
-        {
-          "path": "detail",
-          "style": {
-            "navigationBarTitleText": "工人详情"
-          }
-        }
-      ]
-    },
-    // 工时模块分包
-    {
-      "root": "pages/worker-hour",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "工时列表",
-            "enablePullDownRefresh": true
-          }
-        },
-        {
-          "path": "add",
-          "style": {
-            "navigationBarTitleText": "记工时"
-          }
-        }
-      ]
-    }
-
+		// 工地模块分包
+		{
+			"root": "pages/site",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "工地管理",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "添加工地"
+					}
+				},
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "工地详情"
+					}
+				},
+				{
+					"path": "workers",
+					"style": {
+						"navigationBarTitleText": "工人管理"
+					}
+				}
+			]
+		},
+		// 工人模块分包
+		{
+			"root": "pages/worker",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "工人管理",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "添加工人"
+					}
+				},
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "工人详情"
+					}
+				}
+			]
+		},
+		// 工时模块分包
+		{
+			"root": "pages/worker-hour",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "工时列表",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "add",
+					"style": {
+						"navigationBarTitleText": "记工时"
+					}
+				},
+				{
+					"path": "stats",
+					"style": {
+						"navigationBarTitleText": "工时统计"
+					}
+				}
+			]
+		}
 	],
 	"tabBar": {
 		"color": "#969799",

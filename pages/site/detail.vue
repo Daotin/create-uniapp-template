@@ -7,10 +7,10 @@
 				<u-icon name="map" color="#969799" size="24" class="address-icon"></u-icon>
 				<text>{{ site.address }}</text>
 			</view>
-      <view class="site-remark" v-if="site.remark">
-        <u-icon name="bookmark" color="#969799" size="24" class="remark-icon"></u-icon>
-        <text>{{ site.remark }}</text>
-      </view>
+			<view class="site-remark" v-if="site.remark">
+				<u-icon name="bookmark" color="#969799" size="24" class="remark-icon"></u-icon>
+				<text>{{ site.remark }}</text>
+			</view>
 		</view>
 
 		<!-- 操作面板 -->
@@ -21,14 +21,14 @@
 				</view>
 				<view class="action-text">记工时</view>
 			</view>
-			
+
 			<view class="action-item plain-btn" @click="goWorkHourList">
 				<view class="action-icon">
 					<u-icon name="file-text" color="#2979ff" size="22"></u-icon>
 				</view>
 				<view class="action-text">工时记录</view>
 			</view>
-			
+
 			<view class="action-item plain-btn" @click="goWorkHourStats">
 				<view class="action-icon">
 					<u-icon name="account" color="#2979ff" size="22"></u-icon>
@@ -111,7 +111,7 @@ export default {
 				uni.navigateBack()
 			}, 1500)
 		}
-		
+
 		// 监听工地详情刷新事件
 		uni.$on('refreshSiteDetail', this.refresh)
 	},
@@ -158,8 +158,6 @@ export default {
 				const siteService = uniCloud.importObject('site-service')
 				const res = await siteService.getSiteWorkers({
 					siteId: this.siteId,
-					page: 1,
-					pageSize: 2 // 只获取前2条
 				})
 
 				console.log('工地工人列表返回:', res)
@@ -200,7 +198,7 @@ export default {
 
 				if (res.code === 0) {
 					this.$showToast.success('删除成功')
-					
+
 					// 触发刷新事件
 					uni.$emit('needRefresh')
 
@@ -218,40 +216,41 @@ export default {
 				this.$hideLoading()
 			}
 		},
-		
+
 		// 跳转到工地工人列表页面
 		goSiteWorkers() {
 			// 跳转到工地工人管理页面
 			uni.navigateTo({
-				url: `/pages/site/workers?id=${this.siteId}&name=${encodeURIComponent(this.site.name)}`
+				url: `/pages/site/workers?id=${this.siteId}&name=${encodeURIComponent(this.site.name)}`,
 			})
 		},
-		
+
 		// 跳转到记工时页面
 		goWorkHourRecord() {
-      uni.navigateTo({
-				url: `/pages/worker-hour/add?siteId=${this.siteId}`
+			uni.navigateTo({
+				url: `/pages/worker-hour/add?siteId=${this.siteId}`,
 			})
 		},
-		
+
 		// 跳转到工时记录页面
 		goWorkHourList() {
 			uni.navigateTo({
-				url: `/pages/worker-hour/index?siteId=${this.siteId}`
+				url: `/pages/worker-hour/index?siteId=${this.siteId}`,
 			})
 		},
-		
+
 		// 跳转到工时统计页面
 		goWorkHourStats() {
-			// 暂不实现，等待后续开发
-			this.$showToast.success('工时统计功能开发中')
+			uni.navigateTo({
+				url: `/pages/worker-hour/stats?siteId=${this.siteId}`,
+			})
 		},
 
 		// 跳转到添加工人页面
 		goAddWorker() {
 			// 跳转到工地工人管理页面并默认打开添加工人选项卡
 			uni.navigateTo({
-				url: `/pages/site/workers?id=${this.siteId}&name=${encodeURIComponent(this.site.name)}&tab=1`
+				url: `/pages/site/workers?id=${this.siteId}&name=${encodeURIComponent(this.site.name)}&tab=1`,
 			})
 		},
 
@@ -259,7 +258,7 @@ export default {
 		refresh() {
 			this.getSiteDetail()
 			this.getSiteWorkers()
-		}
+		},
 	},
 	onShow() {
 		// 如果从编辑页返回，刷新数据
@@ -294,7 +293,7 @@ export default {
 			color: #969799;
 			display: flex;
 			align-items: center;
-			
+
 			.address-icon {
 				margin-right: 8rpx;
 			}
@@ -305,7 +304,7 @@ export default {
 			color: #969799;
 			display: flex;
 			align-items: center;
-			
+
 			.remark-icon {
 				margin-right: 8rpx;
 			}
@@ -320,7 +319,7 @@ export default {
 		overflow: hidden;
 		margin: 0 24rpx 24rpx;
 		padding: 32rpx;
-		
+
 		.action-item {
 			display: flex;
 			justify-content: center;
@@ -328,31 +327,31 @@ export default {
 			padding: 24rpx 0;
 			margin-bottom: 24rpx;
 			border-radius: 8rpx;
-			
+
 			&:last-child {
 				margin-bottom: 0;
 			}
-			
+
 			.action-icon {
 				font-size: 40rpx;
 				margin-right: 20rpx;
 			}
-			
+
 			.action-text {
 				font-size: 32rpx;
 				color: #323233;
 			}
 		}
-		
+
 		.primary-btn {
 			background-color: #2979ff;
 			color: white;
-			
+
 			.action-text {
 				color: white;
 			}
 		}
-		
+
 		.plain-btn {
 			background-color: #fff;
 			border: 1rpx solid #ebedf0;
@@ -375,71 +374,71 @@ export default {
 			justify-content: space-between;
 			align-items: center;
 		}
-		
+
 		.view-all {
 			font-size: 28rpx;
 			color: #2979ff;
 			display: flex;
 			align-items: center;
 		}
-		
+
 		.card-content {
 			padding: 0;
 		}
-		
+
 		.card-empty {
 			padding: 40rpx;
 		}
-		
+
 		.worker-row {
 			display: flex;
 			padding: 24rpx 32rpx;
 			border-bottom: 1rpx solid #ebedf0;
 			align-items: center;
-			
+
 			&:last-child {
 				border-bottom: none;
 			}
 		}
-		
+
 		.worker-avatar {
 			margin-right: 24rpx;
 		}
-		
+
 		.worker-info {
 			flex: 1;
 		}
-		
+
 		.worker-name {
 			font-size: 32rpx;
 			line-height: 44rpx;
 			color: #323233;
 		}
-		
+
 		.worker-hours {
 			font-size: 24rpx;
 			color: #969799;
 		}
-		
+
 		.add-worker {
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			padding: 24rpx 32rpx;
 			border-top: 1rpx solid #ebedf0;
-			
+
 			.u-icon {
 				margin-right: 8rpx;
 			}
 		}
-		
+
 		.add-worker-empty {
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			padding: 40rpx;
 			border-top: 1rpx solid #ebedf0;
-			
+
 			.u-icon {
 				margin-right: 8rpx;
 			}
@@ -447,15 +446,15 @@ export default {
 	}
 
 	.action-buttons {
-    display: flex;
+		display: flex;
 		margin: 40rpx 24rpx;
 
 		u-button {
-      flex: 1;
+			flex: 1;
 			&:first-of-type {
-        margin-right: 24rpx;
-      }
+				margin-right: 24rpx;
+			}
 		}
 	}
 }
-</style> 
+</style>

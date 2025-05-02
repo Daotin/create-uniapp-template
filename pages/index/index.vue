@@ -4,25 +4,25 @@
 		<view class="nav-bar custom-nav-bar" :style="{ height: navHeight + 'rpx' }">
 			<text class="nav-title">记工时</text>
 		</view>
-		
+
 		<!-- 菜单卡片 -->
 		<view class="menu-cards">
 			<view class="card-item" @click="goToWorkerList">
 				<u-icon name="account" color="#188fff" size="32"></u-icon>
 				<text class="card-text">工人管理</text>
 			</view>
-			
+
 			<view class="card-item" @click="goToSiteList">
 				<u-icon name="home" color="#19be6b" size="32"></u-icon>
 				<text class="card-text">工地管理</text>
 			</view>
-			
+
 			<view class="card-item">
 				<u-icon name="calendar" color="#fa3534" size="32"></u-icon>
 				<text class="card-text">工时记录</text>
 			</view>
-			
-			<view class="card-item">
+
+			<view class="card-item" @click="goToStat">
 				<u-icon name="chart" color="#ff9900" size="32"></u-icon>
 				<text class="card-text">工时统计</text>
 			</view>
@@ -56,15 +56,20 @@ export default {
 		// 跳转到工人列表
 		goToWorkerList() {
 			uni.navigateTo({
-				url: '/pages/worker/index'
+				url: '/pages/worker/index',
 			})
 		},
 		// 跳转到工地列表
 		goToSiteList() {
 			uni.navigateTo({
-				url: '/pages/site/index'
+				url: '/pages/site/index',
 			})
-		}
+		},
+		goToStat() {
+			uni.navigateTo({
+				url: '/pages/worker-hour/stats',
+			})
+		},
 	},
 }
 </script>
@@ -73,14 +78,14 @@ export default {
 .content {
 	min-height: 100vh;
 	background-color: #f7f8fa;
-	
+
 	.custom-nav-bar {
 		background: linear-gradient(to right, #2979ff, #188fff);
 		width: 100%;
 		display: flex;
 		align-items: flex-end;
 		padding-bottom: 10px;
-		
+
 		.nav-title {
 			color: #fff;
 			font-size: 18px;
@@ -88,13 +93,13 @@ export default {
 			padding-left: 15px;
 		}
 	}
-	
+
 	.menu-cards {
 		padding: 20px 15px;
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
-		
+
 		.card-item {
 			width: 48%;
 			height: 100px;
@@ -106,7 +111,7 @@ export default {
 			align-items: center;
 			justify-content: center;
 			box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-			
+
 			.card-text {
 				margin-top: 10px;
 				font-size: 14px;
