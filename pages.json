@@ -181,7 +181,27 @@
           }
         }
       ]
+    },
+    // 工时模块分包
+    {
+      "root": "pages/worker-hour",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "工时列表",
+            "enablePullDownRefresh": true
+          }
+        },
+        {
+          "path": "add",
+          "style": {
+            "navigationBarTitleText": "记工时"
+          }
+        }
+      ]
     }
+
 	],
 	"tabBar": {
 		"color": "#969799",
