@@ -4,9 +4,13 @@
 		<view class="site-header">
 			<view class="site-name">{{ site.name }}</view>
 			<view class="site-address" v-if="site.address">
-				<u-icon name="map" color="#969799" size="16" class="address-icon"></u-icon>
+				<u-icon name="map" color="#969799" size="24" class="address-icon"></u-icon>
 				<text>{{ site.address }}</text>
 			</view>
+      <view class="site-remark" v-if="site.remark">
+        <u-icon name="bookmark" color="#969799" size="24" class="remark-icon"></u-icon>
+        <text>{{ site.remark }}</text>
+      </view>
 		</view>
 
 		<!-- 操作面板 -->
@@ -63,16 +67,6 @@
 					<u-icon name="plus" color="#2979ff" size="22"></u-icon>
 					<text>添加工人</text>
 				</view>
-			</view>
-		</view>
-
-		<!-- 备注信息 -->
-		<view class="info-card" v-if="site.remark">
-			<view class="card-header">
-				<view>备注信息</view>
-			</view>
-			<view class="card-content">
-				<view class="remark-content">{{ site.remark }}</view>
 			</view>
 		</view>
 
@@ -171,8 +165,8 @@ export default {
 				console.log('工地工人列表返回:', res)
 
 				if (res.code === 0) {
-					this.workers = res.data.list
-					this.workerCount = res.data.total
+					this.workers = res.data.list || []
+					this.workerCount = this.workers.length
 				}
 			} catch (e) {
 				console.error('获取工地工人列表异常:', e)
@@ -235,14 +229,16 @@ export default {
 		
 		// 跳转到记工时页面
 		goWorkHourRecord() {
-			// 暂不实现，等待后续开发
-			this.$showToast.success('记工时功能开发中')
+      uni.navigateTo({
+				url: `/pages/worker-hour/add?siteId=${this.siteId}`
+			})
 		},
 		
 		// 跳转到工时记录页面
 		goWorkHourList() {
-			// 暂不实现，等待后续开发
-			this.$showToast.success('工时记录功能开发中')
+			uni.navigateTo({
+				url: `/pages/worker-hour/index?siteId=${this.siteId}`
+			})
 		},
 		
 		// 跳转到工时统计页面
@@ -300,6 +296,17 @@ export default {
 			align-items: center;
 			
 			.address-icon {
+				margin-right: 8rpx;
+			}
+		}
+
+		.site-remark {
+			font-size: 28rpx;
+			color: #969799;
+			display: flex;
+			align-items: center;
+			
+			.remark-icon {
 				margin-right: 8rpx;
 			}
 		}
@@ -414,13 +421,6 @@ export default {
 			color: #969799;
 		}
 		
-		.remark-content {
-			padding: 24rpx 32rpx;
-			font-size: 28rpx;
-			color: #646566;
-			line-height: 1.5;
-		}
-		
 		.add-worker {
 			display: flex;
 			justify-content: center;
@@ -447,10 +447,14 @@ export default {
 	}
 
 	.action-buttons {
+    display: flex;
 		margin: 40rpx 24rpx;
 
-		.u-button {
-			margin-bottom: 24rpx;
+		u-button {
+      flex: 1;
+			&:first-of-type {
+        margin-right: 24rpx;
+      }
 		}
 	}
 }

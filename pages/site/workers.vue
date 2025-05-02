@@ -63,17 +63,13 @@
 					</view>
 				</view>
 			</view>
-		</scroll-view>
 
-		<!-- 空白状态 -->
-		<view v-if="availableList.length === 0" class="empty-box">
-			<u-empty mode="list" icon="http://cdn.uviewui.com/uview/empty/list.png"></u-empty>
-		</view>
-		<view v-else class="batch-add-box" v-if="current === 1">
-			<view class="batch-btn">
-				<u-button type="primary" @click="batchAddWorkers">批量添加</u-button>
+			<view class="batch-add-box" v-if="current === 1">
+				<view class="batch-btn">
+					<u-button type="primary" @click="batchAddWorkers">批量添加</u-button>
+				</view>
 			</view>
-		</view>
+		</scroll-view>
 
 		<!-- 确认操作弹窗 -->
 		<u-modal
@@ -184,7 +180,7 @@ export default {
 					this.currentList = res.data.list.map(item => {
 						return {
 							...item,
-							checked: false
+							checked: false,
 						}
 					})
 				} else {
@@ -219,7 +215,7 @@ export default {
 					this.availableList = res.data.list.map(item => {
 						return {
 							...item,
-							checked: false
+							checked: false,
 						}
 					})
 				} else {
@@ -272,12 +268,12 @@ export default {
 		batchAddWorkers() {
 			// 获取所有选中的工人
 			const selectedWorkers = this.availableList.filter(item => item.checked)
-			
+
 			if (selectedWorkers.length === 0) {
 				this.$showToast.none('请选择要添加的工人')
 				return
 			}
-			
+
 			this.selectedWorkerIds = selectedWorkers.map(item => item._id)
 			this.confirmType = 'batch'
 			this.confirmContent = `确定要将选中的${selectedWorkers.length}名工人添加到工地吗？`

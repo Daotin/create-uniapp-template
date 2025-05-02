@@ -201,7 +201,7 @@ export default {
 		bottom: 60rpx;
 		z-index: 9;
 		
-		/deep/ .u-btn {
+		::v-deep .u-btn {
 			width: 100rpx;
 			height: 100rpx;
 			box-shadow: 0 8rpx 24rpx rgba(24, 144, 255, 0.4);

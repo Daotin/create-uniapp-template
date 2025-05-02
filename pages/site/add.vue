@@ -161,7 +161,7 @@ export default {
 		padding: 0 24rpx;
 	}
 	
-	/deep/ .u-form-item {
+	::v-deep .u-form-item {
 		min-height: 100rpx;
 	}
 	
