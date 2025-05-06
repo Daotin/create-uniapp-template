@@ -1,12 +1,8 @@
 <template>
-	<view class="worker-detail" v-if="worker._id">
+	<view class="worker-detail common-page-container has-btm-btn" v-if="worker._id">
 		<!-- 工人头部信息 -->
 		<view class="worker-header">
-			<u-avatar
-				:text="worker.name ? worker.name.substring(0, 1) : ''"
-				font-size="28"
-				size="70"
-				bg-color="#188fff"></u-avatar>
+			<u-avatar :text="worker.name ? worker.name.substring(0, 1) : ''" bg-color="#188fff"></u-avatar>
 			<view class="worker-name">{{ worker.name }}</view>
 			<view class="worker-phone">{{ worker.phone || '未设置手机号' }}</view>
 		</view>
@@ -31,7 +27,7 @@
 		</view>
 
 		<!-- 操作按钮区域 -->
-		<view class="action-buttons">
+		<view class="common-btm-btn">
 			<u-button type="primary" @click="goEdit">编辑</u-button>
 			<u-button type="error" :plain="true" @click="confirmDelete">删除</u-button>
 		</view>
@@ -155,10 +151,6 @@ export default {
 
 <style lang="scss" scoped>
 .worker-detail {
-	min-height: 100vh;
-	background-color: #f7f8fa;
-	padding-bottom: 40rpx;
-
 	.worker-header {
 		background-color: #fff;
 		padding: 40rpx;
@@ -166,6 +158,13 @@ export default {
 		flex-direction: column;
 		align-items: center;
 		margin-bottom: 24rpx;
+
+		::v-deep .u-avatar {
+			text {
+				font-size: 32rpx !important;
+				color: #fff;
+			}
+		}
 
 		.worker-name {
 			font-size: 36rpx;
@@ -216,14 +215,6 @@ export default {
 				font-size: 28rpx;
 				color: #323233;
 			}
-		}
-	}
-
-	.action-buttons {
-		margin: 40rpx 24rpx;
-
-		.u-button {
-			margin-bottom: 24rpx;
 		}
 	}
 }
