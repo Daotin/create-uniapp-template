@@ -1,5 +1,5 @@
 <template>
-	<view class="site-workers">
+	<view class="site-workers common-page-container has-btm-btn">
 		<!-- Tab切换 -->
 		<u-tabs :list="tabList" :is-scroll="false" :current="current" @change="tabChange"></u-tabs>
 
@@ -26,8 +26,8 @@
 				</view>
 
 				<view v-for="(item, index) in currentList" :key="index" class="list-item">
-					<view class="avatar-box">
-						<u-avatar :text="item.name.substring(0, 1)" font-size="22" bg-color="#188fff" size="40"></u-avatar>
+					<view class="common-avatar-box">
+						<u-avatar :text="item.name.substring(0, 1)" bg-color="#188fff" size="58"></u-avatar>
 					</view>
 					<view class="info">
 						<view class="name">{{ item.name }}</view>
@@ -51,8 +51,8 @@
 				</view>
 
 				<view v-for="(item, index) in availableList" :key="index" class="list-item">
-					<view class="avatar-box">
-						<u-avatar :text="item.name.substring(0, 1)" font-size="22" bg-color="#188fff" size="40"></u-avatar>
+					<view class="common-avatar-box">
+						<u-avatar :text="item.name.substring(0, 1)" bg-color="#188fff" size="58"></u-avatar>
 					</view>
 					<view class="info">
 						<view class="name">{{ item.name }}</view>
@@ -64,10 +64,8 @@
 				</view>
 			</view>
 
-			<view class="batch-add-box" v-if="current === 1">
-				<view class="batch-btn">
-					<u-button type="primary" @click="batchAddWorkers">批量添加</u-button>
-				</view>
+			<view class="common-btm-btn" v-if="current === 1">
+				<u-button type="primary" @click="batchAddWorkers">批量添加</u-button>
 			</view>
 		</scroll-view>
 
@@ -356,8 +354,6 @@ export default {
 
 <style lang="scss" scoped>
 .site-workers {
-	min-height: 100vh;
-	background-color: #f7f8fa;
 	display: flex;
 	flex-direction: column;
 
@@ -398,10 +394,6 @@ export default {
 		align-items: center;
 		margin-bottom: 2rpx;
 
-		.avatar-box {
-			margin-right: 24rpx;
-		}
-
 		.info {
 			flex: 1;
 
@@ -422,22 +414,6 @@ export default {
 
 		.action-box {
 			margin-left: 20rpx;
-		}
-	}
-
-	.batch-add-box {
-		position: fixed;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		padding: 20rpx 32rpx;
-		background-color: #fff;
-		box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
-		z-index: 9;
-
-		.batch-btn {
-			display: flex;
-			justify-content: center;
 		}
 	}
 

@@ -30,6 +30,21 @@
 //   }
 // }
 
+page,
+view,
+text,
+image,
+navigator,
+input,
+textarea,
+button,
+scroll-view,
+swiper,
+swiper-item,
+picker {
+	box-sizing: border-box;
+}
+
 button {
 	height: 96rpx;
 	line-height: 96rpx;

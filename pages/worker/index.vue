@@ -23,7 +23,7 @@
 
 			<view v-else>
 				<view v-for="(item, index) in list" :key="index" class="list-item" @click="goDetail(item._id)">
-					<view class="avatar-box">
+					<view class="common-avatar-box">
 						<u-avatar :text="item.name.substring(0, 1)" size="58" bg-color="#188fff"></u-avatar>
 					</view>
 					<view class="info">
@@ -38,7 +38,7 @@
 		</scroll-view>
 
 		<!-- 添加按钮 -->
-		<view class="fab-box">
+		<view class="common-add-btn">
 			<u-button type="primary" size="mini" shape="circle" @click="goAdd">
 				<u-icon name="plus" color="#FFFFFF" size="24"></u-icon>
 			</u-button>
@@ -160,16 +160,6 @@ export default {
 		align-items: center;
 		margin-bottom: 2rpx;
 
-		.avatar-box {
-			margin-right: 24rpx;
-			::v-deep .u-avatar {
-				text {
-					font-size: 24rpx !important;
-					color: #fff;
-				}
-			}
-		}
-
 		.info {
 			flex: 1;
 
@@ -190,19 +180,6 @@ export default {
 
 		.right-icon {
 			padding-left: 20rpx;
-		}
-	}
-
-	.fab-box {
-		position: fixed;
-		right: 40rpx;
-		bottom: 60rpx;
-		z-index: 9;
-
-		::v-deep .u-btn {
-			width: 100rpx;
-			height: 100rpx;
-			box-shadow: 0 8rpx 24rpx rgba(24, 144, 255, 0.4);
 		}
 	}
 }

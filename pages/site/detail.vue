@@ -1,15 +1,15 @@
 <template>
-	<view class="site-detail" v-if="site._id">
+	<view class="site-detail common-page-container has-btm-btn" v-if="site._id">
 		<!-- 工地头部信息 -->
 		<view class="site-header">
 			<view class="site-name">{{ site.name }}</view>
 			<view class="site-address" v-if="site.address">
-				<u-icon name="map" color="#969799" size="24" class="address-icon"></u-icon>
-				<text>{{ site.address }}</text>
+				<!-- <u-icon name="map" color="#969799" size="24" class="address-icon"></u-icon> -->
+				<text>📍 {{ site.address }}</text>
 			</view>
 			<view class="site-remark" v-if="site.remark">
-				<u-icon name="bookmark" color="#969799" size="24" class="remark-icon"></u-icon>
-				<text>{{ site.remark }}</text>
+				<!-- <u-icon name="bookmark" color="#969799" size="24" class="remark-icon"></u-icon> -->
+				<text>📄 {{ site.remark }}</text>
 			</view>
 		</view>
 
@@ -43,35 +43,26 @@
 				<view>工地工人 ({{ workerCount || 0 }}人)</view>
 				<view class="view-all" @click="goSiteWorkers">
 					<text>查看全部</text>
-					<u-icon name="arrow-right" color="#2979ff" size="14"></u-icon>
 				</view>
 			</view>
 			<view class="card-content" v-if="workers.length > 0">
 				<view class="worker-row" v-for="(worker, index) in workers" :key="index">
-					<view class="worker-avatar">
-						<u-avatar :text="worker.name.substring(0, 1)" font-size="18" bg-color="#188fff" size="40"></u-avatar>
+					<view class="common-avatar-box">
+						<u-avatar :text="worker.name.substring(0, 1)" bg-color="#188fff" size="58"></u-avatar>
 					</view>
 					<view class="worker-info">
 						<view class="worker-name">{{ worker.name }}</view>
-						<view class="worker-hours">累计工时: 计算中</view>
+						<!-- <view class="worker-hours">累计工时: 计算中</view> -->
 					</view>
-				</view>
-				<view class="add-worker" @click="goAddWorker">
-					<u-icon name="plus" color="#2979ff" size="22"></u-icon>
-					<text>添加工人</text>
 				</view>
 			</view>
 			<view class="card-empty" v-else>
 				<u-empty mode="data" text="暂无工人数据"></u-empty>
-				<view class="add-worker-empty" @click="goAddWorker">
-					<u-icon name="plus" color="#2979ff" size="22"></u-icon>
-					<text>添加工人</text>
-				</view>
 			</view>
 		</view>
 
 		<!-- 操作按钮区域 -->
-		<view class="action-buttons">
+		<view class="common-btm-btn">
 			<u-button type="primary" @click="goEdit">编辑</u-button>
 			<u-button type="error" :plain="true" @click="confirmDelete">删除</u-button>
 		</view>
@@ -272,10 +263,6 @@ export default {
 
 <style lang="scss" scoped>
 .site-detail {
-	min-height: 100vh;
-	background-color: #f7f8fa;
-	padding-bottom: 40rpx;
-
 	.site-header {
 		background-color: #fff;
 		padding: 40rpx 32rpx;
@@ -304,6 +291,7 @@ export default {
 			color: #969799;
 			display: flex;
 			align-items: center;
+			margin-top: 16rpx;
 
 			.remark-icon {
 				margin-right: 8rpx;
@@ -401,10 +389,6 @@ export default {
 			}
 		}
 
-		.worker-avatar {
-			margin-right: 24rpx;
-		}
-
 		.worker-info {
 			flex: 1;
 		}
@@ -418,42 +402,6 @@ export default {
 		.worker-hours {
 			font-size: 24rpx;
 			color: #969799;
-		}
-
-		.add-worker {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 24rpx 32rpx;
-			border-top: 1rpx solid #ebedf0;
-
-			.u-icon {
-				margin-right: 8rpx;
-			}
-		}
-
-		.add-worker-empty {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			padding: 40rpx;
-			border-top: 1rpx solid #ebedf0;
-
-			.u-icon {
-				margin-right: 8rpx;
-			}
-		}
-	}
-
-	.action-buttons {
-		display: flex;
-		margin: 40rpx 24rpx;
-
-		u-button {
-			flex: 1;
-			&:first-of-type {
-				margin-right: 24rpx;
-			}
 		}
 	}
 }

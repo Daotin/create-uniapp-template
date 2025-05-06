@@ -136,6 +136,29 @@
 	}
 }
 
+.common-add-btn {
+	position: fixed;
+	right: 40rpx;
+	bottom: 60rpx;
+	z-index: 9;
+
+	::v-deep .u-btn {
+		width: 100rpx;
+		height: 100rpx;
+		box-shadow: 0 8rpx 24rpx rgba(24, 144, 255, 0.4);
+	}
+}
+
+.common-avatar-box {
+	margin-right: 24rpx;
+	::v-deep .u-avatar {
+		text {
+			font-size: 24rpx !important;
+			color: #fff;
+		}
+	}
+}
+
 // 字体大小 f12 --> f48
 @mixin font($i) {
 	@if $i <= 48 {

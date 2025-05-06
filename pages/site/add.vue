@@ -1,25 +1,25 @@
 <template>
-	<view class="site-add">
+	<view class="site-add common-page-container has-btm-btn">
 		<u-form :model="form" ref="uForm">
 			<view class="form-group">
-				<u-form-item label="工地名称" prop="name" required :label-width="80">
+				<u-form-item label="工地名称" prop="name" required :label-width="120">
 					<u-input v-model="form.name" placeholder="请输入工地名称" />
 				</u-form-item>
-				
-				<u-form-item label="地址" prop="address" :label-width="80">
+
+				<u-form-item label="地址" prop="address" :label-width="120">
 					<u-input v-model="form.address" placeholder="请输入工地地址" />
 				</u-form-item>
 			</view>
-			
+
 			<view class="form-group">
-				<u-form-item label="备注" prop="remark" :label-width="80">
+				<u-form-item label="备注" prop="remark" :label-width="120">
 					<u-input v-model="form.remark" placeholder="请输入备注信息" type="textarea" height="100" />
 				</u-form-item>
 			</view>
 		</u-form>
-		
+
 		<!-- 底部保存按钮 -->
-		<view class="bottom-box">
+		<view class="common-btm-btn">
 			<u-button type="primary" :loading="submitting" @click="submit">保存</u-button>
 		</view>
 	</view>
@@ -33,7 +33,7 @@ export default {
 				_id: '', // 编辑时有值，新增时为空
 				name: '',
 				address: '',
-				remark: ''
+				remark: '',
 			},
 			submitting: false, // 提交状态
 			isEdit: false, // 是否是编辑模式
@@ -42,10 +42,10 @@ export default {
 					{
 						required: true,
 						message: '请输入工地名称',
-						trigger: ['blur', 'change']
-					}
-				]
-			}
+						trigger: ['blur', 'change'],
+					},
+				],
+			},
 		}
 	},
 	onLoad(option) {
@@ -58,32 +58,32 @@ export default {
 				this.form._id = option.id
 				this.isEdit = true
 				uni.setNavigationBarTitle({
-					title: '编辑工地'
+					title: '编辑工地',
 				})
 				await this.getSiteDetail()
 			} else {
 				uni.setNavigationBarTitle({
-					title: '添加工地'
+					title: '添加工地',
 				})
 			}
-			
+
 			// 设置验证规则
 			this.$refs.uForm.setRules(this.rules)
 		},
-		
+
 		// 获取工地详情
 		async getSiteDetail() {
 			try {
 				this.$showLoading('加载中...')
-				
+
 				// 直接调用云对象
 				const siteService = uniCloud.importObject('site-service')
 				const res = await siteService.getSiteDetail({
-					siteId: this.form._id
+					siteId: this.form._id,
 				})
-				
+
 				console.log('工地详情返回:', res)
-				
+
 				if (res.code === 0 && res.data) {
 					const { name, address, remark } = res.data
 					this.form.name = name
@@ -99,7 +99,7 @@ export default {
 				this.$hideLoading()
 			}
 		},
-		
+
 		// 提交表单
 		submit() {
 			this.$refs.uForm.validate(valid => {
@@ -108,29 +108,29 @@ export default {
 				}
 			})
 		},
-		
+
 		// 保存工地
 		async saveSite() {
 			try {
 				this.submitting = true
-				
+
 				// 直接调用云对象
 				const siteService = uniCloud.importObject('site-service')
 				const res = await siteService.saveSite({
 					_id: this.form._id,
 					name: this.form.name,
 					address: this.form.address,
-					remark: this.form.remark
+					remark: this.form.remark,
 				})
-				
+
 				console.log('保存工地返回:', res)
-				
+
 				if (res.code === 0) {
 					this.$showToast.success(this.isEdit ? '修改成功' : '添加成功')
-					
+
 					// 触发刷新事件
 					uni.$emit('needRefresh')
-					
+
 					// 等待提示显示后返回上一页
 					setTimeout(() => {
 						uni.navigateBack()
@@ -144,42 +144,21 @@ export default {
 			} finally {
 				this.submitting = false
 			}
-		}
-	}
+		},
+	},
 }
 </script>
 
 <style lang="scss" scoped>
 .site-add {
-	min-height: 100vh;
-	background-color: #f7f8fa;
-	padding-bottom: 240rpx; // 为底部按钮留出空间
-	
 	.form-group {
 		background: #fff;
 		margin-top: 24rpx;
 		padding: 0 24rpx;
 	}
-	
+
 	::v-deep .u-form-item {
 		min-height: 100rpx;
 	}
-	
-	.bottom-box {
-		position: fixed;
-		left: 0;
-		bottom: 0;
-		width: 100%;
-		padding: 20rpx 30rpx;
-		background-color: #fff;
-		box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
-		z-index: 9;
-		box-sizing: border-box;
-		
-		.u-button {
-			width: 100%;
-			height: 88rpx;
-		}
-	}
 }
-</style> 
+</style>
