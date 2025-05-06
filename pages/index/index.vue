@@ -17,7 +17,7 @@
 				<text class="card-text">工地管理</text>
 			</view>
 
-			<view class="card-item">
+			<view class="card-item" @click="goToRecord">
 				<u-icon name="calendar" color="#fa3534" size="32"></u-icon>
 				<text class="card-text">工时记录</text>
 			</view>
@@ -68,6 +68,11 @@ export default {
 		goToStat() {
 			uni.navigateTo({
 				url: '/pages/worker-hour/stats',
+			})
+		},
+		goToRecord() {
+			uni.navigateTo({
+				url: '/pages/worker-hour/index',
 			})
 		},
 	},

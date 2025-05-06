@@ -1,5 +1,5 @@
 <template>
-	<view class="container">
+	<view class="container common-page-container">
 		<!-- 使用自定义筛选组件 -->
 		<advanced-filter :defaultSiteId="siteId" @search="loadWorkHourList"></advanced-filter>
 
@@ -18,9 +18,11 @@
 							<text class="site-name">{{ item.siteName }}</text>
 							<text class="record-time">{{ formatTime(item.createTime) }}</text>
 						</view>
-						<view class="worker-info">
-							<view class="avatar">{{ item.workerName.substring(0, 1) }}</view>
-							<text class="worker-name">{{ item.workerName }}</text>
+						<view class="worker-info justify-between">
+							<view class="flex items-center">
+								<view class="avatar">{{ item.workerName.substring(0, 1) }}</view>
+								<text class="worker-name">{{ item.workerName }}</text>
+							</view>
 							<text class="hours">{{ formatHours(item.hours) }}</text>
 						</view>
 					</view>
@@ -37,15 +39,17 @@
 		<u-action-sheet :list="actionList" v-model="showActionSheet" @click="handleActionClick"></u-action-sheet>
 
 		<!-- 悬浮按钮 -->
-		<view class="fab" @click="goToAddWorkHour">
-			<text class="fab-icon">+</text>
+		<view class="common-add-btn">
+			<u-button type="primary" size="mini" shape="circle" @click="goToAddWorkHour">
+				<u-icon name="plus" color="#FFFFFF" size="24"></u-icon>
+			</u-button>
 		</view>
 	</view>
 </template>
 
 <script>
 import dayjs from 'dayjs'
-
+import { redirectToLogin } from '@/utils'
 export default {
 	data() {
 		return {
@@ -134,10 +138,9 @@ export default {
 				}
 			} catch (e) {
 				console.log('加载工时记录失败:', e)
-				uni.showToast({
-					title: '加载工时记录失败',
-					icon: 'none',
-				})
+				if (e.code === 401 || e.code === 403) {
+					redirectToLogin()
+				}
 			} finally {
 				this.$hideLoading()
 			}
@@ -281,8 +284,6 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-	background-color: #f7f8fa;
-	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 }
@@ -377,27 +378,5 @@ export default {
 	font-size: 28rpx;
 	color: #2979ff;
 	font-weight: 500;
-}
-
-.fab {
-	position: fixed;
-	right: 30rpx;
-	bottom: 50rpx;
-	width: 100rpx;
-	height: 100rpx;
-	border-radius: 50%;
-	background-color: #2979ff;
-	color: #ffffff;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-shadow: 0 8rpx 24rpx rgba(41, 121, 255, 0.4);
-	font-size: 48rpx;
-	z-index: 10;
-}
-
-.fab-icon {
-	font-size: 48rpx;
-	font-weight: bold;
 }
 </style>

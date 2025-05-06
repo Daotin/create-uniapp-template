@@ -1,5 +1,5 @@
 <template>
-	<view class="container">
+	<view class="container common-page-container has-btm-btn">
 		<!-- 表单内容 -->
 		<view class="form-group">
 			<u-cell-group>
@@ -7,8 +7,8 @@
 				<u-cell-item
 					title="工地"
 					:value="siteInfo.name || '请选择工地'"
-					:arrow="true"
-					@click="showSitePicker = true"
+					:arrow="!isEdit"
+					@click="!isEdit && (showSitePicker = true)"
 					:border-bottom="true">
 					<text slot="icon" class="required-icon">*</text>
 				</u-cell-item>
@@ -46,8 +46,11 @@
 		</view>
 
 		<!-- 选择工人部分 -->
-		<view class="worker-section" v-if="!isEdit">
-			<view class="section-title">选择工人（已选 {{ selectedWorkers.length }} 人）</view>
+		<view class="worker-section">
+			<view class="section-title">
+				<template v-if="isEdit">已选工人</template>
+				<template v-else>选择工人（已选 {{ selectedWorkers.length }} 人）</template>
+			</view>
 
 			<view class="worker-list">
 				<!-- 加载中提示 -->
@@ -60,31 +63,50 @@
 				</view>
 				<!-- 工人列表 -->
 				<view v-else>
-					<view v-for="(item, index) in workerList" :key="item._id" class="worker-item" @click="toggleWorker(item._id)">
-						<view class="worker-checkbox">
-							<u-checkbox
-								v-model="workerSelected[item._id]"
-								shape="circle"
-								@change="checkboxChange(item._id, $event)"></u-checkbox>
-						</view>
-						<view class="worker-content">
-							<view class="avatar">{{ item.name ? item.name.substr(0, 1) : '' }}</view>
-							<view class="info">
-								<view class="name">{{ item.name }}</view>
-								<view class="phone">{{ item.phone || '' }}</view>
+					<template v-if="isEdit">
+						<!-- 编辑模式下只显示已选工人 -->
+						<view v-for="(item, index) in selectedWorkers" :key="item._id" class="worker-item">
+							<view class="worker-content">
+								<view class="avatar">{{ item.name ? item.name.substr(0, 1) : '' }}</view>
+								<view class="info">
+									<view class="name">{{ item.name }}</view>
+									<view class="phone">{{ item.phone || '' }}</view>
+								</view>
 							</view>
 						</view>
-					</view>
+					</template>
+					<template v-else>
+						<!-- 新增模式下可选择工人 -->
+						<view
+							v-for="(item, index) in workerList"
+							:key="item._id"
+							class="worker-item"
+							@click="toggleWorker(item._id)">
+							<view class="worker-checkbox">
+								<u-checkbox
+									v-model="workerSelected[item._id]"
+									shape="circle"
+									@change="checkboxChange(item._id, $event)"></u-checkbox>
+							</view>
+							<view class="worker-content">
+								<view class="avatar">{{ item.name ? item.name.substr(0, 1) : '' }}</view>
+								<view class="info">
+									<view class="name">{{ item.name }}</view>
+									<view class="phone">{{ item.phone || '' }}</view>
+								</view>
+							</view>
+						</view>
+					</template>
 				</view>
 			</view>
 		</view>
 
 		<!-- 底部按钮 -->
-		<view class="footer">
-			<view class="button-group" v-if="isEdit">
-				<u-button type="error" :loading="submitting" @click="handleDelete">删除记录</u-button>
+		<view class="common-btm-btn">
+			<template v-if="isEdit">
+				<u-button type="error" plain :loading="submitting" @click="handleDelete">删除记录</u-button>
 				<u-button type="primary" :loading="submitting" @click="handleSubmit">保存修改</u-button>
-			</view>
+			</template>
 			<u-button v-else type="primary" :loading="submitting" @click="handleSubmit">保存记录</u-button>
 		</view>
 
@@ -98,7 +120,8 @@
 			@confirm="onSiteConfirm"></u-select>
 
 		<!-- 日期选择器 -->
-		<u-calendar v-model="showDatePicker" mode="date" @change="onDateChange"></u-calendar>
+		<!-- TODO：uView v1不支持默认日期。解决办法：复制一份源码为公共组件，修改增加默认日期功能 -->
+		<u-calendar v-model="showDatePicker" mode="date" :default-date="date" @change="onDateChange"></u-calendar>
 	</view>
 </template>
 
@@ -138,7 +161,7 @@ export default {
 		}
 	},
 	onLoad(option) {
-		// 如果有参数传入，进行初始化
+		// 编辑模式
 		if (option._id) {
 			// 编辑模式
 			this.isEdit = true
@@ -160,6 +183,10 @@ export default {
 			if (option.workerId) {
 				this.selectedWorkerIds = [option.workerId]
 			}
+		}
+
+		if (option.siteId) {
+			this.siteId = option.siteId
 		}
 
 		// 初始化日期为今天（如果没有传入日期）
@@ -466,8 +493,6 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-	background-color: #f8f8f8;
-	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 }
@@ -575,14 +600,5 @@ export default {
 	right: 0;
 	z-index: 100;
 	box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
-}
-
-.button-group {
-	display: flex;
-	gap: 20rpx;
-
-	.u-button {
-		flex: 1;
-	}
 }
 </style>
