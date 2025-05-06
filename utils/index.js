@@ -1,3 +1,4 @@
+import packageJson from '../package.json'
 // 手机号脱敏
 export function formatPhone(phone) {
 	if (phone && phone.length) {
@@ -11,9 +12,16 @@ export function redirectToLogin() {
 	uni.removeStorageSync('uni_id_token')
 	// uni.removeStorageSync('uni-id-pages-userInfo')
 	uni.setStorageSync('uni_id_token_expired', 0)
-	setTimeout(() => {
+	let t = setTimeout(() => {
+		clearTimeout(t)
+		console.log('跳转redirectToLogin')
 		uni.switchTab({
 			url: '/pages/about/index',
 		})
 	}, 100)
+}
+
+// 获取package.json的version
+export function getVersion() {
+	return packageJson.version
 }

@@ -1,7 +1,7 @@
 <template>
-	<view class="container">
+	<view class="container common-page-container">
 		<!-- 使用高级筛选组件 -->
-		<advanced-filter @search="loadStatistics"></advanced-filter>
+		<advanced-filter :defaultSiteId="siteId" @search="loadStatistics"></advanced-filter>
 
 		<!-- 统计结果 -->
 		<view class="content" v-if="statisticsList.length > 0">
@@ -14,7 +14,7 @@
 				<view class="result-table">
 					<view class="table-header">
 						<view class="th">工人</view>
-						<view class="th">总工时</view>
+						<view class="th text-right">总工时</view>
 					</view>
 					<view class="table-body">
 						<view class="table-row" v-for="item in statisticsList" :key="item._id">
@@ -22,7 +22,7 @@
 								<view class="avatar">{{ item.workerName.substring(0, 1) }}</view>
 								<text class="worker-name">{{ item.workerName }}</text>
 							</view>
-							<view class="total-hours">{{ formatHours(item.totalHours) }}</view>
+							<view class="total-hours text-right">{{ formatHours(item.totalHours) }}</view>
 						</view>
 					</view>
 				</view>
@@ -31,20 +31,28 @@
 
 		<!-- 空状态 -->
 		<view class="empty-wrapper" v-else>
-			<u-empty mode="data" text="暂无符合条件的工时记录"></u-empty>
+			<u-empty mode="data" text="暂无符合条件的工时统计"></u-empty>
 		</view>
 	</view>
 </template>
 
 <script>
 import dayjs from 'dayjs'
-
+import { redirectToLogin } from '@/utils'
 export default {
 	data() {
 		return {
+			siteId: '',
 			// 统计数据
 			statisticsList: [],
 			totalHours: 0,
+		}
+	},
+
+	onLoad(option) {
+		// 如果有工地ID参数，则保存
+		if (option.siteId) {
+			this.siteId = option.siteId
 		}
 	},
 
@@ -77,16 +85,15 @@ export default {
 
 				if (res.code === 0) {
 					this.statisticsList = res.data.list
-					this.totalHours = res.data.totalHours
+					this.totalHours = res.data.total?.totalHours || 0
 				} else {
 					throw new Error(res.message || '获取工时统计失败')
 				}
 			} catch (e) {
 				console.log('加载工时统计失败:', e)
-				uni.showToast({
-					title: e.message || '加载工时统计失败',
-					icon: 'none',
-				})
+				if (e.code === 401 || e.code === 403) {
+					redirectToLogin()
+				}
 			} finally {
 				this.$hideLoading()
 			}
@@ -138,8 +145,6 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-	background-color: #f7f8fa;
-	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 }
@@ -173,6 +178,7 @@ export default {
 
 .table-header {
 	display: flex;
+	align-items: center;
 	height: 88rpx;
 	background-color: #f7f8fa;
 	border-bottom: 1px solid #ebedf0;
@@ -180,8 +186,6 @@ export default {
 
 .th {
 	flex: 1;
-	display: flex;
-	align-items: center;
 	padding: 0 30rpx;
 	font-size: 28rpx;
 	color: #646566;
@@ -224,8 +228,6 @@ export default {
 
 .total-hours {
 	flex: 1;
-	display: flex;
-	align-items: center;
 	font-size: 28rpx;
 	color: #2979ff;
 	font-weight: 500;

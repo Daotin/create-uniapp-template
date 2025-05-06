@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { redirectToLogin } from '@/utils'
+import { redirectToLogin } from '@/utils/index.js'
 export default {
 	data() {
 		return {
@@ -99,7 +99,7 @@ export default {
 					this.$showToast.none(res.message || '获取工地列表失败')
 				}
 			} catch (e) {
-				console.error('获取工地列表异常:', e)
+				console.error('获取工地列表异常:', e, e.code)
 				if (e.code === 401 || e.code === 403) {
 					redirectToLogin()
 				}

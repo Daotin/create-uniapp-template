@@ -8,7 +8,7 @@
 				</view>
 				<view class="nickname" @click="goToUserInfo">{{ userInfo.nickname || '点击设置昵称' }}</view>
 			</view>
-			
+
 			<!-- 其他可能的"我的"页面功能入口 -->
 			<view class="menu-list">
 				<view class="menu-item" @click="goToUserInfo">
@@ -16,10 +16,13 @@
 					<text class="arrow">></text>
 				</view>
 				<view class="menu-item" @click="handleLogout">
-					<text style="color: red;">退出登录</text>
+					<text style="color: red">退出登录</text>
 					<text class="arrow">></text>
 				</view>
 				<!-- 可以添加更多菜单项 -->
+			</view>
+			<view class="version-box">
+				<text>当前版本：{{ version }}</text>
 			</view>
 		</template>
 		<template v-else>
@@ -34,29 +37,38 @@
 import storage from '@/utils/storage.js'
 import { mutations as uniIdMutations } from '@/uni_modules/uni-id-pages/common/store.js'
 import { confirm } from '@/utils/toast.js'
+import { getVersion } from '@/utils/index.js'
 export default {
 	data() {
 		return {
+			version: '',
 			hasLogin: false,
 			userInfo: {},
-			defaultAvatar: '/static/avatar.jpg'
+			defaultAvatar: '/static/avatar.jpg',
 		}
 	},
 	onLoad() {
-		this.checkLoginState()
+		this.init()
 	},
 	onShow() {
 		// 每次显示页面时检查登录状态
-		this.checkLoginState()
+		this.init()
 	},
 	methods: {
+		init() {
+			this.getVersion()
+			this.checkLoginState()
+		},
+		getVersion() {
+			this.version = getVersion()
+		},
 		checkLoginState() {
 			try {
 				// 检查是否有token和用户信息
 				const token = storage.getItem('uni_id_token')
 				const userInfoStorage = storage.getItem('uni-id-pages-userInfo')
 				this.hasLogin = Boolean(token && userInfoStorage)
-				
+
 				if (this.hasLogin) {
 					// 获取最新的用户信息
 					this.getUserInfo()
@@ -72,7 +84,7 @@ export default {
 				const userInfoStorage = storage.getItem('uni-id-pages-userInfo')
 				if (userInfoStorage) {
 					this.userInfo = JSON.parse(JSON.stringify(userInfoStorage))
-					
+
 					// 处理头像URL
 					if (this.userInfo.avatar_file && this.userInfo.avatar_file.url) {
 						this.userInfo.avatar = this.userInfo.avatar_file.url
@@ -87,12 +99,12 @@ export default {
 		},
 		handleLogin() {
 			uni.navigateTo({
-				url: `/uni_modules/uni-id-pages/pages/login/login-withoutpwd`
+				url: `/uni_modules/uni-id-pages/pages/login/login-withoutpwd`,
 			})
 		},
 		goToUserInfo() {
 			uni.navigateTo({
-				url: '/uni_modules/uni-id-pages/pages/userinfo/userinfo'
+				url: '/uni_modules/uni-id-pages/pages/userinfo/userinfo',
 			})
 		},
 		async handleLogout() {
@@ -100,37 +112,37 @@ export default {
 			await uniIdMutations.logout()
 			this.hasLogin = false
 		},
-	}
+	},
 }
 </script>
 
 <style lang="scss">
 .my-page {
 	padding: 30rpx;
-	
+
 	.login-container {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		height: 80vh;
 	}
-	
+
 	.user-info {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		padding: 40rpx 0;
-		
+
 		.avatar-wrapper {
 			margin-bottom: 20rpx;
 		}
-		
+
 		.avatar {
 			width: 150rpx;
 			height: 150rpx;
 			border-radius: 50%;
 		}
-		
+
 		.nickname {
 			font-size: 32rpx;
 			font-weight: bold;
@@ -138,24 +150,29 @@ export default {
 			margin-top: 10rpx;
 		}
 	}
-	
+
 	.menu-list {
 		width: 100%;
 		background-color: #ffffff;
 		border-radius: 12rpx;
 		margin-top: 30rpx;
-		
+
 		.menu-item {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 			padding: 30rpx;
 			border-bottom: 1rpx solid #eee;
-			
+
 			.arrow {
 				color: #999;
 			}
 		}
+	}
+	.version-box {
+		margin-top: 30rpx;
+		font-size: 24rpx;
+		color: #999;
 	}
 }
 </style>

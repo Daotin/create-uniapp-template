@@ -31,17 +31,34 @@
 // }
 
 page,
+block,
 view,
-text,
-image,
-navigator,
-input,
-textarea,
-button,
 scroll-view,
 swiper,
-swiper-item,
-picker {
+movable-view,
+icon,
+text,
+progress,
+button,
+checkbox,
+form,
+input,
+label,
+picker,
+picker-view,
+radio,
+slider,
+switch,
+textarea,
+navigator,
+audio,
+image,
+video,
+map,
+canvas,
+contact-button,
+cover-image,
+cover-view {
 	box-sizing: border-box;
 }
 

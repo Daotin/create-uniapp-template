@@ -9,7 +9,9 @@ module.exports = {
 		const token = this.getUniIdToken()
 
 		if (!token) {
-			throw new Error('用户未登录，请先登录')
+			const err = new Error('用户未登录，请先登录')
+			err.code = 401
+			throw err
 		}
 
 		// 校验token
@@ -21,7 +23,9 @@ module.exports = {
 		// 校验token
 		const checkTokenRes = await uniID.checkToken(token)
 		if (checkTokenRes.errCode) {
-			throw new Error('登录状态无效，请重新登录1')
+			const err = new Error('登录状态失效，请重新登录')
+			err.code = 403
+			throw err
 		}
 
 		// 将用户ID存入上下文
