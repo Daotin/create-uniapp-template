@@ -1,0 +1,138 @@
+// 全局字体放大比例
+$font-scale: 1.2;
+
+// 基础字体大小
+page {
+	font-size: calc(32rpx * #{$font-scale});
+}
+
+// 修改所有文本组件的基础字体大小
+text,
+view,
+navigator,
+button,
+input,
+textarea,
+label {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+}
+
+// 按钮样式调整
+.u-button {
+	font-size: calc(32rpx * #{$font-scale}) !important;
+	height: calc(96rpx * #{$font-scale}) !important;
+	line-height: calc(96rpx * #{$font-scale}) !important;
+}
+
+// 底部按钮区域调整
+.common-btm-btn {
+	padding: calc(70rpx * #{$font-scale}) calc(32rpx * #{$font-scale});
+}
+
+// uView组件库中的字体大小调整
+.u-cell__title {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+}
+
+.u-cell__value {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+}
+
+.u-form-item__body__left__content__label {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+}
+
+.u-input__content__field-wrapper__field {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+	min-height: calc(40rpx * #{$font-scale}) !important;
+}
+
+.u-tabs__wrapper__nav__item__text {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+}
+
+.u-empty__text {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+}
+
+.u-modal__title {
+	font-size: calc(32rpx * #{$font-scale}) !important;
+}
+
+.u-modal__content {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+}
+
+// 特定页面元素字体大小
+.site-detail {
+	.site-name {
+		font-size: calc(36rpx * #{$font-scale}) !important;
+	}
+
+	.site-address,
+	.site-remark {
+		font-size: calc(28rpx * #{$font-scale}) !important;
+	}
+
+	.action-text {
+		font-size: calc(32rpx * #{$font-scale}) !important;
+	}
+
+	.card-header {
+		font-size: calc(32rpx * #{$font-scale}) !important;
+	}
+
+	.view-all {
+		font-size: calc(28rpx * #{$font-scale}) !important;
+	}
+
+	.worker-name {
+		font-size: calc(32rpx * #{$font-scale}) !important;
+	}
+
+	.worker-hours {
+		font-size: calc(24rpx * #{$font-scale}) !important;
+	}
+}
+
+// 工地/工人列表项
+.list-item {
+	.site-name,
+	.worker-name {
+		font-size: calc(32rpx * #{$font-scale}) !important;
+	}
+
+	.info-text {
+		font-size: calc(28rpx * #{$font-scale}) !important;
+	}
+}
+
+// 一些常用的标题类
+.site-name,
+.worker-name,
+.card-header {
+	font-size: calc(32rpx * #{$font-scale}) !important;
+}
+
+// 适配小字体
+.small-text,
+.info-text,
+.worker-hours {
+	font-size: calc(24rpx * #{$font-scale}) !important;
+}
+
+// 保持图标大小
+uni-icon,
+.u-icon {
+	font-size: inherit;
+}
+
+// 表单样式调整
+.u-form-item {
+	padding: calc(26rpx * #{$font-scale}) 0;
+}
+
+// 文本域样式
+.u-textarea {
+	font-size: calc(28rpx * #{$font-scale}) !important;
+}

@@ -31,13 +31,13 @@ export default {
 
 		uni.$on('uni-id-pages-login-success', () => {
 			console.log('==== 登录成功 ====')
-      this.$showToast.success('登录成功')
+			this.$showToast.success('登录成功')
 
-      // setTimeout(() => {
-      //   uni.switchTab({
-      //     url: '/pages/about/index',
-      //   })
-      // }, 1000);
+			// setTimeout(() => {
+			//   uni.switchTab({
+			//     url: '/pages/about/index',
+			//   })
+			// }, 1000);
 		})
 
 		uni.$on('uni-id-pages-logout', () => {
@@ -63,15 +63,23 @@ export default {
 @import 'uview-ui/index.scss';
 
 @import './style/base.scss';
+// 引入字体缩放样式
+@import './style/font-scale.scss';
 
 page {
 	background-color: #f7f9fb;
 	height: 100%;
 	box-sizing: border-box;
+	padding: 0; // 确保没有默认padding
 
 	/* iOS < 11.2 */
 	padding-bottom: constant(safe-area-inset-bottom);
 	/* iOS >= 11.2, Android */
 	padding-bottom: env(safe-area-inset-bottom);
+}
+
+// 增大内容区域padding
+.common-page-container {
+	padding: 24rpx !important;
 }
 </style>
