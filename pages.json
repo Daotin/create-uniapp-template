@@ -5,19 +5,6 @@
 	},
 	"pages": [
 		//pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		// {
-		// 	"path": "pages/index/index",
-		// 	"style": {
-		// 		"navigationBarTitleText": "首页",
-		// 		"navigationStyle": "custom"
-		// 	}
-		// },
-		// {
-		// 	"path": "pages/about/index",
-		// 	"style": {
-		// 		"navigationBarTitleText": "我的"
-		// 	}
-		// },
 		{
 			"path": "pages/tabbar/site/index",
 			"style": {
@@ -32,20 +19,20 @@
 				"enablePullDownRefresh": true
 			}
 		},
-		{
-			"path": "pages/tabbar/hour/index",
-			"style": {
-				"navigationBarTitleText": "工时列表",
-				"enablePullDownRefresh": true
-			}
-		},
-		{
-			"path": "pages/tabbar/stats/stats",
-			"style": {
-				"navigationBarTitleText": "工时统计",
-				"enablePullDownRefresh": true
-			}
-		},
+		// {
+		// 	"path": "pages/tabbar/hour/index",
+		// 	"style": {
+		// 		"navigationBarTitleText": "工时列表",
+		// 		"enablePullDownRefresh": true
+		// 	}
+		// },
+		// {
+		// 	"path": "pages/tabbar/stats/stats",
+		// 	"style": {
+		// 		"navigationBarTitleText": "工时统计",
+		// 		"enablePullDownRefresh": true
+		// 	}
+		// },
 		{
 			"path": "pages/about/index",
 			"style": {
@@ -211,6 +198,20 @@
 					"style": {
 						"navigationBarTitleText": "记工时"
 					}
+				},
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "工时列表",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "stats",
+					"style": {
+						"navigationBarTitleText": "工时统计",
+						"enablePullDownRefresh": true
+					}
 				}
 			]
 		}
@@ -245,12 +246,12 @@
 			// 	"iconPath": "/static/images/tabbar/hour.png",
 			// 	"selectedIconPath": "/static/images/tabbar/hour-active.png"
 			// },
-			{
-				"pagePath": "pages/tabbar/stats/stats",
-				"text": "工时统计",
-				"iconPath": "/static/images/tabbar/stats.png",
-				"selectedIconPath": "/static/images/tabbar/stats-active.png"
-			},
+			// {
+			// 	"pagePath": "pages/tabbar/stats/stats",
+			// 	"text": "工时统计",
+			// 	"iconPath": "/static/images/tabbar/stats.png",
+			// 	"selectedIconPath": "/static/images/tabbar/stats-active.png"
+			// },
 			{
 				"pagePath": "pages/about/index",
 				"text": "我的",
