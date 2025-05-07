@@ -62,6 +62,7 @@ export default {
 	},
 	onShow() {
 		// 如果从新增页返回，刷新列表
+		console.log('worker onshow')
 		uni.$on('needRefresh', this.getWorkerList)
 	},
 	onUnload() {
@@ -74,6 +75,7 @@ export default {
 	methods: {
 		// 获取工人列表
 		async getWorkerList() {
+			console.log('worker--getWorkerList')
 			try {
 				this.loading = true
 				console.log('请求参数:', { keyword: this.keyword })

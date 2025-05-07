@@ -125,10 +125,12 @@ export default {
 				if (res.code === 0) {
 					this.$showToast.success('删除成功')
 
+					uni.$emit('needRefresh')
+
 					// 等待提示显示后返回上一页
 					setTimeout(() => {
 						uni.navigateBack()
-					}, 1500)
+					}, 500)
 				} else {
 					this.$showToast.none(res.message || '删除失败')
 				}
