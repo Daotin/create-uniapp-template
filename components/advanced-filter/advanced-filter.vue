@@ -152,53 +152,39 @@ export default {
 	},
 
 	created() {
-		this.loadFilterOptions()
+		this.loadSiteOptions()
+		// 初始化时不再加载所有工人，等待工地选择后再加载
+		// 设置默认日期范围文本
+		this.updateDateRangeText()
 	},
 
 	methods: {
-		// 加载筛选选项
-		async loadFilterOptions() {
-			this.$showLoading()
-
+		// 加载工地筛选选项
+		async loadSiteOptions() {
+			this.$showLoading({ title: '加载工地...' })
 			try {
-				// 加载工地列表
 				const siteService = uniCloud.importObject('site-service')
 				const siteRes = await siteService.getSiteList({ keyword: '' })
-
 				console.log('siteRes', siteRes)
-
 				if (siteRes.code === 0 && siteRes.data.list) {
 					this.siteFilterOptions = siteRes.data.list
-
-					// 设置默认选中的工地
+					// 设置默认选中的工地并加载对应工人
 					if (this.defaultSiteId) {
 						const site = siteRes.data.list.find(item => item._id === this.defaultSiteId)
 						if (site) {
 							this.selectedSite = { _id: site._id, name: site.name }
+							await this.loadWorkersBySite(this.defaultSiteId) // 加载该工地的工人
 						}
+					} else {
+						// 如果没有默认工地，清空工人列表和选中状态
+						this.workerFilterOptions = []
+						this.selectedWorkers = []
 					}
 				}
-
-				// 加载工人列表
-				const workerService = uniCloud.importObject('worker-service')
-				const workerRes = await workerService.getWorkerList({ keyword: '' })
-
-				if (workerRes.code === 0 && workerRes.data.list) {
-					this.workerFilterOptions = workerRes.data.list.map(item => {
-						item.checked = false
-						return item
-					})
-
-					// 初始化工人选择状态
-					this.initWorkerSelection()
-				}
-
-				// 设置默认日期范围文本
-				this.updateDateRangeText()
 			} catch (e) {
-				console.error('加载筛选选项失败:', e)
+				console.error('加载工地选项失败:', e)
 				uni.showToast({
-					title: '加载筛选选项失败',
+					title: '加载工地选项失败',
 					icon: 'none',
 				})
 			} finally {
@@ -206,24 +192,87 @@ export default {
 			}
 		},
 
+		// 根据工地ID加载工人筛选选项
+		async loadWorkersBySite(siteId) {
+			if (!siteId) {
+				this.workerFilterOptions = []
+				this.selectedWorkers = []
+				this.initWorkerSelection() // 清空工人选择时也应初始化
+				return
+			}
+			this.$showLoading({ title: '加载工人...' })
+			try {
+				const workerService = uniCloud.importObject('worker-service')
+				const workerRes = await workerService.getWorkersBySiteId({ siteId })
+				console.log('workerRes by siteId', siteId, workerRes)
+				if (workerRes.code === 0 && workerRes.data.list) {
+					this.workerFilterOptions = workerRes.data.list.map(item => {
+						item.checked = false // 重置选中状态
+						return item
+					})
+					// 初始化工人选择状态 (加载默认选中)
+					this.initWorkerSelection()
+					// 如果之前有选中的工人，需要根据新的工人列表重新匹配，但这里通常是清空后重新选择
+					// this.updateSelectedWorkers() // 确保 selectedWorkers 也更新
+				} else {
+					this.workerFilterOptions = []
+					this.$showToast.none(workerRes.message || '加载工人列表失败')
+				}
+			} catch (e) {
+				console.error('加载工人列表失败:', e)
+				this.$showToast.none('加载工人列表失败')
+				this.workerFilterOptions = []
+			} finally {
+				this.$hideLoading()
+				// 加载完工人后，确保 selectedWorkers 与实际勾选一致
+				this.updateSelectedWorkers()
+				this.emitFilterChange() // 工人列表变化也触发一次change
+			}
+		},
+
 		// 初始化工人选择状态
 		initWorkerSelection() {
+			// 如果没有工人选项，直接返回
+			if (!this.workerFilterOptions || this.workerFilterOptions.length === 0) {
+				this.selectedWorkers = []
+				return
+			}
 			this.workerFilterOptions.forEach(worker => {
-				if (this.defaultWorkerIds.includes(worker._id)) {
-					this.$set(worker, 'checked', true)
-				}
+				// 检查 defaultWorkerIds 中是否包含当前工人ID，且当前选定工地与默认工地ID一致时才自动勾选
+				// 或者，如果不是初始加载，则根据 selectedWorkers 恢复勾选状态 (适用于切换工地后重新打开popup)
+				const isDefaultWorker =
+					this.defaultWorkerIds.includes(worker._id) && this.selectedSite._id === this.defaultSiteId
+				const isPreviouslySelected = this.selectedWorkers.some(sw => sw._id === worker._id)
+
+				this.$set(worker, 'checked', isDefaultWorker || isPreviouslySelected)
 			})
+			this.updateSelectedWorkers() // 更新一下selectedWorkers数组
 		},
 
 		// 工地筛选确认
-		onSiteFilterConfirm(e) {
-			console.log(e)
+		async onSiteFilterConfirm(e) {
+			console.log('工地筛选确认:', e)
+			let newSiteId = ''
+			let newSiteName = ''
 			if (e.length > 0) {
-				const siteId = e[0].value
-				const site = this.siteFilterOptions.find(item => item._id === siteId)
-				this.selectedSite = { _id: siteId, name: site ? site.name : '' }
+				newSiteId = e[0].value
+				const site = this.siteFilterOptions.find(item => item._id === newSiteId)
+				newSiteName = site ? site.name : ''
 			}
 
+			// 只有当工地实际发生变化时才重新加载工人并清空工人选择
+			if (this.selectedSite._id !== newSiteId) {
+				this.selectedSite = { _id: newSiteId, name: newSiteName }
+				this.selectedWorkers = [] // 清空已选工人
+				this.clearWorkerSelectionInternal() // 清空勾选状态
+				await this.loadWorkersBySite(newSiteId) // 根据新工地加载工人
+			} else if (!newSiteId) {
+				// 如果清空了工地选择
+				this.selectedSite = {}
+				this.selectedWorkers = []
+				this.workerFilterOptions = []
+				this.clearWorkerSelectionInternal()
+			}
 			// 触发筛选变更事件
 			this.emitFilterChange()
 		},
@@ -231,6 +280,7 @@ export default {
 		// 切换单个工人选中状态
 		toggleWorker(worker) {
 			this.$set(worker, 'checked', !worker.checked)
+			// this.updateSelectedWorkers() // 实时更新selectedWorkers，或者在confirm时更新
 		},
 
 		// 切换全选状态
@@ -239,10 +289,17 @@ export default {
 			this.workerFilterOptions.forEach(worker => {
 				this.$set(worker, 'checked', !flag)
 			})
+			// this.updateSelectedWorkers()
 		},
 
-		// 清空工人选择
+		// 清空工人选择（用户操作）
 		clearWorkerSelection() {
+			this.clearWorkerSelectionInternal()
+			// this.updateSelectedWorkers() // 立即更新，或者在confirm时更新
+		},
+
+		// 内部清空工人勾选状态的方法
+		clearWorkerSelectionInternal() {
 			this.workerFilterOptions.forEach(worker => {
 				this.$set(worker, 'checked', false)
 			})
@@ -322,8 +379,9 @@ export default {
 
 		reset() {
 			this.selectedSite = {}
-			this.clearWorkerSelection()
-			this.updateSelectedWorkers()
+			this.clearWorkerSelectionInternal() // 使用内部方法清空勾选
+			this.updateSelectedWorkers() // 更新selectedWorkers数组
+			this.workerFilterOptions = [] // 重置时清空工人选项
 			this.startDate = ''
 			this.endDate = ''
 			this.dateRangeText = ''
