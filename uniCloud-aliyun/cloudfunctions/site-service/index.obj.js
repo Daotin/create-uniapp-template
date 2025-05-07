@@ -168,6 +168,10 @@ module.exports = {
 		const { siteId } = params
 		const user_id = this.context.uid
 
+		// 添加调试日志
+		console.log('删除工地，参数:', params)
+		console.log('当前用户ID:', user_id)
+
 		if (!siteId) {
 			return {
 				code: -1,
@@ -175,75 +179,84 @@ module.exports = {
 			}
 		}
 
-		// 事务操作
-		const transaction = await db.startTransaction()
 		try {
-			// 检查工地是否存在且属于当前用户
-			const siteInfo = await transaction
+			// 1. 先检查工地是否存在且属于当前用户
+			const siteInfo = await db
 				.collection('sites')
 				.doc(siteId)
 				.get()
-				.then(res => res.data[0])
+				.then(res => {
+					console.log('检查工地是否存在:', JSON.stringify(res.data))
+					return res.data && res.data.length > 0 ? res.data[0] : null
+				})
 
 			if (!siteInfo) {
-				await transaction.rollback()
+				console.log('工地不存在')
 				return {
 					code: -1,
 					message: '工地不存在',
 				}
 			}
 
+			console.log('找到工地信息:', JSON.stringify(siteInfo))
+
+			// 2. 检查用户是否有权限操作
 			if (siteInfo.user_id !== user_id) {
-				await transaction.rollback()
+				console.log('无权操作此数据')
 				return {
 					code: -1,
 					message: '无权操作此数据',
 				}
 			}
 
-			// 1. 检查工地是否关联有工人
-			const workerCount = await transaction
+			// 3. 检查工地是否关联有工人
+			const workerCount = await db
 				.collection('site_worker')
 				.where({ siteId, user_id })
 				.count()
-				.then(res => res.total)
+				.then(res => {
+					console.log('工地关联工人数量:', res.total)
+					return res.total
+				})
 
 			if (workerCount > 0) {
-				await transaction.rollback()
+				console.log('工地关联了工人，无法删除')
 				return {
 					code: -1,
 					message: `该工地关联了${workerCount}名工人，请先移除关联关系再删除`,
 				}
 			}
 
-			// 2. 检查工地是否有工时记录
-			const workHourCount = await transaction
+			// 4. 检查工地是否有工时记录
+			const workHourCount = await db
 				.collection('work_hours')
 				.where({ siteId, user_id })
 				.count()
-				.then(res => res.total)
+				.then(res => {
+					console.log('工地工时记录数量:', res.total)
+					return res.total
+				})
 
 			if (workHourCount > 0) {
-				await transaction.rollback()
+				console.log('工地有工时记录，无法删除')
 				return {
 					code: -1,
 					message: `该工地有${workHourCount}条工时记录，无法删除`,
 				}
 			}
 
-			// 3. 删除工地
-			await transaction.collection('sites').doc(siteId).remove()
-
-			// 提交事务
-			await transaction.commit()
+			// 5. 删除工地 - 不使用事务，简化操作
+			console.log('准备删除工地，ID:', siteId)
+			await db.collection('sites').doc(siteId).remove()
+			console.log('工地删除成功')
 
 			return {
 				code: 0,
 				message: '删除成功',
 			}
 		} catch (error) {
-			await transaction.rollback()
 			console.error('[deleteSite error]', error)
+			console.log('删除工地发生错误，错误详情:', error.message, '错误堆栈:', error.stack)
 			return {
 				code: -1,
 				message: '删除失败：' + error.message,
@@ -533,6 +546,10 @@ module.exports = {
 		const { siteId, workerId } = params
 		const user_id = this.context.uid
 
+		// 添加调试日志
+		console.log('从工地移除工人，参数:', params)
+		console.log('当前用户ID:', user_id)
+
 		if (!siteId) {
 			return {
 				code: -1,
@@ -556,60 +573,91 @@ module.exports = {
 			}
 		}
 
-		// 查询要删除的关联记录，确保只能删除自己的数据
-		const relationRecords = await db
-			.collection('site_worker')
-			.where({
-				siteId,
-				workerId: dbCmd.in(workerIds),
-				user_id, // 添加用户ID限制
-			})
-			.get()
-			.then(res => res.data)
-
-		if (relationRecords.length === 0) {
-			return {
-				code: -1,
-				message: '未找到指定的关联关系或无权操作',
-			}
-		}
-
-		// 检查这些工人是否有工时记录
-		for (const worker of relationRecords) {
-			const workHourCount = await db
-				.collection('work_hours')
+		try {
+			// 查询要删除的关联记录，确保只能删除自己的数据
+			const relationRecords = await db
+				.collection('site_worker')
 				.where({
 					siteId,
-					workerId: worker.workerId,
-					user_id,
+					workerId: dbCmd.in(workerIds),
+					user_id, // 添加用户ID限制
 				})
-				.count()
-				.then(res => res.total)
+				.get()
+				.then(res => res.data)
 
-			if (workHourCount > 0) {
+			console.log('查询到的关联记录:', JSON.stringify(relationRecords))
+
+			if (relationRecords.length === 0) {
 				return {
 					code: -1,
-					message: `工人ID为 ${worker.workerId} 的工人在该工地有工时记录，无法移除`,
+					message: '未找到指定的关联关系或无权操作',
 				}
 			}
-		}
 
-		// 删除关联关系
-		const relationIds = relationRecords.map(item => item._id)
-		await db
-			.collection('site_worker')
-			.where({
-				_id: dbCmd.in(relationIds),
-				user_id, // 添加用户ID限制
-			})
-			.remove()
+			let totalWorkHours = 0
 
-		return {
-			code: 0,
-			message: '移除成功',
-			data: {
-				successCount: relationIds.length,
-			},
+			// 查询这些工人的工时记录，并记录数量（但不阻止删除）
+			for (const worker of relationRecords) {
+				const workHourCount = await db
+					.collection('work_hours')
+					.where({
+						siteId,
+						workerId: worker.workerId,
+						user_id,
+					})
+					.count()
+					.then(res => res.total)
+
+				console.log(`工人ID ${worker.workerId} 的工时记录数量:`, workHourCount)
+				totalWorkHours += workHourCount
+			}
+
+			// 先删除关联的工时记录（如果有）
+			if (totalWorkHours > 0) {
+				console.log('需要删除工时记录，总数:', totalWorkHours)
+
+				// 删除工时记录
+				for (const worker of relationRecords) {
+					const deleteResult = await db
+						.collection('work_hours')
+						.where({
+							siteId,
+							workerId: worker.workerId,
+							user_id,
+						})
+						.remove()
+
+					console.log(`删除工人ID ${worker.workerId} 的工时记录结果:`, deleteResult)
+				}
+			}
+
+			// 删除关联关系
+			const relationIds = relationRecords.map(item => item._id)
+			const deleteRelationResult = await db
+				.collection('site_worker')
+				.where({
+					_id: dbCmd.in(relationIds),
+					user_id, // 添加用户ID限制
+				})
+				.remove()
+
+			console.log('删除关联关系结果:', deleteRelationResult)
+
+			return {
+				code: 0,
+				message: totalWorkHours > 0 ? `移除成功，同时删除了${totalWorkHours}条工时记录` : '移除成功',
+				data: {
+					successCount: relationIds.length,
+					deletedWorkHours: totalWorkHours,
+				},
+			}
+		} catch (error) {
+			console.error('[removeWorkerFromSite error]', error)
+			console.log('移除工人时发生错误，错误详情:', error.message, '错误堆栈:', error.stack)
+			return {
+				code: -1,
+				message: '移除失败：' + error.message,
+			}
 		}
 	},
 }

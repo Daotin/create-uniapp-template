@@ -22,22 +22,26 @@
 			<u-empty v-if="list.length === 0 && !loading" text="暂无工地数据" mode="list"></u-empty>
 
 			<view v-else>
-				<view v-for="(item, index) in list" :key="index" class="list-item" @click="goDetail(item._id)">
-					<view class="item-header">
+				<view v-for="(item, index) in list" :key="index" class="list-item">
+					<view class="item-header" @click="goDetail(item._id)">
 						<view class="site-name">{{ item.name }}</view>
 					</view>
-					<view class="item-content">
+					<view class="item-content" @click="goDetail(item._id)">
 						<view class="info-row" v-if="item.address">
-							<!-- <view class="info-icon">
-								<u-icon name="map" color="#969799" size="16"></u-icon>
-							</view> -->
 							<view class="info-text">📍 {{ item.address }}</view>
 						</view>
 						<view class="info-row" v-if="item.remark">
-							<!-- <view class="info-icon">
-								<u-icon name="file-text" color="#969799" size="16"></u-icon>
-							</view> -->
 							<view class="info-text">📄 {{ item.remark }}</view>
+						</view>
+					</view>
+					<view class="item-actions">
+						<view class="action-btn" @click="goDetail(item._id)">
+							<u-icon name="file-text" color="#2979ff" size="20"></u-icon>
+							<text>详情</text>
+						</view>
+						<view class="action-btn" @click="goWorkTime(item._id)">
+							<u-icon name="clock" color="#2979ff" size="20"></u-icon>
+							<text>记工时</text>
 						</view>
 					</view>
 				</view>
@@ -128,8 +132,17 @@ export default {
 
 		// 跳转到详情页
 		goDetail(id) {
+			console.log('跳转到工地详情页，传递的ID:', id)
 			uni.navigateTo({
 				url: `/pages/site/detail?id=${id}`,
+			})
+		},
+
+		// 跳转到记工时页面
+		goWorkTime(id) {
+			console.log('直接跳转到记工时页面，工地ID:', id)
+			uni.navigateTo({
+				url: `/pages/worker-hour/add?siteId=${id}`,
 			})
 		},
 
@@ -166,12 +179,12 @@ export default {
 		margin-bottom: 24rpx;
 		border-radius: 16rpx;
 		overflow: hidden;
-		box-shadow: 0 4rpx 24rpx rgba(100, 101, 102, 0.08);
+		box-shadow: 0 2rpx 12rpx rgba(100, 101, 102, 0.08);
 
 		.item-header {
 			background-color: #2979ff;
 			color: white;
-			padding: 20rpx 32rpx;
+			padding: 16rpx 24rpx;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -183,26 +196,44 @@ export default {
 		}
 
 		.item-content {
-			padding: 24rpx 32rpx;
+			padding: 20rpx 24rpx;
 
 			.info-row {
 				display: flex;
-				margin-bottom: 16rpx;
+				margin-bottom: 12rpx;
 				align-items: center;
 
 				&:last-child {
 					margin-bottom: 0;
 				}
 
-				.info-icon {
-					margin-right: 16rpx;
-					color: #969799;
-					font-size: 28rpx;
-				}
-
 				.info-text {
 					font-size: 28rpx;
 					color: #646566;
+				}
+			}
+		}
+
+		.item-actions {
+			display: flex;
+			border-top: 1rpx solid #ebedf0;
+
+			.action-btn {
+				flex: 1;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				padding: 16rpx 0;
+				color: #2979ff;
+				font-size: 26rpx;
+
+				&:first-child {
+					border-right: 1rpx solid #ebedf0;
+				}
+
+				text {
+					margin-left: 8rpx;
 				}
 			}
 		}

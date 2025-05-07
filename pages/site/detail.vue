@@ -92,11 +92,15 @@ export default {
 		}
 	},
 	onLoad(option) {
+		console.log('进入工地详情页，接收到的参数:', option)
+
 		if (option.id) {
 			this.siteId = option.id
+			console.log('成功设置工地ID:', this.siteId)
 			this.getSiteDetail()
 			this.getSiteWorkers()
 		} else {
+			console.log('未找到工地ID参数')
 			this.$showToast.none('参数错误')
 			setTimeout(() => {
 				uni.navigateBack()
@@ -178,6 +182,8 @@ export default {
 		async deleteSite() {
 			try {
 				this.$showLoading('删除中...')
+
+				console.log('准备删除工地，工地ID:', this.siteId, '类型:', typeof this.siteId)
 
 				// 直接调用云对象
 				const siteService = uniCloud.importObject('site-service')
