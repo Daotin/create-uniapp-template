@@ -161,7 +161,7 @@ export default {
 	methods: {
 		// 加载工地筛选选项
 		async loadSiteOptions() {
-			this.$showLoading({ title: '加载工地...' })
+			this.$showLoading('加载工地...')
 			try {
 				const siteService = uniCloud.importObject('site-service')
 				const siteRes = await siteService.getSiteList({ keyword: '' })
@@ -183,10 +183,7 @@ export default {
 				}
 			} catch (e) {
 				console.error('加载工地选项失败:', e)
-				uni.showToast({
-					title: '加载工地选项失败',
-					icon: 'none',
-				})
+				this.$showToast.none('加载工地选项失败')
 			} finally {
 				this.$hideLoading()
 			}
@@ -200,10 +197,10 @@ export default {
 				this.initWorkerSelection() // 清空工人选择时也应初始化
 				return
 			}
-			this.$showLoading({ title: '加载工人...' })
+			this.$showLoading('加载工人...')
 			try {
-				const workerService = uniCloud.importObject('worker-service')
-				const workerRes = await workerService.getWorkersBySiteId({ siteId })
+				const siteService = uniCloud.importObject('site-service')
+				const workerRes = await siteService.getSiteWorkers({ siteId })
 				console.log('workerRes by siteId', siteId, workerRes)
 				if (workerRes.code === 0 && workerRes.data.list) {
 					this.workerFilterOptions = workerRes.data.list.map(item => {
@@ -225,7 +222,7 @@ export default {
 			} finally {
 				this.$hideLoading()
 				// 加载完工人后，确保 selectedWorkers 与实际勾选一致
-				this.updateSelectedWorkers()
+				this.updateSelectedWorkers() // 更新selectedWorkers数组
 				this.emitFilterChange() // 工人列表变化也触发一次change
 			}
 		},

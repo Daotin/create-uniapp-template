@@ -169,73 +169,73 @@
 }
 
 // 字体大小 f12 --> f48
-@mixin font($i) {
-	@if $i <= 48 {
-		.f#{$i} {
-			font-size: $i + 0rpx;
-		}
-		@include font($i + 2);
-	}
-}
+// @mixin font($i) {
+// 	@if $i <= 48 {
+// 		.f#{$i} {
+// 			font-size: $i + 0rpx;
+// 		}
+// 		@include font($i + 2);
+// 	}
+// }
 
-@include font(12);
+// @include font(12);
 
-// 通用 margin 混合宏
-@mixin margin($type, $i) {
-	@if $i <= 200 {
-		@if $type == top {
-			.mt-#{$i} {
-				margin-top: $i + 0rpx;
-			}
-		} @else if $type == bottom {
-			.mb-#{$i} {
-				margin-bottom: $i + 0rpx;
-			}
-		} @else if $type == left {
-			.ml-#{$i} {
-				margin-left: $i + 0rpx;
-			}
-		} @else if $type == right {
-			.mr-#{$i} {
-				margin-right: $i + 0rpx;
-			}
-		}
-		@include margin($type, $i + 2);
-	}
-}
+// // 通用 margin 混合宏
+// @mixin margin($type, $i) {
+// 	@if $i <= 200 {
+// 		@if $type == top {
+// 			.mt-#{$i} {
+// 				margin-top: $i + 0rpx;
+// 			}
+// 		} @else if $type == bottom {
+// 			.mb-#{$i} {
+// 				margin-bottom: $i + 0rpx;
+// 			}
+// 		} @else if $type == left {
+// 			.ml-#{$i} {
+// 				margin-left: $i + 0rpx;
+// 			}
+// 		} @else if $type == right {
+// 			.mr-#{$i} {
+// 				margin-right: $i + 0rpx;
+// 			}
+// 		}
+// 		@include margin($type, $i + 2);
+// 	}
+// }
 
-// 生成各种边距类
-@include margin(top, 12);
-@include margin(bottom, 12);
-@include margin(left, 12);
-@include margin(right, 12);
+// // 生成各种边距类
+// @include margin(top, 12);
+// @include margin(bottom, 12);
+// @include margin(left, 12);
+// @include margin(right, 12);
 
-// 通用 padding 混合宏
-@mixin padding($type, $i) {
-	@if $i <= 200 {
-		@if $type == top {
-			.pt-#{$i} {
-				padding-top: $i + 0rpx;
-			}
-		} @else if $type == bottom {
-			.pb-#{$i} {
-				padding-bottom: $i + 0rpx;
-			}
-		} @else if $type == left {
-			.pl-#{$i} {
-				padding-left: $i + 0rpx;
-			}
-		} @else if $type == right {
-			.pr-#{$i} {
-				padding-right: $i + 0rpx;
-			}
-		}
-		@include padding($type, $i + 2);
-	}
-}
+// // 通用 padding 混合宏
+// @mixin padding($type, $i) {
+// 	@if $i <= 200 {
+// 		@if $type == top {
+// 			.pt-#{$i} {
+// 				padding-top: $i + 0rpx;
+// 			}
+// 		} @else if $type == bottom {
+// 			.pb-#{$i} {
+// 				padding-bottom: $i + 0rpx;
+// 			}
+// 		} @else if $type == left {
+// 			.pl-#{$i} {
+// 				padding-left: $i + 0rpx;
+// 			}
+// 		} @else if $type == right {
+// 			.pr-#{$i} {
+// 				padding-right: $i + 0rpx;
+// 			}
+// 		}
+// 		@include padding($type, $i + 2);
+// 	}
+// }
 
-// 生成各种边距类
-@include padding(top, 12);
-@include padding(bottom, 12);
-@include padding(left, 12);
-@include padding(right, 12);
+// // 生成各种边距类
+// @include padding(top, 12);
+// @include padding(bottom, 12);
+// @include padding(left, 12);
+// @include padding(right, 12);
