@@ -27,9 +27,9 @@
 				<u-cell-item title="工时单位" :arrow="false" :border-bottom="true">
 					<text slot="icon" class="required-icon">*</text>
 					<view slot="right-icon" class="radio-group">
-						<u-radio-group v-model="timeUnit" placement="row">
-							<u-radio :name="1" shape="circle">按天</u-radio>
-							<u-radio :name="2" shape="circle">按小时</u-radio>
+						<u-radio-group v-model="timeUnit" placement="row" @change="watchTimeUnit">
+							<u-radio name="day" shape="circle">按天</u-radio>
+							<u-radio name="hour" shape="circle">按小时</u-radio>
 						</u-radio-group>
 					</view>
 				</u-cell-item>
@@ -38,8 +38,16 @@
 				<u-cell-item title="工时数量" :arrow="false" :border-bottom="false">
 					<text slot="icon" class="required-icon">*</text>
 					<view slot="right-icon" class="number-input">
-						<u-input v-model="hoursValue" type="number" :clearable="false" :border="false"></u-input>
-						<text class="unit-text">{{ timeUnit === 1 ? '天' : '小时' }}</text>
+						<u-number-box
+							v-model="hoursValue"
+							:min="0"
+							:max="timeUnit === 'day' ? 1 : 24"
+							:step="0.5"
+							:positive-integer="false"
+							disabled-input
+							:input-width="120"
+							@change="onHoursChange"></u-number-box>
+						<text class="unit-text">{{ timeUnit === 'day' ? '天' : '小时' }}</text>
 					</view>
 				</u-cell-item>
 			</u-cell-group>
@@ -146,8 +154,8 @@ export default {
 			showDatePicker: false,
 
 			// 工时相关
-			timeUnit: 1, // 1-按天, 2-按小时
-			hoursValue: '1',
+			timeUnit: 'day', // 改为字符串类型: 'day'和'hour'
+			hoursValue: 1, // 改为数值类型
 
 			// 工人相关
 			loading: false,
@@ -172,11 +180,11 @@ export default {
 			// 计算工时单位和值
 			const hours = parseFloat(option.hours)
 			if (hours % 8 === 0) {
-				this.timeUnit = 1 // 按天
-				this.hoursValue = String(hours / 8)
+				this.timeUnit = 'day' // 按天
+				this.hoursValue = hours / 8
 			} else {
-				this.timeUnit = 2 // 按小时
-				this.hoursValue = String(hours)
+				this.timeUnit = 'hour' // 按小时
+				this.hoursValue = hours
 			}
 
 			// 设置选中的工人
@@ -366,6 +374,23 @@ export default {
 			this.selectedWorkers = this.workerList.filter(worker => this.selectedWorkerIds.includes(worker._id))
 		},
 
+		// 工时单位切换
+		watchTimeUnit(value) {
+			// 自动调整工时值以适应新的单位
+			if (value === 'day' && this.hoursValue > 1) {
+				// 从小时切换到天，如果超过1天，则设为1天
+				this.hoursValue = 1
+			} else if (value === 'day' && this.hoursValue * 8 > 24) {
+				// 如果换算后超过24小时，则调整
+				this.hoursValue = 1
+			}
+		},
+
+		// 工时数量改变事件
+		onHoursChange(e) {
+			console.log('工时值改变:', e.value)
+		},
+
 		// 处理删除
 		handleDelete() {
 			uni.showModal({
@@ -425,7 +450,7 @@ export default {
 				return this.$showToast.none('请选择日期')
 			}
 
-			if (!this.hoursValue || parseFloat(this.hoursValue) <= 0) {
+			if (this.hoursValue <= 0) {
 				return this.$showToast.none('请输入有效的工时数量')
 			}
 
@@ -439,7 +464,7 @@ export default {
 			try {
 				// 转换工时值
 				// 如果是按天，转换为小时 (1天=8小时)
-				const hours = this.timeUnit === 1 ? parseFloat(this.hoursValue) * 8 : parseFloat(this.hoursValue)
+				const hours = this.timeUnit === 'day' ? this.hoursValue * 8 : this.hoursValue
 
 				let params = {
 					siteId: this.siteId,
