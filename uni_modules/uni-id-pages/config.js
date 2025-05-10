@@ -1,6 +1,6 @@
 export default {
 	// 调试模式
-	debug: true,
+	debug: false,
 	/*
 		登录类型 未列举到的或运行环境不支持的，将被自动隐藏。
 		如果需要在不同平台有不同的配置，直接用条件编译即可
@@ -16,7 +16,7 @@ export default {
 		// "alipay",
 		// "douyin",
 		'weixin',
-		'username',
+		// 'username',
 	],
 	// 政策协议
 	agreements: {
