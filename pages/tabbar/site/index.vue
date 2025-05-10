@@ -36,11 +36,11 @@
 					</view>
 					<view class="item-actions">
 						<view class="action-btn" @click="goDetail(item._id)">
-							<u-icon name="file-text" color="#2979ff" size="20"></u-icon>
+							<u-icon name="file-text" color="#2979ff" size="34"></u-icon>
 							<text>详情</text>
 						</view>
 						<view class="action-btn" @click="goWorkTime(item._id)">
-							<u-icon name="clock" color="#2979ff" size="20"></u-icon>
+							<u-icon name="clock" color="#2979ff" size="34"></u-icon>
 							<text>记工时</text>
 						</view>
 					</view>

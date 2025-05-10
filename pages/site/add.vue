@@ -2,17 +2,17 @@
 	<view class="site-add common-page-container has-btm-btn">
 		<u-form :model="form" ref="uForm">
 			<view class="form-group">
-				<u-form-item label="工地名称" prop="name" required :label-width="120">
+				<u-form-item label="工地名称" prop="name" required :label-width="150">
 					<u-input v-model="form.name" placeholder="请输入工地名称" />
 				</u-form-item>
 
-				<u-form-item label="地址" prop="address" :label-width="120">
+				<u-form-item label="地址" prop="address" :label-width="150">
 					<u-input v-model="form.address" placeholder="请输入工地地址" />
 				</u-form-item>
 			</view>
 
 			<view class="form-group">
-				<u-form-item label="备注" prop="remark" :label-width="120">
+				<u-form-item label="备注" prop="remark" :label-width="150">
 					<u-input v-model="form.remark" placeholder="请输入备注信息" type="textarea" height="100" />
 				</u-form-item>
 			</view>

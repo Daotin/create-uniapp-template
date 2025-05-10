@@ -77,9 +77,4 @@ page {
 	/* iOS >= 11.2, Android */
 	padding-bottom: env(safe-area-inset-bottom);
 }
-
-// 增大内容区域padding
-.common-page-container {
-	padding: 24rpx !important;
-}
 </style>

@@ -17,21 +17,21 @@
 		<view class="action-panel">
 			<view class="action-item primary-btn" @click="goWorkHourRecord">
 				<view class="action-icon">
-					<u-icon name="clock" color="#FFFFFF" size="22"></u-icon>
+					<u-icon name="clock" color="#FFFFFF" size="34"></u-icon>
 				</view>
 				<view class="action-text">记工时</view>
 			</view>
 
 			<view class="action-item plain-btn" @click="goWorkHourList">
 				<view class="action-icon">
-					<u-icon name="file-text" color="#2979ff" size="22"></u-icon>
+					<u-icon name="file-text" color="#2979ff" size="34"></u-icon>
 				</view>
 				<view class="action-text">工时记录</view>
 			</view>
 
 			<view class="action-item plain-btn" @click="goWorkHourStats">
 				<view class="action-icon">
-					<u-icon name="account" color="#2979ff" size="22"></u-icon>
+					<u-icon name="account" color="#2979ff" size="34"></u-icon>
 				</view>
 				<view class="action-text">工时统计</view>
 			</view>
@@ -328,7 +328,7 @@ export default {
 
 			.action-icon {
 				font-size: 40rpx;
-				margin-right: 20rpx;
+				margin-right: 8rpx;
 			}
 
 			.action-text {

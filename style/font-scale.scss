@@ -14,14 +14,14 @@ button,
 input,
 textarea,
 label {
-	font-size: calc(28rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
 }
 
 // 按钮样式调整
 .u-button {
-	font-size: calc(32rpx * #{$font-scale}) !important;
-	height: calc(96rpx * #{$font-scale}) !important;
-	line-height: calc(96rpx * #{$font-scale}) !important;
+	font-size: calc(32rpx * #{$font-scale});
+	height: calc(96rpx * #{$font-scale});
+	line-height: calc(96rpx * #{$font-scale});
 }
 
 // 底部按钮区域调整
@@ -31,67 +31,67 @@ label {
 
 // uView组件库中的字体大小调整
 .u-cell__title {
-	font-size: calc(28rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
 }
 
 .u-cell__value {
-	font-size: calc(28rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
 }
 
 .u-form-item__body__left__content__label {
-	font-size: calc(28rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
 }
 
 .u-input__content__field-wrapper__field {
-	font-size: calc(28rpx * #{$font-scale}) !important;
-	min-height: calc(40rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
+	min-height: calc(40rpx * #{$font-scale});
 }
 
 .u-tabs__wrapper__nav__item__text {
-	font-size: calc(28rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
 }
 
 .u-empty__text {
-	font-size: calc(28rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
 }
 
 .u-modal__title {
-	font-size: calc(32rpx * #{$font-scale}) !important;
+	font-size: calc(32rpx * #{$font-scale});
 }
 
 .u-modal__content {
-	font-size: calc(28rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
 }
 
 // 特定页面元素字体大小
 .site-detail {
 	.site-name {
-		font-size: calc(36rpx * #{$font-scale}) !important;
+		font-size: calc(36rpx * #{$font-scale});
 	}
 
 	.site-address,
 	.site-remark {
-		font-size: calc(28rpx * #{$font-scale}) !important;
+		font-size: calc(28rpx * #{$font-scale});
 	}
 
 	.action-text {
-		font-size: calc(32rpx * #{$font-scale}) !important;
+		font-size: calc(32rpx * #{$font-scale});
 	}
 
 	.card-header {
-		font-size: calc(32rpx * #{$font-scale}) !important;
+		font-size: calc(32rpx * #{$font-scale});
 	}
 
 	.view-all {
-		font-size: calc(28rpx * #{$font-scale}) !important;
+		font-size: calc(28rpx * #{$font-scale});
 	}
 
 	.worker-name {
-		font-size: calc(32rpx * #{$font-scale}) !important;
+		font-size: calc(32rpx * #{$font-scale});
 	}
 
 	.worker-hours {
-		font-size: calc(24rpx * #{$font-scale}) !important;
+		font-size: calc(24rpx * #{$font-scale});
 	}
 }
 
@@ -99,11 +99,11 @@ label {
 .list-item {
 	.site-name,
 	.worker-name {
-		font-size: calc(32rpx * #{$font-scale}) !important;
+		font-size: calc(32rpx * #{$font-scale});
 	}
 
 	.info-text {
-		font-size: calc(28rpx * #{$font-scale}) !important;
+		font-size: calc(28rpx * #{$font-scale});
 	}
 }
 
@@ -111,14 +111,14 @@ label {
 .site-name,
 .worker-name,
 .card-header {
-	font-size: calc(32rpx * #{$font-scale}) !important;
+	font-size: calc(32rpx * #{$font-scale});
 }
 
 // 适配小字体
 .small-text,
 .info-text,
 .worker-hours {
-	font-size: calc(24rpx * #{$font-scale}) !important;
+	font-size: calc(24rpx * #{$font-scale});
 }
 
 // 保持图标大小
@@ -134,5 +134,5 @@ uni-icon,
 
 // 文本域样式
 .u-textarea {
-	font-size: calc(28rpx * #{$font-scale}) !important;
+	font-size: calc(28rpx * #{$font-scale});
 }
