@@ -444,4 +444,99 @@ module.exports = {
 			},
 		}
 	},
+
+	/**
+	 * 获取月度工时统计，返回指定月份每天的工时总数
+	 * @param {String} siteId - 工地ID
+	 * @param {Number} year - 年份
+	 * @param {Number} month - 月份
+	 * @returns {Object} 月度工时统计结果，包含每天的工时总数
+	 */
+	async getMonthlyWorkHourStats(params) {
+		const { siteId, year, month } = params
+		const user_id = this.context.uid // 获取当前用户ID
+
+		console.log('[getMonthlyWorkHourStats] 获取月度工时统计，参数:', params)
+
+		// 参数校验
+		if (!siteId) {
+			return {
+				code: -1,
+				message: '工地ID不能为空',
+			}
+		}
+
+		if (!year || !month) {
+			return {
+				code: -1,
+				message: '年份和月份不能为空',
+			}
+		}
+
+		try {
+			// 构建月份的开始和结束日期 (UTC)
+			const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0))
+			const endDate = new Date(Date.UTC(year, month, 1, 0, 0, 0))
+			// endDate设置为下个月第一天的0点，查询时使用 $lt (小于)
+
+			console.log('[getMonthlyWorkHourStats] 查询日期范围 (UTC):', startDate.toISOString(), '至', endDate.toISOString())
+
+			// 构建查询条件
+			const matchCondition = {
+				user_id,
+				siteId,
+				date: {
+					$gte: startDate,
+					$lt: endDate, // 使用 $lt (小于下个月第一天) 来包含当月所有时间
+				},
+			}
+
+			console.log('[getMonthlyWorkHourStats] 聚合查询条件:', JSON.stringify(matchCondition))
+
+			// 使用聚合查询，按日期分组统计每天的工时总数
+			const result = await db
+				.collection('work_hours')
+				.aggregate()
+				.match(matchCondition)
+				.addFields({
+					// 将日期转换为指定时区（如东八区）的日期字符串，用于分组
+					dateString: {
+						$dateToString: {
+							format: '%Y-%m-%d',
+							date: '$date', // 使用原始日期字段
+							timezone: '+0800', // 指定时区为东八区 (CST)
+						},
+					},
+				})
+				.group({
+					_id: '$dateString', // 按转换后的日期字符串分组
+					totalHours: $.sum('$hours'), // 求和计算总工时
+				})
+				.project({
+					_id: 0,
+					date: '$_id', // 将分组的键 (_id, 即日期字符串) 重命名为 date
+					totalHours: 1, // 保留总工时
+				})
+				.sort({
+					date: 1, // 按日期字符串排序 (YYYY-MM-DD 格式可直接排序)
+				})
+				.end()
+
+			console.log('[getMonthlyWorkHourStats] 聚合查询结果:', result)
+
+			return {
+				code: 0,
+				message: '获取成功',
+				data: {
+					list: result.data,
+				},
+			}
+		} catch (e) {
+			console.error('[getMonthlyWorkHourStats] 获取月度工时统计异常:', e)
+			return {
+				code: -1,
+				message: '获取月度工时统计失败: ' + e.message,
+			}
+		}
+	},
 }

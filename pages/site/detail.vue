@@ -108,10 +108,12 @@ export default {
 			showDeleteModal: false, // 是否显示删除确认弹窗
 			info: {
 				lunar: true,
-				range: true,
+				range: false,
 				insert: false,
 				selected: [],
 			},
+			currentYear: new Date().getFullYear(),
+			currentMonth: new Date().getMonth() + 1,
 		}
 	},
 	onLoad(option) {
@@ -122,6 +124,8 @@ export default {
 			console.log('成功设置工地ID:', this.siteId)
 			this.getSiteDetail()
 			this.getSiteWorkers()
+			// 加载当月工时统计
+			this.getMonthlyWorkHourStats()
 		} else {
 			console.log('未找到工地ID参数')
 			this.$showToast.none('参数错误')
@@ -141,16 +145,22 @@ export default {
 		// 日历日期变化事件
 		calendarChange(e) {
 			console.log('日历日期变化:', e)
-			if (this.info.selected.length > 5) return
-			this.info.selected.push({
-				date: e.fulldate,
-				info: '打卡',
-			})
+			// 不再需要手动添加打卡记录
+			// if (this.info.selected.length > 5) return
+			// this.info.selected.push({
+			// 	date: e.fulldate,
+			// 	info: '打卡',
+			// })
 		},
 
 		// 日历月份切换事件
 		monthSwitch(e) {
 			console.log('日历月份切换:', e)
+			// 获取新的年月信息
+			this.currentYear = e.year
+			this.currentMonth = e.month
+			// 加载该月工时统计
+			this.getMonthlyWorkHourStats()
 		},
 
 		// 获取工地详情
@@ -293,6 +303,52 @@ export default {
 		refresh() {
 			this.getSiteDetail()
 			this.getSiteWorkers()
+			this.getMonthlyWorkHourStats()
+		},
+
+		// 获取月度工时统计
+		async getMonthlyWorkHourStats() {
+			try {
+				this.$showLoading('加载中...')
+
+				// 调用云对象
+				const workHourService = uniCloud.importObject('work-hour-service')
+				const res = await workHourService.getMonthlyWorkHourStats({
+					siteId: this.siteId,
+					year: this.currentYear,
+					month: this.currentMonth,
+				})
+
+				console.log('月度工时统计返回:', res)
+
+				if (res.code === 0) {
+					// 将数据转换为日历组件需要的格式
+					this.processWorkHourData(res.data.list)
+				} else {
+					console.error('获取月度工时统计失败:', res.message)
+				}
+			} catch (e) {
+				console.error('获取月度工时统计异常:', e)
+			} finally {
+				this.$hideLoading()
+			}
+		},
+
+		// 处理工时数据用于日历显示
+		processWorkHourData(data) {
+			// 清空之前的选择
+			this.info.selected = []
+
+			// 将工时数据转换为日历组件需要的格式
+			data.forEach(item => {
+				this.info.selected.push({
+					date: item.date, // 格式为: 2023-05-01
+					info: item.totalHours + '小时',
+					color: '#2979ff', // 有工时的日期使用蓝色高亮
+				})
+			})
+
+			console.log('处理后的日历数据:', this.info.selected)
 		},
 	},
 	onShow() {
@@ -300,6 +356,7 @@ export default {
 		if (this.siteId) {
 			this.getSiteDetail()
 			this.getSiteWorkers()
+			this.getMonthlyWorkHourStats()
 		}
 	},
 }

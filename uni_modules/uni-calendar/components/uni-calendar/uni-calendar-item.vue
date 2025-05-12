@@ -10,7 +10,7 @@
 			'uni-calendar-item--after-checked': weeks.afterMultiple,
 		}"
 		@click="choiceDate(weeks)">
-		<view class="uni-calendar-item__weeks-box-item">
+		<view class="uni-calendar-item__weeks-box-item" :class="{ selected: selected && weeks.extraInfo }">
 			<text v-if="selected && weeks.extraInfo" class="uni-calendar-item__weeks-box-circle"></text>
 			<text
 				class="uni-calendar-item__weeks-box-text"
@@ -153,6 +153,10 @@ $uni-primary: #2979ff !default;
 	align-items: center;
 	width: 100rpx;
 	height: 100rpx;
+
+	&.selected {
+		background-color: rgba(41, 121, 255, 0.2);
+	}
 }
 
 .uni-calendar-item__weeks-box-circle {
@@ -178,10 +182,13 @@ $uni-primary: #2979ff !default;
 	background-color: $uni-primary;
 	opacity: 0.8;
 	color: #fff;
+	.uni-calendar-item--extra {
+		color: #fff;
+	}
 }
 
 .uni-calendar-item--extra {
-	color: $uni-color-error;
+	color: $uni-primary;
 	opacity: 0.8;
 }
 
