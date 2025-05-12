@@ -145,12 +145,10 @@ export default {
 		// 日历日期变化事件
 		calendarChange(e) {
 			console.log('日历日期变化:', e)
-			// 不再需要手动添加打卡记录
-			// if (this.info.selected.length > 5) return
-			// this.info.selected.push({
-			// 	date: e.fulldate,
-			// 	info: '打卡',
-			// })
+			// 跳转到工时记录列表页面，并带入选中的日期
+			uni.navigateTo({
+				url: `/pages/worker-hour/index?siteId=${this.siteId}&date=${e.fulldate}`,
+			})
 		},
 
 		// 日历月份切换事件

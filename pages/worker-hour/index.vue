@@ -10,7 +10,10 @@
 		<!-- 工时记录列表 -->
 		<view class="work-hour-list" v-if="workHourGroups.length > 0">
 			<view class="date-group" v-for="group in workHourGroups" :key="group.date">
-				<view class="date-header">{{ group.dateText }}</view>
+				<view class="date-header">
+					<text>{{ group.dateText }}</text>
+					<text class="total-hours">总计: {{ formatHours(group.totalHours) }}</text>
+				</view>
 				<view class="records">
 					<view
 						class="record-item"
@@ -92,7 +95,15 @@ export default {
 			this.filterParams.selectedSite._id = option.siteId
 			console.log('工地ID:', this.siteId)
 		}
-		// 初始化加载数据，使用默认筛选条件（所有工人、今天）
+
+		// 如果传入了日期参数，更新筛选条件的开始日期和结束日期
+		if (option.date) {
+			console.log('接收到日期参数:', option.date)
+			this.filterParams.startDate = option.date
+			this.filterParams.endDate = option.date
+		}
+
+		// 初始化加载数据，使用设置好的筛选条件
 		this.loadWorkHourList()
 	},
 
@@ -181,10 +192,14 @@ export default {
 						date: dateStr,
 						dateText,
 						records: [],
+						totalHours: 0, // 新增总工时字段
 					})
 				}
 
-				dateMap.get(dateStr).records.push(item)
+				// 计算总工时
+				const group = dateMap.get(dateStr)
+				group.records.push(item)
+				group.totalHours += Number(item.hours || 0) // 累加工时
 			})
 
 			// 转换为数组并按日期排序
@@ -272,10 +287,20 @@ export default {
 		formatHours(hours) {
 			if (hours === undefined || hours === null) return ''
 
-			// 如果可以被8整除，显示为天数
+			// 如果可以被8整除，按照工作日显示
 			if (hours % 8 === 0) {
 				const days = hours / 8
 				return `${days}天`
+			}
+
+			// 如果超过8小时，显示为x天x小时
+			if (hours > 8) {
+				const days = Math.floor(hours / 8)
+				const remainingHours = hours % 8
+				if (remainingHours === 0) {
+					return `${days}天`
+				}
+				return `${days}天${remainingHours}小时`
 			}
 
 			return `${hours}小时`
@@ -327,6 +352,15 @@ export default {
 	padding: 20rpx 30rpx;
 	font-size: 28rpx;
 	color: #969799;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.total-hours {
+	font-size: 26rpx;
+	color: #2979ff;
+	font-weight: 500;
 }
 
 .records {
