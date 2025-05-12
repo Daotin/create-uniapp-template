@@ -1,7 +1,11 @@
 <template>
 	<view class="container common-page-container">
 		<!-- 使用自定义筛选组件 -->
-		<advanced-filter :defaultSiteId="siteId" @search="loadWorkHourList"></advanced-filter>
+		<advanced-filter
+			:defaultSiteId="siteId"
+			:defaultStartDate="filterParams.startDate"
+			:defaultEndDate="filterParams.endDate"
+			@search="loadWorkHourList"></advanced-filter>
 
 		<!-- 工时记录列表 -->
 		<view class="work-hour-list" v-if="workHourGroups.length > 0">
@@ -58,8 +62,8 @@ export default {
 			filterParams: {
 				selectedSite: {},
 				selectedWorkers: [],
-				startDate: '',
-				endDate: '',
+				startDate: dayjs().format('YYYY-MM-DD'),
+				endDate: dayjs().format('YYYY-MM-DD'),
 			},
 
 			// 列表数据
@@ -85,7 +89,11 @@ export default {
 		// }, 500)
 		if (option.siteId) {
 			this.siteId = option.siteId
+			this.filterParams.selectedSite._id = option.siteId
+			console.log('工地ID:', this.siteId)
 		}
+		// 初始化加载数据，使用默认筛选条件（所有工人、今天）
+		this.loadWorkHourList()
 	},
 
 	onShow() {
@@ -96,6 +104,7 @@ export default {
 	methods: {
 		// 加载工时记录列表
 		async loadWorkHourList(params) {
+			console.log('加载工时记录列表', params)
 			// 如果从筛选组件传入了参数，则使用传入的参数
 			if (params) {
 				this.filterParams = params
@@ -112,14 +121,16 @@ export default {
 				// 构建请求参数
 				const requestParams = {
 					siteId: this.filterParams.selectedSite?._id || '',
-					workerId: this.filterParams.selectedWorkers?.map(worker => worker._id).join(','),
+					workerId: this.filterParams.selectedWorkers?.map(worker => worker._id).join(',') || '', // 确保即使为空也传递空字符串
 					startDate: this.filterParams.startDate,
 					endDate: this.filterParams.endDate,
 				}
 
 				console.log('请求参数:', requestParams)
 
-				if (!requestParams.siteId || !requestParams.workerId || !requestParams.startDate || !requestParams.endDate) {
+				// 移除参数校验，允许查询所有工人数据
+				// if (!requestParams.siteId || !requestParams.workerId || !requestParams.startDate || !requestParams.endDate) {
+				if (!requestParams.siteId || !requestParams.startDate || !requestParams.endDate) {
 					this.$showToast.none('请求参数不正确')
 					return
 				}

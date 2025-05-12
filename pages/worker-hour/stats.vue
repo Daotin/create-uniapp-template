@@ -1,7 +1,11 @@
 <template>
 	<view class="container common-page-container">
 		<!-- 使用高级筛选组件 -->
-		<advanced-filter :defaultSiteId="siteId" @search="loadStatistics"></advanced-filter>
+		<advanced-filter
+			:defaultSiteId="siteId"
+			:defaultStartDate="filterParams.startDate"
+			:defaultEndDate="filterParams.endDate"
+			@search="loadStatistics"></advanced-filter>
 
 		<!-- 统计结果 -->
 		<view class="content" v-if="statisticsList.length > 0">
@@ -46,6 +50,13 @@ export default {
 			// 统计数据
 			statisticsList: [],
 			totalHours: 0,
+			// 筛选条件
+			filterParams: {
+				selectedSite: {},
+				selectedWorkers: [], // 默认空数组，表示查询所有工人
+				startDate: dayjs().format('YYYY-MM-DD'), // 默认今天
+				endDate: dayjs().format('YYYY-MM-DD'), // 默认今天
+			},
 		}
 	},
 
@@ -53,7 +64,12 @@ export default {
 		// 如果有工地ID参数，则保存
 		if (option.siteId) {
 			this.siteId = option.siteId
+			this.filterParams.selectedSite._id = option.siteId
+			console.log('工地ID:', this.siteId)
 		}
+
+		// 初始化加载数据，使用默认筛选条件（所有工人、今天）
+		this.loadStatistics(this.filterParams)
 	},
 
 	methods: {
@@ -61,7 +77,9 @@ export default {
 		async loadStatistics(params) {
 			console.log('统计查询参数:', params)
 
-			if (!params.selectedSite._id || !params.selectedWorkers.length || !params.startDate || !params.endDate) {
+			// 允许查询所有工人，只要有工地和日期范围即可
+			if (!params.selectedSite._id || !params.startDate || !params.endDate) {
+				this.$showToast.none('请选择完整的查询条件')
 				return
 			}
 
@@ -74,10 +92,12 @@ export default {
 				// 构建请求参数
 				const requestParams = {
 					siteId: params.selectedSite._id,
-					workerId: params.selectedWorkers.map(worker => worker._id).join(','),
+					workerId: params.selectedWorkers?.map(worker => worker._id).join(',') || '', // 确保即使为空也传递空字符串
 					startDate: params.startDate,
 					endDate: params.endDate,
 				}
+
+				console.log('请求参数:', requestParams)
 
 				// 请求统计数据
 				const res = await workHourService.getWorkHourStats(requestParams)

@@ -31,7 +31,7 @@
 							<view class="info-text">📍 {{ item.address }}</view>
 						</view>
 						<view class="info-row" v-if="item.remark">
-							<view class="info-text">📄 {{ item.remark }}</view>
+							<view class="info-text">📝 {{ item.remark }}</view>
 						</view>
 					</view>
 					<view class="item-actions">

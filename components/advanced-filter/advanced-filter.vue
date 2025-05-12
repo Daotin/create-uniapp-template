@@ -12,7 +12,7 @@
 			<view class="filter-item" @click="showWorkerPopup = true">
 				<text class="filter-label">工人：</text>
 				<view class="filter-value">
-					<text :class="{ placeholder: !selectedWorkers.length }">{{ selectedWorkerText }}</text>
+					<text :class="{ placeholder: !selectedWorkers.length && !isAllWorkersMode }">{{ selectedWorkerText }}</text>
 					<text class="arrow">▼</text>
 				</view>
 			</view>
@@ -111,8 +111,8 @@ export default {
 			// 筛选条件
 			selectedSite: {},
 			selectedWorkers: [],
-			startDate: this.defaultStartDate || '',
-			endDate: this.defaultEndDate || '',
+			startDate: '',
+			endDate: '',
 			dateRangeText: '',
 
 			// 筛选弹窗
@@ -123,13 +123,18 @@ export default {
 			// 筛选选项
 			siteFilterOptions: [],
 			workerFilterOptions: [],
+
+			// 是否选择全部工人
+			isAllWorkersMode: true,
 		}
 	},
 
 	computed: {
 		// 显示已选工人文本
 		selectedWorkerText() {
-			if (this.selectedWorkers.length === 0) {
+			if (this.isAllWorkersMode) {
+				return '全部工人'
+			} else if (this.selectedWorkers.length === 0) {
 				return '请选择工人'
 			} else if (this.selectedWorkers.length === 1) {
 				return this.selectedWorkers[0].name
@@ -147,7 +152,7 @@ export default {
 		},
 		// 验证是否可以查询
 		isValid() {
-			return this.selectedSite._id && this.selectedWorkers.length > 0 && this.startDate && this.endDate
+			return this.selectedSite._id && this.startDate && this.endDate
 		},
 	},
 
@@ -155,6 +160,8 @@ export default {
 		this.loadSiteOptions()
 		// 初始化时不再加载所有工人，等待工地选择后再加载
 		// 设置默认日期范围文本
+		this.startDate = this.defaultStartDate || dayjs().format('YYYY-MM-DD')
+		this.endDate = this.defaultEndDate || dayjs().format('YYYY-MM-DD')
 		this.updateDateRangeText()
 	},
 
@@ -194,6 +201,7 @@ export default {
 			if (!siteId) {
 				this.workerFilterOptions = []
 				this.selectedWorkers = []
+				this.isAllWorkersMode = true // 没有工地时，默认为全部工人模式
 				this.initWorkerSelection() // 清空工人选择时也应初始化
 				return
 			}
@@ -317,6 +325,8 @@ export default {
 		// 更新选中的工人数组
 		updateSelectedWorkers() {
 			this.selectedWorkers = this.workerFilterOptions.filter(item => item.checked)
+			// 当没有选择任何工人时，自动切换到全部工人模式
+			this.isAllWorkersMode = this.selectedWorkers.length === 0
 		},
 
 		// 日期范围选择回调
@@ -342,7 +352,12 @@ export default {
 
 			// 格式化显示文本
 			if (this.startDate === this.endDate) {
-				this.dateRangeText = dayjs(this.startDate).format('YYYY/MM/DD')
+				// 如果是今天，特殊处理
+				if (this.startDate === dayjs().format('YYYY-MM-DD')) {
+					this.dateRangeText = '今天'
+				} else {
+					this.dateRangeText = dayjs(this.startDate).format('YYYY/MM/DD')
+				}
 			} else {
 				this.dateRangeText = `${dayjs(this.startDate).format('YYYY/MM/DD')} 至 ${dayjs(this.endDate).format(
 					'YYYY/MM/DD',
@@ -355,7 +370,7 @@ export default {
 			// 构建筛选条件对象
 			const filterParams = {
 				selectedSite: this.selectedSite,
-				selectedWorkers: this.selectedWorkers,
+				selectedWorkers: this.isAllWorkersMode ? [] : this.selectedWorkers, // 全部工人模式时传递空数组
 				startDate: this.startDate,
 				endDate: this.endDate,
 			}
@@ -368,7 +383,7 @@ export default {
 		handleQuery() {
 			this.$emit('search', {
 				selectedSite: this.selectedSite,
-				selectedWorkers: this.selectedWorkers,
+				selectedWorkers: this.isAllWorkersMode ? [] : this.selectedWorkers, // 全部工人模式时传递空数组
 				startDate: this.startDate,
 				endDate: this.endDate,
 			})

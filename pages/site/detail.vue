@@ -9,7 +9,13 @@
 			</view>
 			<view class="site-remark" v-if="site.remark">
 				<!-- <u-icon name="bookmark" color="#969799" size="24" class="remark-icon"></u-icon> -->
-				<text>📄 {{ site.remark }}</text>
+				<text>📝 {{ site.remark }}</text>
+			</view>
+			<view class="site-worker">
+				<text>👷🏻‍♂️ {{ workerCount || 0 }}人</text>
+				<view class="view-all" @click="goSiteWorkers">
+					<text>查看全部</text>
+				</view>
 			</view>
 		</view>
 
@@ -37,8 +43,20 @@
 			</view>
 		</view>
 
-		<!-- 工地工人列表 -->
+		<!-- 工时记录日历 -->
 		<view class="info-card">
+			<view class="calendar-container">
+				<uni-calendar
+					:insert="true"
+					:showMonth="true"
+					:selected="info.selected"
+					@change="calendarChange"
+					@monthSwitch="monthSwitch" />
+			</view>
+		</view>
+
+		<!-- 工地工人列表 -->
+		<!-- <view class="info-card">
 			<view class="card-header">
 				<view>工地工人 ({{ workerCount || 0 }}人)</view>
 				<view class="view-all" @click="goSiteWorkers">
@@ -52,14 +70,13 @@
 					</view>
 					<view class="worker-info">
 						<view class="worker-name">{{ worker.name }}</view>
-						<!-- <view class="worker-hours">累计工时: 计算中</view> -->
 					</view>
 				</view>
 			</scroll-view>
 			<view class="card-empty" v-else>
 				<u-empty mode="data" text="暂无工人数据"></u-empty>
 			</view>
-		</view>
+		</view> -->
 
 		<!-- 操作按钮区域 -->
 		<view class="common-btm-btn">
@@ -89,6 +106,12 @@ export default {
 			workerCount: 0, // 工人总数
 			loading: false, // 加载状态
 			showDeleteModal: false, // 是否显示删除确认弹窗
+			info: {
+				lunar: true,
+				range: true,
+				insert: false,
+				selected: [],
+			},
 		}
 	},
 	onLoad(option) {
@@ -115,6 +138,21 @@ export default {
 		uni.$off('refreshSiteDetail')
 	},
 	methods: {
+		// 日历日期变化事件
+		calendarChange(e) {
+			console.log('日历日期变化:', e)
+			if (this.info.selected.length > 5) return
+			this.info.selected.push({
+				date: e.fulldate,
+				info: '打卡',
+			})
+		},
+
+		// 日历月份切换事件
+		monthSwitch(e) {
+			console.log('日历月份切换:', e)
+		},
+
 		// 获取工地详情
 		async getSiteDetail() {
 			try {
@@ -269,12 +307,6 @@ export default {
 
 <style lang="scss" scoped>
 .site-detail {
-	display: flex;
-	flex-direction: column;
-
-	&.common-page-container {
-		overflow-y: hidden;
-	}
 	.site-header {
 		background-color: #fff;
 		padding: 40rpx 32rpx;
@@ -309,36 +341,48 @@ export default {
 				margin-right: 8rpx;
 			}
 		}
+
+		.site-worker {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-top: 16rpx;
+			font-size: 28rpx;
+			color: #969799;
+
+			.view-all {
+				font-size: 28rpx;
+				color: #2979ff;
+				cursor: pointer;
+			}
+		}
 	}
 
 	.action-panel {
 		background: #fff;
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
+		justify-content: space-between;
 		border-radius: 16rpx;
 		overflow: hidden;
 		margin: 0 24rpx 24rpx;
-		padding: 32rpx;
+		padding: 24rpx;
 
 		.action-item {
 			display: flex;
+			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			padding: 24rpx 0;
-			margin-bottom: 24rpx;
-			border-radius: 8rpx;
-
-			&:last-child {
-				margin-bottom: 0;
-			}
+			width: 200rpx;
+			height: 200rpx;
+			border-radius: 12rpx;
 
 			.action-icon {
-				font-size: 40rpx;
-				margin-right: 8rpx;
+				margin-bottom: 16rpx;
 			}
 
 			.action-text {
-				font-size: 32rpx;
+				font-size: 28rpx;
 				color: #323233;
 			}
 		}
@@ -376,6 +420,10 @@ export default {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+		}
+
+		.calendar-container {
+			padding: 16rpx;
 		}
 
 		.view-all {
