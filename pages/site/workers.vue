@@ -41,7 +41,7 @@
 		</scroll-view>
 
 		<!-- 可添加工人列表 -->
-		<scroll-view v-if="current === 1" scroll-y class="content">
+		<scroll-view v-if="current === 1" scroll-y class="content add-worker-list">
 			<u-empty v-if="availableList.length === 0 && !loading" text="暂无可添加工人" mode="list"></u-empty>
 
 			<view v-else>
@@ -357,6 +357,11 @@ export default {
 	display: flex;
 	flex-direction: column;
 
+	&.common-page-container {
+		padding-bottom: 0;
+		overflow-y: hidden;
+	}
+
 	.search-box {
 		padding: 20rpx 32rpx;
 		background-color: #fff;
@@ -365,8 +370,10 @@ export default {
 
 	.content {
 		flex: 1;
-		height: calc(100vh - 88rpx - 116rpx); // 减去tab高度和搜索框高度
-		padding-bottom: 160rpx; // 为底部按钮留出空间
+		overflow: hidden;
+		&.add-worker-list {
+			padding-bottom: 156rpx;
+		}
 	}
 
 	.site-info {

@@ -42,7 +42,7 @@
 							v-model="hoursValue"
 							:min="0"
 							:max="timeUnit === 'day' ? 1 : 24"
-							:step="0.5"
+							:step="1"
 							:positive-integer="false"
 							disabled-input
 							:input-width="120"
@@ -70,7 +70,7 @@
 					<u-empty mode="list" text="暂无工人信息"></u-empty>
 				</view>
 				<!-- 工人列表 -->
-				<view v-else>
+				<scroll-view class="worker-list-scroll" v-else scroll-y>
 					<template v-if="isEdit">
 						<!-- 编辑模式下只显示已选工人 -->
 						<view v-for="(item, index) in selectedWorkers" :key="item._id" class="worker-item">
@@ -105,7 +105,7 @@
 							</view>
 						</view>
 					</template>
-				</view>
+				</scroll-view>
 			</view>
 		</view>
 
@@ -552,6 +552,9 @@ export default {
 .worker-section {
 	margin-top: 30rpx;
 	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 }
 
 .section-title {
@@ -563,6 +566,15 @@ export default {
 .worker-list {
 	background-color: #ffffff;
 	padding: 0 20rpx;
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+
+	.worker-list-scroll {
+		flex: 1;
+		overflow: hidden;
+	}
 }
 
 .worker-item {

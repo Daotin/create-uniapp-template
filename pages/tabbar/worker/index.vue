@@ -151,8 +151,7 @@ export default {
 
 	.content {
 		flex: 1;
-		height: calc(100vh - 116rpx); // 减去搜索框高度
-		padding-bottom: 160rpx; // 为底部按钮留出空间
+		height: calc(100vh - 116rpx);
 	}
 
 	.list-item {

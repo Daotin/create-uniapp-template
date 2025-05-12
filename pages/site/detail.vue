@@ -45,7 +45,7 @@
 					<text>查看全部</text>
 				</view>
 			</view>
-			<view class="card-content" v-if="workers.length > 0">
+			<scroll-view class="card-content" v-if="workers.length > 0" scroll-y>
 				<view class="worker-row" v-for="(worker, index) in workers" :key="index">
 					<view class="common-avatar-box">
 						<u-avatar :text="worker.name.substring(0, 1)" bg-color="#188fff" size="58"></u-avatar>
@@ -55,7 +55,7 @@
 						<!-- <view class="worker-hours">累计工时: 计算中</view> -->
 					</view>
 				</view>
-			</view>
+			</scroll-view>
 			<view class="card-empty" v-else>
 				<u-empty mode="data" text="暂无工人数据"></u-empty>
 			</view>
@@ -269,6 +269,12 @@ export default {
 
 <style lang="scss" scoped>
 .site-detail {
+	display: flex;
+	flex-direction: column;
+
+	&.common-page-container {
+		overflow-y: hidden;
+	}
 	.site-header {
 		background-color: #fff;
 		padding: 40rpx 32rpx;
@@ -357,6 +363,9 @@ export default {
 		margin: 0 24rpx 24rpx;
 		border-radius: 16rpx;
 		overflow: hidden;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
 
 		.card-header {
 			padding: 24rpx 32rpx;
@@ -377,6 +386,8 @@ export default {
 		}
 
 		.card-content {
+			flex: 1;
+			overflow: hidden;
 			padding: 0;
 		}
 
