@@ -49,7 +49,7 @@
 				<uni-calendar
 					:insert="true"
 					:showMonth="true"
-					:selected="info.selected"
+					:selected="calendarSelected"
 					:endDate="endDate"
 					@change="calendarChange"
 					@monthSwitch="monthSwitch" />
@@ -108,13 +108,8 @@ export default {
 			workerCount: 0, // 工人总数
 			loading: false, // 加载状态
 			showDeleteModal: false, // 是否显示删除确认弹窗
-			info: {
-				lunar: true,
-				range: false,
-				insert: false,
-				selected: [],
-			},
 
+			calendarSelected: [], // 日历选中的日期
 			startDate: '',
 			endDate: dayjs().format('YYYY-MM-DD'),
 			currentYear: dayjs().year(),
@@ -340,18 +335,18 @@ export default {
 		// 处理工时数据用于日历显示
 		processWorkHourData(data) {
 			// 清空之前的选择
-			this.info.selected = []
+			this.calendarSelected = []
 
 			// 将工时数据转换为日历组件需要的格式
 			data.forEach(item => {
-				this.info.selected.push({
+				this.calendarSelected.push({
 					date: item.date, // 格式为: 2023-05-01
 					info: item.totalHours + 'h',
 					color: '#2979ff', // 有工时的日期使用蓝色高亮
 				})
 			})
 
-			console.log('处理后的日历数据:', this.info.selected)
+			console.log('处理后的日历数据:', this.calendarSelected)
 		},
 	},
 	onShow() {
