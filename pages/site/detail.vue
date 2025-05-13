@@ -50,6 +50,7 @@
 					:insert="true"
 					:showMonth="true"
 					:selected="info.selected"
+					:endDate="endDate"
 					@change="calendarChange"
 					@monthSwitch="monthSwitch" />
 			</view>
@@ -97,6 +98,7 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
 export default {
 	data() {
 		return {
@@ -112,8 +114,11 @@ export default {
 				insert: false,
 				selected: [],
 			},
-			currentYear: new Date().getFullYear(),
-			currentMonth: new Date().getMonth() + 1,
+
+			startDate: '',
+			endDate: dayjs().format('YYYY-MM-DD'),
+			currentYear: dayjs().year(),
+			currentMonth: dayjs().month() + 1,
 		}
 	},
 	onLoad(option) {
