@@ -117,7 +117,7 @@
 	// padding: 48rpx 32rpx;
 	background-color: #f7f8fa;
 	&.has-btm-btn {
-		padding-bottom: 154rpx;
+		padding-bottom: 124rpx;
 		overflow-x: hidden;
 		overflow-y: auto;
 	}
@@ -132,7 +132,7 @@
 	position: fixed;
 	bottom: 0;
 	left: 0;
-	padding: 70rpx 32rpx;
+	padding: 30rpx 32rpx 70rpx 32rpx;
 	z-index: 100;
 	display: flex;
 	background: #f7f9fb;

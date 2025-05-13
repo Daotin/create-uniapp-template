@@ -41,10 +41,10 @@
 		</scroll-view>
 
 		<!-- 可添加工人列表 -->
-		<scroll-view v-if="current === 1" scroll-y class="content add-worker-list">
+		<scroll-view v-if="current === 1" scroll-y class="content add-worker-scroll">
 			<u-empty v-if="availableList.length === 0 && !loading" text="暂无可添加工人" mode="list"></u-empty>
 
-			<view v-else>
+			<view class="add-worker-list" v-else>
 				<view class="site-info">
 					<text class="site-name">{{ siteName }}</text>
 					<text class="site-count">可添加 {{ availableList.length }} 人</text>
@@ -371,8 +371,8 @@ export default {
 	.content {
 		flex: 1;
 		overflow: hidden;
-		&.add-worker-list {
-			padding-bottom: 156rpx;
+		.add-worker-list {
+			padding-bottom: 184rpx;
 		}
 	}
 

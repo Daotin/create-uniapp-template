@@ -23,21 +23,21 @@
 		<view class="action-panel">
 			<view class="action-item primary-btn" @click="goWorkHourRecord">
 				<view class="action-icon">
-					<u-icon name="clock" color="#FFFFFF" size="34"></u-icon>
+					<u-icon name="clock" color="#FFFFFF" size="50"></u-icon>
 				</view>
 				<view class="action-text">记工时</view>
 			</view>
 
 			<view class="action-item plain-btn" @click="goWorkHourList">
 				<view class="action-icon">
-					<u-icon name="file-text" color="#2979ff" size="34"></u-icon>
+					<u-icon name="list-dot" color="#2979ff" size="50"></u-icon>
 				</view>
 				<view class="action-text">工时记录</view>
 			</view>
 
 			<view class="action-item plain-btn" @click="goWorkHourStats">
 				<view class="action-icon">
-					<u-icon name="account" color="#2979ff" size="34"></u-icon>
+					<u-icon name="calendar" color="#2979ff" size="50"></u-icon>
 				</view>
 				<view class="action-text">工时统计</view>
 			</view>
@@ -341,7 +341,7 @@ export default {
 			data.forEach(item => {
 				this.info.selected.push({
 					date: item.date, // 格式为: 2023-05-01
-					info: item.totalHours + '小时',
+					info: item.totalHours + 'h',
 					color: '#2979ff', // 有工时的日期使用蓝色高亮
 				})
 			})
@@ -362,6 +362,10 @@ export default {
 
 <style lang="scss" scoped>
 .site-detail {
+	&.common-page-container {
+		padding-bottom: 184rpx;
+	}
+
 	.site-header {
 		background-color: #fff;
 		padding: 40rpx 32rpx;
@@ -443,17 +447,18 @@ export default {
 		}
 
 		.primary-btn {
-			background-color: #2979ff;
-			color: white;
+			background-color: $u-type-primary;
+			color: #fff;
 
 			.action-text {
-				color: white;
+				color: #fff;
 			}
 		}
 
 		.plain-btn {
 			background-color: #fff;
-			border: 1rpx solid #ebedf0;
+			border: 1rpx solid $u-type-primary;
+			background-color: $u-type-primary-light;
 		}
 	}
 

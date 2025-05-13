@@ -34,7 +34,7 @@
 							<view class="info-text">📝 {{ item.remark }}</view>
 						</view>
 					</view>
-					<view class="item-actions">
+					<!-- <view class="item-actions">
 						<view class="action-btn" @click="goDetail(item._id)">
 							<u-icon name="file-text" color="#2979ff" size="34"></u-icon>
 							<text>详情</text>
@@ -43,7 +43,7 @@
 							<u-icon name="clock" color="#2979ff" size="34"></u-icon>
 							<text>记工时</text>
 						</view>
-					</view>
+					</view> -->
 				</view>
 			</view>
 		</scroll-view>
@@ -209,6 +209,7 @@ export default {
 				.info-text {
 					font-size: 28rpx;
 					color: #646566;
+					word-break: break-all;
 				}
 			}
 		}

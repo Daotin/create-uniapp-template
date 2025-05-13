@@ -358,7 +358,6 @@ export default {
 }
 
 .total-hours {
-	font-size: 26rpx;
 	color: #2979ff;
 	font-weight: 500;
 }

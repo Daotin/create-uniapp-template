@@ -520,6 +520,10 @@ export default {
 .container {
 	display: flex;
 	flex-direction: column;
+
+	&.common-page-container {
+		padding-bottom: 184rpx;
+	}
 }
 
 .form-group {
