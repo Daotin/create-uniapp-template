@@ -202,15 +202,13 @@
 				{
 					"path": "index",
 					"style": {
-						"navigationBarTitleText": "工时列表",
-						"enablePullDownRefresh": true
+						"navigationBarTitleText": "工时列表"
 					}
 				},
 				{
 					"path": "stats",
 					"style": {
-						"navigationBarTitleText": "工时统计",
-						"enablePullDownRefresh": true
+						"navigationBarTitleText": "工时统计"
 					}
 				}
 			]

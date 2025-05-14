@@ -46,11 +46,11 @@
 		<u-action-sheet :list="actionList" v-model="showActionSheet" @click="handleActionClick"></u-action-sheet>
 
 		<!-- 悬浮按钮 -->
-		<view class="common-add-btn">
+		<!-- <view class="common-add-btn">
 			<u-button type="primary" size="mini" shape="circle" @click="goToAddWorkHour">
 				<u-icon name="plus" color="#FFFFFF" size="24"></u-icon>
 			</u-button>
-		</view>
+		</view> -->
 	</view>
 </template>
 
@@ -86,6 +86,8 @@ export default {
 	},
 
 	onLoad(option) {
+		console.log('进入工时记录列表页，接收到的参数:', option)
+
 		// 加载工时记录数据
 		// setTimeout(() => {
 		// 	this.loadWorkHourList()
@@ -101,6 +103,7 @@ export default {
 			console.log('接收到日期参数:', option.date)
 			this.filterParams.startDate = option.date
 			this.filterParams.endDate = option.date
+			console.log('已设置筛选日期为:', this.filterParams.startDate, this.filterParams.endDate)
 		}
 
 		// 初始化加载数据，使用设置好的筛选条件

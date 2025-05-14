@@ -35,6 +35,7 @@
 			v-model="showSiteFilter"
 			:list="siteFilterOptions"
 			value-name="_id"
+			:default-value="defaultSiteIndexArray"
 			label-name="name"
 			@confirm="onSiteFilterConfirm"></u-select>
 
@@ -154,15 +155,23 @@ export default {
 		isValid() {
 			return this.selectedSite._id && this.startDate && this.endDate
 		},
+		// 默认选中的工地索引
+		defaultSiteIndexArray() {
+			const index = this.siteFilterOptions.findIndex(item => item._id === this.defaultSiteId)
+			return index !== -1 ? [index] : []
+		},
 	},
 
 	created() {
+		console.log('Advanced-Filter 组件创建，默认日期：', this.defaultStartDate, this.defaultEndDate)
 		this.loadSiteOptions()
 		// 初始化时不再加载所有工人，等待工地选择后再加载
 		// 设置默认日期范围文本
 		this.startDate = this.defaultStartDate || dayjs().format('YYYY-MM-DD')
 		this.endDate = this.defaultEndDate || dayjs().format('YYYY-MM-DD')
-		this.updateDateRangeText()
+		console.log('设置后的日期范围:', this.startDate, this.endDate)
+		this.updateDateRangeText() // 确保调用此方法更新日期显示
+		console.log('日期范围文本:', this.dateRangeText)
 	},
 
 	methods: {
@@ -352,12 +361,7 @@ export default {
 
 			// 格式化显示文本
 			if (this.startDate === this.endDate) {
-				// 如果是今天，特殊处理
-				if (this.startDate === dayjs().format('YYYY-MM-DD')) {
-					this.dateRangeText = '今天'
-				} else {
-					this.dateRangeText = dayjs(this.startDate).format('YYYY/MM/DD')
-				}
+				this.dateRangeText = dayjs(this.startDate).format('YYYY/MM/DD')
 			} else {
 				this.dateRangeText = `${dayjs(this.startDate).format('YYYY/MM/DD')} 至 ${dayjs(this.endDate).format(
 					'YYYY/MM/DD',
@@ -400,6 +404,24 @@ export default {
 
 			// 触发筛选变更事件
 			this.emitFilterChange()
+		},
+	},
+
+	watch: {
+		// 监听默认日期变化
+		defaultStartDate(newVal) {
+			console.log('defaultStartDate变化:', newVal)
+			if (newVal) {
+				this.startDate = newVal
+				this.updateDateRangeText()
+			}
+		},
+		defaultEndDate(newVal) {
+			console.log('defaultEndDate变化:', newVal)
+			if (newVal) {
+				this.endDate = newVal
+				this.updateDateRangeText()
+			}
 		},
 	},
 }

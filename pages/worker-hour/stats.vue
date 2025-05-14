@@ -54,13 +54,15 @@ export default {
 			filterParams: {
 				selectedSite: {},
 				selectedWorkers: [], // 默认空数组，表示查询所有工人
-				startDate: dayjs().format('YYYY-MM-DD'), // 默认今天
-				endDate: dayjs().format('YYYY-MM-DD'), // 默认今天
+				startDate: dayjs().startOf('year').format('YYYY-MM-DD'), // 默认今年1月1日
+				endDate: dayjs().endOf('year').format('YYYY-MM-DD'), // 默认今年12月31日
 			},
 		}
 	},
 
 	onLoad(option) {
+		console.log('工时统计页面加载，初始筛选条件:', this.filterParams)
+
 		// 如果有工地ID参数，则保存
 		if (option.siteId) {
 			this.siteId = option.siteId
@@ -68,7 +70,7 @@ export default {
 			console.log('工地ID:', this.siteId)
 		}
 
-		// 初始化加载数据，使用默认筛选条件（所有工人、今天）
+		// 初始化加载数据，使用默认筛选条件（所有工人、今年全年）
 		this.loadStatistics(this.filterParams)
 	},
 
