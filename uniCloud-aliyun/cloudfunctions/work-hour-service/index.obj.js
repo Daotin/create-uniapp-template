@@ -2,41 +2,27 @@
 const db = uniCloud.database()
 const dbCmd = db.command
 const $ = db.command.aggregate
+// 假设公共模块在 package.json 中定义的 name 是 'auth-filter'
+const authFilter = require('auth-filter')
 
 module.exports = {
 	_before: async function () {
-		// 获取客户端信息和token
+		console.log('work-hour-service: 进入 _before 方法')
 		const clientInfo = this.getClientInfo()
 		const token = this.getUniIdToken()
 
-		if (!token) {
-			const err = new Error('用户未登录，请先登录')
-			err.code = 401
-			throw err
-		}
+		const tokenInfo = await authFilter.checkLogin(token, clientInfo)
 
-		// 校验token
-		const uniIDCommon = require('uni-id-common')
-		const uniID = uniIDCommon.createInstance({
-			clientInfo,
-		})
-
-		// 校验token
-		const checkTokenRes = await uniID.checkToken(token)
-		if (checkTokenRes.errCode) {
-			const err = new Error('登录状态已过期，请重新登录')
-			err.code = 403
-			throw err
-		}
-
-		// 将用户ID存入上下文
 		this.context = {
-			uid: checkTokenRes.uid,
-			role: checkTokenRes.role,
-			permission: checkTokenRes.permission,
+			uid: tokenInfo.uid,
+			role: tokenInfo.role,
+			permission: tokenInfo.permission,
 		}
+		this.authInfo = tokenInfo
 
 		this.startTime = Date.now()
+
+		console.log('work-hour-service: 公共 _before 校验完成, context 设置为:', JSON.stringify(this.context))
 	},
 
 	/**

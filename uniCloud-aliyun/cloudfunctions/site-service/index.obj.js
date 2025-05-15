@@ -1,42 +1,32 @@
 // site-service云对象
 const db = uniCloud.database()
 const dbCmd = db.command
+// 假设公共模块在 package.json 中定义的 name 是 'auth-filter'
+const authFilter = require('auth-filter')
 
 module.exports = {
 	_before: async function () {
-		// 获取客户端信息和token
+		console.log('site-service: 进入 _before 方法')
 		const clientInfo = this.getClientInfo()
 		const token = this.getUniIdToken()
 
-		if (!token) {
-			const err = new Error('用户未登录，请先登录')
-			err.code = 401
-			throw err
-		}
+		// 调用公共模块的 checkLogin 函数，传入 token 和 clientInfo
+		const tokenInfo = await authFilter.checkLogin(token, clientInfo)
 
-		// 校验token
-		const uniIDCommon = require('uni-id-common')
-		const uniID = uniIDCommon.createInstance({
-			clientInfo,
-		})
-
-		// 校验token
-		const checkTokenRes = await uniID.checkToken(token)
-		if (checkTokenRes.errCode) {
-			const err = new Error('登录状态失效，请重新登录')
-			err.code = 403
-			throw err
-		}
-
-		// 将用户ID存入上下文
+		// 公共模块校验成功后返回 tokenInfo
+		// 设置 this.context 以兼容云对象内其他方法对 this.context 的使用
 		this.context = {
-			uid: checkTokenRes.uid,
-			role: checkTokenRes.role,
-			permission: checkTokenRes.permission,
+			uid: tokenInfo.uid,
+			role: tokenInfo.role,
+			permission: tokenInfo.permission,
 		}
+		// 也可以考虑将完整的 tokenInfo 挂载到 this.authInfo，如果其他地方需要更详细信息
+		this.authInfo = tokenInfo
 
-		// 记录开始时间，用于性能分析
+		// 保留原有的 startTime 逻辑
 		this.startTime = Date.now()
+
+		console.log('site-service: 公共 _before 校验完成, context 设置为:', JSON.stringify(this.context))
 	},
 
 	/**

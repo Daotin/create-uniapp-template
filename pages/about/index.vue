@@ -64,10 +64,13 @@ export default {
 		},
 		checkLoginState() {
 			try {
+				console.log('检查登录状态')
 				// 检查是否有token和用户信息
 				const token = storage.getItem('uni_id_token')
 				const userInfoStorage = storage.getItem('uni-id-pages-userInfo')
 				this.hasLogin = Boolean(token && userInfoStorage)
+
+				console.log('检查登录状态', this.hasLogin, token)
 
 				if (this.hasLogin) {
 					// 获取最新的用户信息

@@ -103,7 +103,7 @@ export default {
 					this.$showToast.none(res.message || '获取工地列表失败')
 				}
 			} catch (e) {
-				console.error('获取工地列表异常:', e, e.code)
+				console.error('获取工地列表异常:', e)
 				if (e.code === 401 || e.code === 403) {
 					redirectToLogin()
 				}
