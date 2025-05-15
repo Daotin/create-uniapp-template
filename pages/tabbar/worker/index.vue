@@ -94,8 +94,8 @@ export default {
 					this.$showToast.none(res.message || '获取工人列表失败')
 				}
 			} catch (e) {
-				console.error('获取工人列表异常:', e)
-				if (e.code === 401 || e.code === 403) {
+				console.error('获取工人列表异常:', String(e), e.code, e.errCode, e.errMsg)
+				if (e.code === 401 || e.code === 403 || String(e).includes('401') || String(e).includes('403')) {
 					redirectToLogin()
 				}
 			} finally {

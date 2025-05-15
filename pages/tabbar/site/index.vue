@@ -87,7 +87,7 @@ export default {
 		async getSiteList() {
 			try {
 				this.loading = true
-				console.log('请求参数:', { keyword: this.keyword })
+				console.log('site请求参数:', { keyword: this.keyword })
 
 				// 直接调用云对象
 				const siteService = uniCloud.importObject('site-service')
@@ -103,8 +103,8 @@ export default {
 					this.$showToast.none(res.message || '获取工地列表失败')
 				}
 			} catch (e) {
-				console.error('获取工地列表异常:', e)
-				if (e.code === 401 || e.code === 403) {
+				console.error('获取工地列表异常:', String(e), e.code, e.errCode, e.errMsg)
+				if (e.code === 401 || e.code === 403 || String(e).includes('401') || String(e).includes('403')) {
 					redirectToLogin()
 				}
 			} finally {

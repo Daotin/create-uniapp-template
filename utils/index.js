@@ -18,7 +18,7 @@ export function redirectToLogin() {
 		uni.switchTab({
 			url: '/pages/about/index',
 		})
-	}, 100)
+	}, 60)
 }
 
 // 获取package.json的version
