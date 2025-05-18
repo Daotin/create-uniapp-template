@@ -25,3 +25,5 @@ const app = new Vue({
 	store,
 })
 app.$mount()
+
+console.log('uView版本号', uni.$u.config.v) // 获取uView版本号

@@ -12,8 +12,10 @@
 		<!-- 公共组件示例 -->
 		<common-empty></common-empty>
 
+		<u-icon name="level" size="100"></u-icon>
+
 		<!-- 测试底部安全区域 -->
-		<u-keyboard ref="uKeyboard" mode="number" v-model="show"></u-keyboard>
+		<u-keyboard ref="uKeyboard" mode="number" :show="show" @close="show = false"></u-keyboard>
 	</view>
 </template>
 
