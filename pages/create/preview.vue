@@ -8,7 +8,7 @@
         class="preview-image"
       ></image>
       <view v-else class="loading-wrapper">
-        <u-loading mode="circle" size="60"></u-loading>
+        <u-loading-icon mode="circle" size="60"></u-loading-icon>
         <text class="loading-text">加载中...</text>
       </view>
     </view>

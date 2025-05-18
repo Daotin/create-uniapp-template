@@ -6,15 +6,13 @@
 			<!-- 提示词输入 -->
 			<view class="form-item">
 				<view class="label">输入提示词</view>
-				<u-input 
-					type="textarea"
-					v-model="prompt" 
+				<u-textarea
+					v-model="prompt"
+          height="100"
 					placeholder="尝试描述你想要创建的图片，例如：'一只在雨中漫步的猫，动漫风格，高清，细节丰富'" 
-					:height="150"
-					:auto-height="true"
           clearable
-          border
-				></u-input>
+          count
+				></u-textarea>
 			</view>
 			
 			<!-- 风格选择 -->
@@ -67,7 +65,7 @@
 					:loading="generating"
 					@click="generateImage"
 				>
-					<u-icon name="play-right-fill" size="24" style="margin-right: 8rpx;"></u-icon>
+					<u-icon name="play-right-fill" color="#fff" size="24" style="margin-right: 8rpx;"></u-icon>
 					开始创作
 				</u-button>
 			</view>
@@ -241,7 +239,7 @@ export default {
 		padding: 12rpx 28rpx;
 		margin: 0 10rpx 20rpx 0;
 		border-radius: 40rpx;
-		background-color: #f1f1f1;
+		background-color: #eee;
 		font-size: 24rpx;
 		color: #606266;
 		transition: all 0.3s;
@@ -260,7 +258,7 @@ export default {
 	}
 	
 	.tips-content {
-		background-color: #f5f5f5;
+		background-color: #eee;
 		border-radius: 12rpx;
 		padding: 24rpx;
 		

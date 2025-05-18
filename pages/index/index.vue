@@ -1,32 +1,17 @@
 <template>
 	<view class="ai-gallery">
-		<!-- 瀑布流内容 -->
-		<u-waterfall v-model="flowList" ref="uWaterfall">
-			<template v-slot:left="{ leftList }">
-				<view v-for="(item, index) in leftList" :key="index" class="waterfall-item" @click="goToPreview(item)">
-					<u-lazy-load threshold="-450" border-radius="10" :image="item.url" :index="index"></u-lazy-load>
-					<view class="item-footer">
-						<image :src="item.avatarUrl" class="avatar" mode="aspectFill"></image>
-						<view class="user-info">
-							<view class="username">{{ item.nickname }}</view>
-							<view class="date">{{ item.create_time }}</view>
-						</view>
+		<view class="waterfall-columns-view">
+			<view v-for="item in galleryItems" :key="item._id" class="waterfall-item" @click="goToPreview(item)">
+				<image :src="item.url" lazy-load mode="widthFix" class="item-image"></image>
+				<view class="item-footer">
+					<image :src="item.avatarUrl" class="avatar" mode="widthFix"></image>
+					<view class="user-info">
+						<view class="username">{{ item.nickname }}</view>
+						<view class="date">{{ item.create_time }}</view>
 					</view>
 				</view>
-			</template>
-			<template v-slot:right="{ rightList }">
-				<view v-for="(item, index) in rightList" :key="index" class="waterfall-item" @click="goToPreview(item)">
-					<u-lazy-load threshold="-450" border-radius="10" :image="item.url" :index="index"></u-lazy-load>
-					<view class="item-footer">
-						<image :src="item.avatarUrl" class="avatar" mode="aspectFill"></image>
-						<view class="user-info">
-							<view class="username">{{ item.nickname }}</view>
-							<view class="date">{{ item.create_time }}</view>
-						</view>
-					</view>
-				</view>
-			</template>
-		</u-waterfall>
+			</view>
+		</view>
 
 		<!-- 创建按钮 -->
 		<view class="create-button" @click="goToCreate">
@@ -45,11 +30,10 @@ export default {
 	data() {
 		return {
 			current: 0,
-			flowList: [],
+			galleryItems: [],
 			loadStatus: 'loadmore',
 			page: 1,
 			limit: 10,
-			// 云对象实例
 			aiGalleryObj: null,
 		}
 	},
@@ -71,8 +55,7 @@ export default {
 	},
 	onPullDownRefresh() {
 		this.page = 1
-		this.flowList = []
-		this.$refs.uWaterfall.clear()
+		this.galleryItems = []
 		this.getImageList()
 		setTimeout(() => {
 			uni.stopPullDownRefresh()
@@ -119,41 +102,40 @@ export default {
 			try {
 				this.loadStatus = 'loading'
 
-				// 直接调用云对象
 				const result = await this.aiGalleryObj.getPublicImages({
 					page: this.page,
 					limit: this.limit,
 				})
 
-				if (result.success && result.data) {
-					// 添加到瀑布流
-					this.flowList = [...this.flowList, ...result.data]
+				if (result.success && result.data && result.data.length > 0) {
+					const processedData = result.data.map(item => ({
+						...item,
+						avatarUrl: this.getAvatarUrl(item.creator),
+						nickname: this.getNickname(item.creator),
+						create_time: this.getFormatDate(item.create_time),
+					}));
 
-					console.log('flowList==>', this.flowList)
+					// Append new items to the single galleryItems list
+					this.galleryItems = [...this.galleryItems, ...processedData];
 
-					if (this.flowList.length) {
-						this.flowList.forEach(item => {
-							item.avatarUrl = this.getAvatarUrl(item.creator)
-							item.nickname = this.getNickname(item.creator)
-							item.create_time = this.getFormatDate(item.create_time)
-						})
-					}
-
-					// 更新加载状态
 					if (result.data.length < this.limit) {
 						this.loadStatus = 'nomore'
 					} else {
 						this.loadStatus = 'loadmore'
 					}
+				} else if (result.success && (!result.data || result.data.length === 0)) {
+					if (this.page === 1) {
+						this.galleryItems = []; // Clear if first page has no new items
+					}
+					this.loadStatus = 'nomore';
 				} else {
 					this.loadStatus = 'loadmore'
-					this.$showToast.none('获取图片列表失败')
+					this.$showToast.none(result.message || '获取图片列表失败')
 				}
 			} catch (error) {
 				console.error('获取图片列表失败:', error)
-				// console.log(JSON.parse(error.message))
 				this.loadStatus = 'loadmore'
-				this.$showToast.none(error.message)
+				this.$showToast.none(error.message || '获取图片列表失败，请稍后再试')
 			}
 		},
 
@@ -172,29 +154,31 @@ export default {
 	background-color: #f8f8f8;
 	min-height: 100vh;
 	padding-bottom: 100rpx;
-
-	.u-waterfall {
-		padding: 0 20rpx;
-
-		.u-column {
-			margin-right: 20rpx;
-
-			&:last-of-type {
-				margin-right: 0;
-			}
-		}
+	
+	// 瀑布流布局 - 使用CSS列
+	.waterfall-columns-view {
+		padding: 20rpx;      // 内容区域的整体内边距
+		column-count: 2;     // 2列布局
+		column-gap: 20rpx;   // 列间距
 	}
 
 	.waterfall-item {
-		margin-bottom: 20rpx;
-		border-radius: 24rpx;
-		overflow: hidden;
-		background: white;
-		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-
-		image {
-			display: block;
-		}
+    display: inline-block;  // 避免某些浏览器中的渲染问题
+    width: 100%;  // 确保项目占据整个列宽
+		margin-bottom: 20rpx;  // 每个项目底部的间距
+		border-radius: 24rpx;  // 圆角边框
+		overflow: hidden;      // 隐藏溢出内容
+		background: white;     // 白色背景
+		box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);  // 轻微阴影
+		break-inside: avoid;   // 防止项目被分割到不同列
+		-webkit-column-break-inside: avoid;  // 兼容性
+        page-break-inside: avoid;  // 兼容性
+	}
+	
+	.item-image {
+		width: 100%;  // 宽度100%
+		height: auto;  // 高度自适应，保持原始比例
+		display: block;  // 移除图片下方可能的间隙
 	}
 
 	.item-footer {
