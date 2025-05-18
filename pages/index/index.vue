@@ -13,7 +13,7 @@
 		<common-empty></common-empty>
 
 		<!-- 测试底部安全区域 -->
-		<u-keyboard ref="uKeyboard" mode="number" v-model="show"></u-keyboard>
+		<u-keyboard ref="uKeyboard" mode="number" :show="show" @close="show = false"></u-keyboard>
 	</view>
 </template>
 
