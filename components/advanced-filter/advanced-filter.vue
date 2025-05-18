@@ -31,13 +31,13 @@
 		</view>
 
 		<!-- 工地选择器 (单选) -->
-		<u-select
+		<u-picker
 			v-model="showSiteFilter"
 			:list="siteFilterOptions"
 			value-name="_id"
 			:default-value="defaultSiteIndexArray"
 			label-name="name"
-			@confirm="onSiteFilterConfirm"></u-select>
+			@confirm="onSiteFilterConfirm"></u-picker>
 
 		<!-- 工人选择器 (多选) -->
 		<u-popup v-model="showWorkerPopup" mode="bottom" border-radius="16">

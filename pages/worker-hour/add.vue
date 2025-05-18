@@ -4,27 +4,29 @@
 		<view class="form-group">
 			<u-cell-group>
 				<!-- 工地选择 -->
-				<u-cell-item
+				<u-cell
 					title="工地"
 					:value="siteInfo.name || '请选择工地'"
-					:arrow="!isEdit"
+					:isLink="true"
+					arrow-direction="down"
 					@click="!isEdit && (showSitePicker = true)"
 					:border-bottom="true">
 					<text slot="icon" class="required-icon">*</text>
-				</u-cell-item>
+				</u-cell>
 
 				<!-- 日期选择 -->
-				<u-cell-item
+				<u-cell
 					title="日期"
 					:value="date || '请选择日期'"
-					:arrow="true"
+					:isLink="true"
+					arrow-direction="down"
 					@click="showDatePicker = true"
 					:border-bottom="true">
 					<text slot="icon" class="required-icon">*</text>
-				</u-cell-item>
+				</u-cell>
 
 				<!-- 工时单位 -->
-				<u-cell-item title="工时单位" :arrow="false" :border-bottom="true">
+				<u-cell title="工时单位" :border-bottom="true">
 					<text slot="icon" class="required-icon">*</text>
 					<view slot="right-icon" class="radio-group">
 						<u-radio-group v-model="timeUnit" placement="row" @change="watchTimeUnit">
@@ -32,10 +34,10 @@
 							<u-radio name="hour" shape="circle">按小时</u-radio>
 						</u-radio-group>
 					</view>
-				</u-cell-item>
+				</u-cell>
 
 				<!-- 工时数量 -->
-				<u-cell-item title="工时数量" :arrow="false" :border-bottom="false">
+				<u-cell title="工时数量" :border-bottom="false">
 					<text slot="icon" class="required-icon">*</text>
 					<view slot="right-icon" class="number-input">
 						<u-number-box
@@ -49,7 +51,7 @@
 							@change="onHoursChange"></u-number-box>
 						<text class="unit-text">{{ timeUnit === 'day' ? '天' : '小时' }}</text>
 					</view>
-				</u-cell-item>
+				</u-cell>
 			</u-cell-group>
 		</view>
 
@@ -63,7 +65,7 @@
 			<view class="worker-list">
 				<!-- 加载中提示 -->
 				<view v-if="loading" class="u-text-center u-padding-20">
-					<u-loading></u-loading>
+					<u-loading-icon></u-loading-icon>
 				</view>
 				<!-- 无数据提示 -->
 				<view v-else-if="workerList.length === 0" class="u-text-center u-padding-20">
@@ -119,13 +121,15 @@
 		</view>
 
 		<!-- 工地选择弹窗 -->
-		<u-select
-			v-model="showSitePicker"
-			:list="siteList"
-			:default-value="[defaultSiteIndex]"
-			value-name="_id"
-			label-name="name"
-			@confirm="onSiteConfirm"></u-select>
+		<u-picker
+			:show="showSitePicker"
+			:columns="siteList"
+			:default-index="[defaultSiteIndex]"
+			key-name="name"
+			close-on-click-overlay
+			@close="showSitePicker = false"
+			@cancel="showSitePicker = false"
+			@confirm="onSiteConfirm"></u-picker>
 
 		<!-- 日期选择器 -->
 		<!-- TODO：uView v1不支持默认日期。解决办法：复制一份源码为公共组件，修改增加默认日期功能 -->
@@ -323,21 +327,21 @@ export default {
 		// 选择工地回调
 		onSiteConfirm(e) {
 			console.log(e)
-			if (e.length > 0) {
-				const selectedSiteId = e[0]?.value || ''
-				// 如果选择了新的工地，清空已选工人
-				if (this.siteId !== selectedSiteId) {
-					this.selectedWorkerIds = []
-					this.selectedWorkers = []
-					this.workerSelected = {}
-				}
+			// if (e.length > 0) {
+			// 	const selectedSiteId = e[0]?.value || ''
+			// 	// 如果选择了新的工地，清空已选工人
+			// 	if (this.siteId !== selectedSiteId) {
+			// 		this.selectedWorkerIds = []
+			// 		this.selectedWorkers = []
+			// 		this.workerSelected = {}
+			// 	}
 
-				this.siteId = selectedSiteId
-				this.siteInfo = this.siteList.filter(item => item._id === selectedSiteId)[0]
-				this.defaultSiteIndex = this.siteList.findIndex(item => item._id === selectedSiteId)
-				// 重新获取工地关联的工人
-				this.getWorkersBySite()
-			}
+			// 	this.siteId = selectedSiteId
+			// 	this.siteInfo = this.siteList.filter(item => item._id === selectedSiteId)[0]
+			// 	this.defaultSiteIndex = this.siteList.findIndex(item => item._id === selectedSiteId)
+			// 	// 重新获取工地关联的工人
+			// 	this.getWorkersBySite()
+			// }
 		},
 
 		// 日期选择回调

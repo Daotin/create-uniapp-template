@@ -23,21 +23,21 @@
 		<view class="action-panel">
 			<view class="action-item primary-btn" @click="goWorkHourRecord">
 				<view class="action-icon">
-					<u-icon name="clock" color="#FFFFFF" size="50"></u-icon>
+					<u-icon name="clock" color="#FFFFFF" size="28"></u-icon>
 				</view>
 				<view class="action-text">记工时</view>
 			</view>
 
 			<view class="action-item plain-btn" @click="goWorkHourList">
 				<view class="action-icon">
-					<u-icon name="list-dot" color="#2979ff" size="50"></u-icon>
+					<u-icon name="list-dot" color="#2979ff" size="28"></u-icon>
 				</view>
 				<view class="action-text">工时记录</view>
 			</view>
 
 			<view class="action-item plain-btn" @click="goWorkHourStats">
 				<view class="action-icon">
-					<u-icon name="calendar" color="#2979ff" size="50"></u-icon>
+					<u-icon name="calendar" color="#2979ff" size="28"></u-icon>
 				</view>
 				<view class="action-text">工时统计</view>
 			</view>
@@ -87,13 +87,15 @@
 
 		<!-- 删除确认弹窗 -->
 		<u-modal
-			v-model="showDeleteModal"
+			:show="showDeleteModal"
 			content="确定要删除该工地吗？删除后无法恢复"
 			:show-cancel-button="true"
 			confirm-text="删除"
 			cancel-text="取消"
 			confirm-color="#fa3534"
-			@confirm="deleteSite"></u-modal>
+			@confirm="deleteSite"
+			@close="showDeleteModal = false"
+			@cancel="showDeleteModal = false"></u-modal>
 	</view>
 </template>
 
@@ -257,6 +259,7 @@ export default {
 				this.$showToast.none('删除失败，请重试')
 			} finally {
 				this.$hideLoading()
+				this.showDeleteModal = false
 			}
 		},
 
@@ -447,7 +450,7 @@ export default {
 		}
 
 		.primary-btn {
-			background-color: $u-type-primary;
+			background-color: $u-primary;
 			color: #fff;
 
 			.action-text {
@@ -457,8 +460,8 @@ export default {
 
 		.plain-btn {
 			background-color: #fff;
-			border: 1rpx solid $u-type-primary;
-			background-color: $u-type-primary-light;
+			border: 1rpx solid $u-primary;
+			background-color: $u-primary-light;
 		}
 	}
 

@@ -2,17 +2,17 @@
 	<view class="worker-add common-page-container has-btm-btn">
 		<u-form :model="form" ref="uForm">
 			<view class="form-group">
-				<u-form-item label="姓名" prop="name" required :label-width="150">
+				<u-form-item label="姓名" prop="name" required :label-width="100">
 					<u-input v-model="form.name" placeholder="请输入工人姓名" />
 				</u-form-item>
 
-				<u-form-item label="手机号" prop="phone" :label-width="150">
+				<u-form-item label="手机号" prop="phone" :label-width="100">
 					<u-input v-model="form.phone" placeholder="请输入联系电话" type="number" maxlength="11" />
 				</u-form-item>
 			</view>
 
 			<view class="form-group">
-				<u-form-item label="备注" prop="remark" :label-width="150">
+				<u-form-item label="备注" prop="remark" :label-width="100">
 					<u-input v-model="form.remark" placeholder="请输入备注信息" />
 				</u-form-item>
 			</view>
@@ -108,12 +108,9 @@ export default {
 		},
 
 		// 提交表单
-		submit() {
-			this.$refs.uForm.validate(valid => {
-				if (valid) {
-					this.saveWorker()
-				}
-			})
+		async submit() {
+			await this.$refs.uForm.validate()
+			this.saveWorker()
 		},
 
 		// 保存工人

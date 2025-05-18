@@ -64,7 +64,7 @@ export default {
 
 @import './style/base.scss';
 // 引入字体缩放样式
-@import './style/font-scale.scss';
+// @import './style/font-scale.scss';
 
 page {
 	background-color: #f7f9fb;

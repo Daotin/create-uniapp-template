@@ -34,13 +34,15 @@
 
 		<!-- 删除确认弹窗 -->
 		<u-modal
-			v-model="showDeleteModal"
+			:show="showDeleteModal"
 			content="确定要删除该工人吗？删除后无法恢复"
 			:show-cancel-button="true"
 			confirm-text="删除"
 			cancel-text="取消"
 			confirm-color="#fa3534"
-			@confirm="deleteWorker"></u-modal>
+			@confirm="deleteWorker"
+			@cancel="showDeleteModal = false"
+			@close="showDeleteModal = false"></u-modal>
 	</view>
 </template>
 
@@ -139,6 +141,7 @@ export default {
 				this.$showToast.none('删除失败，请重试')
 			} finally {
 				this.$hideLoading()
+				this.showDeleteModal = false
 			}
 		},
 	},

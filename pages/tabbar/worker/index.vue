@@ -24,7 +24,7 @@
 			<view v-else>
 				<view v-for="(item, index) in list" :key="index" class="list-item" @click="goDetail(item._id)">
 					<view class="common-avatar-box">
-						<u-avatar :text="item.name.substring(0, 1)" size="58" bg-color="#188fff"></u-avatar>
+						<u-avatar :text="item.name.substring(0, 1)" size="40" bg-color="#188fff"></u-avatar>
 					</view>
 					<view class="info">
 						<view class="name">{{ item.name }}</view>

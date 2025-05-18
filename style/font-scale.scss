@@ -127,11 +127,6 @@ uni-icon,
 	font-size: inherit;
 }
 
-// 表单样式调整
-.u-form-item {
-	padding: calc(26rpx * #{$font-scale}) 0;
-}
-
 // 文本域样式
 .u-textarea {
 	font-size: calc(28rpx * #{$font-scale});

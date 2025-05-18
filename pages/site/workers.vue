@@ -1,7 +1,7 @@
 <template>
 	<view class="site-workers common-page-container has-btm-btn">
 		<!-- Tab切换 -->
-		<u-tabs :list="tabList" :is-scroll="false" :current="current" @change="tabChange"></u-tabs>
+		<u-tabs :list="tabList" :scrollable="false" :current="current" @click="tabChange"></u-tabs>
 
 		<!-- 搜索框 -->
 		<view class="search-box">
@@ -27,7 +27,7 @@
 
 				<view v-for="(item, index) in currentList" :key="index" class="list-item">
 					<view class="common-avatar-box">
-						<u-avatar :text="item.name.substring(0, 1)" bg-color="#188fff" size="58"></u-avatar>
+						<u-avatar :text="item.name.substring(0, 1)" bg-color="#188fff" size="40"></u-avatar>
 					</view>
 					<view class="info">
 						<view class="name">{{ item.name }}</view>
@@ -50,16 +50,17 @@
 					<text class="site-count">可添加 {{ availableList.length }} 人</text>
 				</view>
 
-				<view v-for="(item, index) in availableList" :key="index" class="list-item">
+				<view v-for="(item, index) in availableList" :key="index" class="list-item" @click="handleItemClick(item)">
 					<view class="common-avatar-box">
-						<u-avatar :text="item.name.substring(0, 1)" bg-color="#188fff" size="58"></u-avatar>
+						<u-avatar :text="item.name.substring(0, 1)" bg-color="#188fff" size="40"></u-avatar>
 					</view>
 					<view class="info">
 						<view class="name">{{ item.name }}</view>
 						<view class="phone">{{ item.phone || '未设置手机号' }}</view>
 					</view>
 					<view class="action-box">
-						<u-checkbox :name="item._id" v-model="item.checked" @change="checkboxChange"></u-checkbox>
+						<u-icon v-if="item.checked" name="checkmark-circle-fill" size="24" color="#188fff"></u-icon>
+						<view v-else class="checkbox-box-empty"></view>
 					</view>
 				</view>
 			</view>
@@ -71,10 +72,12 @@
 
 		<!-- 确认操作弹窗 -->
 		<u-modal
-			v-model="showConfirmModal"
+			:show="showConfirmModal"
 			:content="confirmContent"
 			:show-cancel-button="true"
-			@confirm="confirmAction"></u-modal>
+			@confirm="confirmAction"
+			@close="showConfirmModal = false"
+			@cancel="showConfirmModal = false"></u-modal>
 	</view>
 </template>
 
@@ -230,7 +233,7 @@ export default {
 
 		// Tab切换
 		tabChange(index) {
-			this.current = index
+			this.current = index.index
 			this.keyword = ''
 			this.loadData()
 		},
@@ -258,8 +261,9 @@ export default {
 		},
 
 		// 复选框更改事件
-		checkboxChange(value, name) {
-			console.log('复选框状态变更:', name, value)
+		handleItemClick(item) {
+			console.log('复选框状态变更:', item)
+			this.$set(item, 'checked', !item.checked)
 		},
 
 		// 批量添加工人
@@ -308,6 +312,7 @@ export default {
 				this.$showToast.none('移除失败，请重试')
 			} finally {
 				this.$hideLoading()
+				this.showConfirmModal = false
 			}
 		},
 
@@ -346,6 +351,7 @@ export default {
 				this.$showToast.none('添加失败，请重试')
 			} finally {
 				this.$hideLoading()
+				this.showConfirmModal = false
 			}
 		},
 	},
@@ -369,10 +375,9 @@ export default {
 	}
 
 	.content {
-		flex: 1;
 		overflow: hidden;
-		.add-worker-list {
-			padding-bottom: 184rpx;
+		&.add-worker-scroll {
+			padding-bottom: 116rpx;
 		}
 	}
 
@@ -421,6 +426,13 @@ export default {
 
 		.action-box {
 			margin-left: 20rpx;
+			.checkbox-box-empty {
+				width: 38rpx;
+				height: 38rpx;
+				border-radius: 50%;
+				background-color: #fff;
+				border: 1rpx solid #c8c9cc;
+			}
 		}
 	}
 

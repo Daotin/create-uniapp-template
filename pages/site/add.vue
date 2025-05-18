@@ -2,17 +2,17 @@
 	<view class="site-add common-page-container has-btm-btn">
 		<u-form :model="form" ref="uForm">
 			<view class="form-group">
-				<u-form-item label="工地名称" prop="name" required :label-width="150">
+				<u-form-item label="工地名称" prop="name" required :label-width="100">
 					<u-input v-model="form.name" placeholder="请输入工地名称" />
 				</u-form-item>
 
-				<u-form-item label="地址" prop="address" :label-width="150">
+				<u-form-item label="地址" prop="address" :label-width="100">
 					<u-input v-model="form.address" placeholder="请输入工地地址" />
 				</u-form-item>
 			</view>
 
 			<view class="form-group">
-				<u-form-item label="备注" prop="remark" :label-width="150">
+				<u-form-item label="备注" prop="remark" :label-width="100">
 					<u-input v-model="form.remark" placeholder="请输入备注信息" type="textarea" height="100" />
 				</u-form-item>
 			</view>
@@ -101,18 +101,18 @@ export default {
 		},
 
 		// 提交表单
-		submit() {
-			this.$refs.uForm.validate(valid => {
-				if (valid) {
-					this.saveSite()
-				}
-			})
+		async submit() {
+			console.log('提交表单')
+			await this.$refs.uForm.validate()
+			console.log('表单验证通过')
+			this.saveSite()
 		},
 
 		// 保存工地
 		async saveSite() {
 			try {
 				this.submitting = true
+				console.log('保存工地', this.form)
 
 				// 直接调用云对象
 				const siteService = uniCloud.importObject('site-service')
