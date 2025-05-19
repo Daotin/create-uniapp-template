@@ -99,6 +99,7 @@
 
 <script>
 import dayjs from 'dayjs'
+import { convertHoursToWorkDays } from '@/utils'
 export default {
 	data() {
 		return {
@@ -341,7 +342,7 @@ export default {
 			data.forEach(item => {
 				this.calendarSelected.push({
 					date: item.date, // 格式为: 2023-05-01
-					info: item.totalHours + 'h',
+					info: convertHoursToWorkDays(item.totalHours).workText,
 					color: '#2979ff', // 有工时的日期使用蓝色高亮
 				})
 			})

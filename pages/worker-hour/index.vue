@@ -12,7 +12,7 @@
 			<view class="date-group" v-for="group in workHourGroups" :key="group.date">
 				<view class="date-header">
 					<text>{{ group.dateText }}</text>
-					<text class="total-hours">总计: {{ formatHours(group.totalHours) }}</text>
+					<text class="total-hours">总计: {{ convertHoursToWorkDays(group.totalHours).workText }}</text>
 				</view>
 				<view class="records">
 					<view
@@ -30,7 +30,7 @@
 								<view class="avatar">{{ item.workerName.substring(0, 1) }}</view>
 								<text class="worker-name">{{ item.workerName }}</text>
 							</view>
-							<text class="hours">{{ formatHours(item.hours) }}</text>
+							<text class="hours">{{ convertHoursToWorkDays(item.hours).workText }}</text>
 						</view>
 					</view>
 				</view>
@@ -57,9 +57,11 @@
 <script>
 import dayjs from 'dayjs'
 import { redirectToLogin } from '@/utils'
+import { convertHoursToWorkDays } from '@/utils'
 export default {
 	data() {
 		return {
+			convertHoursToWorkDays,
 			siteId: '',
 			// 筛选条件
 			filterParams: {
@@ -284,29 +286,6 @@ export default {
 		formatTime(time) {
 			if (!time) return ''
 			return dayjs(time).format('HH:mm')
-		},
-
-		// 格式化工时
-		formatHours(hours) {
-			if (hours === undefined || hours === null) return ''
-
-			// 如果可以被8整除，按照工作日显示
-			if (hours % 8 === 0) {
-				const days = hours / 8
-				return `${days}天`
-			}
-
-			// 如果超过8小时，显示为x天x小时
-			if (hours > 8) {
-				const days = Math.floor(hours / 8)
-				const remainingHours = hours % 8
-				if (remainingHours === 0) {
-					return `${days}天`
-				}
-				return `${days}天${remainingHours}小时`
-			}
-
-			return `${hours}小时`
 		},
 
 		// 点击工时记录项

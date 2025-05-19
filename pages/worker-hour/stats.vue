@@ -12,7 +12,7 @@
 			<view class="result-container">
 				<view class="result-header">
 					<text>统计结果 (共{{ statisticsList.length }}人)</text>
-					<text class="result-value">总计：{{ formatTotalHours(totalHours) }}</text>
+					<text class="result-value">总计：{{ convertHoursToWorkDays(totalHours).workText }}</text>
 				</view>
 
 				<view class="result-table">
@@ -26,7 +26,7 @@
 								<view class="avatar">{{ item.workerName.substring(0, 1) }}</view>
 								<text class="worker-name">{{ item.workerName }}</text>
 							</view>
-							<view class="total-hours text-right">{{ formatHours(item.totalHours) }}</view>
+							<view class="total-hours text-right">{{ convertHoursToWorkDays(item.totalHours).workText }}</view>
 						</view>
 					</view>
 				</view>
@@ -43,9 +43,11 @@
 <script>
 import dayjs from 'dayjs'
 import { redirectToLogin } from '@/utils'
+import { convertHoursToWorkDays } from '@/utils'
 export default {
 	data() {
 		return {
+			convertHoursToWorkDays,
 			siteId: '',
 			// 统计数据
 			statisticsList: [],
@@ -119,47 +121,6 @@ export default {
 			} finally {
 				this.$hideLoading()
 			}
-		},
-
-		// 格式化工时
-		formatHours(hours) {
-			if (hours === undefined || hours === null) return ''
-
-			// 如果可以被8整除，显示为天数
-			if (hours % 8 === 0) {
-				const days = hours / 8
-				return `${days}天`
-			}
-
-			// 如果有整天，则显示天数和小时
-			if (hours > 8) {
-				const days = Math.floor(hours / 8)
-				const remainingHours = hours % 8
-				if (remainingHours === 0) {
-					return `${days}天`
-				}
-				return `${days}天${remainingHours}小时`
-			}
-
-			return `${hours}小时`
-		},
-
-		// 格式化总工时
-		formatTotalHours(hours) {
-			if (hours === undefined || hours === null) return ''
-
-			const days = Math.floor(hours / 8)
-			const remainingHours = hours % 8
-
-			if (days === 0) {
-				return `${hours}小时`
-			}
-
-			if (remainingHours === 0) {
-				return `${days}天`
-			}
-
-			return `${days}天${remainingHours}小时`
 		},
 	},
 }

@@ -28,7 +28,7 @@
 					<text slot="icon" class="required-icon">*</text>
 					<view slot="right-icon" class="radio-group">
 						<u-radio-group v-model="timeUnit" placement="row" @change="watchTimeUnit">
-							<u-radio name="day" shape="circle">按天</u-radio>
+							<u-radio name="day" shape="circle">按工</u-radio>
 							<u-radio name="hour" shape="circle">按小时</u-radio>
 						</u-radio-group>
 					</view>
@@ -47,7 +47,7 @@
 							disabled-input
 							:input-width="120"
 							@change="onHoursChange"></u-number-box>
-						<text class="unit-text">{{ timeUnit === 'day' ? '天' : '小时' }}</text>
+						<text class="unit-text">{{ timeUnit === 'day' ? '工' : '小时' }}</text>
 					</view>
 				</u-cell-item>
 			</u-cell-group>
@@ -135,6 +135,8 @@
 
 <script>
 import dayjs from 'dayjs'
+import { convertHoursToWorkDays } from '@/utils'
+const app = getApp()
 export default {
 	data() {
 		return {
@@ -152,6 +154,7 @@ export default {
 			// 日期相关
 			date: '',
 			showDatePicker: false,
+			dayUnit: app.globalData.dayUnit,
 
 			// 工时相关
 			timeUnit: 'day', // 改为字符串类型: 'day'和'hour'
@@ -179,9 +182,9 @@ export default {
 
 			// 计算工时单位和值
 			const hours = parseFloat(option.hours)
-			if (hours % 8 === 0) {
+			if (hours % this.dayUnit === 0) {
 				this.timeUnit = 'day' // 按天
-				this.hoursValue = hours / 8
+				this.hoursValue = hours / this.dayUnit
 			} else {
 				this.timeUnit = 'hour' // 按小时
 				this.hoursValue = hours
@@ -380,7 +383,7 @@ export default {
 			if (value === 'day' && this.hoursValue > 1) {
 				// 从小时切换到天，如果超过1天，则设为1天
 				this.hoursValue = 1
-			} else if (value === 'day' && this.hoursValue * 8 > 24) {
+			} else if (value === 'day' && this.hoursValue * this.dayUnit > 24) {
 				// 如果换算后超过24小时，则调整
 				this.hoursValue = 1
 			}
@@ -451,7 +454,7 @@ export default {
 			}
 
 			if (this.hoursValue <= 0) {
-				return this.$showToast.none('请输入有效的工时数量')
+				return this.$showToast.none('请输入有效的工时')
 			}
 
 			if (this.selectedWorkerIds.length === 0) {
@@ -463,8 +466,8 @@ export default {
 
 			try {
 				// 转换工时值
-				// 如果是按天，转换为小时 (1天=8小时)
-				const hours = this.timeUnit === 'day' ? this.hoursValue * 8 : this.hoursValue
+				// 如果是按天，转换为小时
+				const hours = this.timeUnit === 'day' ? this.hoursValue * this.dayUnit : this.hoursValue
 
 				let params = {
 					siteId: this.siteId,
