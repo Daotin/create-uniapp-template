@@ -45,7 +45,8 @@
 							:step="1"
 							:positive-integer="false"
 							disabled-input
-							:input-width="120"
+							:input-width="100"
+							:input-height="65"
 							@change="onHoursChange"></u-number-box>
 						<text class="unit-text">{{ timeUnit === 'day' ? '工' : '小时' }}</text>
 					</view>
