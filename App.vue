@@ -11,7 +11,6 @@ export default {
 		isIOS: false, //是否是IOS系统
 		isIPhoneX: false, //是否是iPhoneX以上的手机
 		safeAreaHeight: 0, //安全区域高度
-		dayUnit: 10, // 一个工等于xx小时
 	},
 	onLaunch: async function () {
 		this.globalData.navHeight = systemInfo().navHeight + systemInfo().statusBarHeight
@@ -23,7 +22,6 @@ export default {
 		console.log('isIOS:', this.globalData.isIOS)
 		console.log('isIPhoneX:', this.globalData.isIPhoneX)
 		console.log('safeAreaHeight:', this.globalData.safeAreaHeight)
-		console.log('dayUnit:', this.globalData.dayUnit)
 
 		// 初始化uni-id-pages
 		await uniIdPageInit()
@@ -65,8 +63,6 @@ export default {
 @import 'uview-ui/index.scss';
 
 @import './style/base.scss';
-// 引入字体缩放样式
-@import './style/font-scale.scss';
 
 page {
 	background-color: #f7f9fb;

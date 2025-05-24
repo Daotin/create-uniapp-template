@@ -6,35 +6,14 @@
 	"pages": [
 		//pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/tabbar/site/index",
+			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "工地管理",
+				"navigationBarTitleText": "首页",
 				"enablePullDownRefresh": true
 			}
 		},
 		{
-			"path": "pages/tabbar/worker/index",
-			"style": {
-				"navigationBarTitleText": "工人管理",
-				"enablePullDownRefresh": true
-			}
-		},
-		// {
-		// 	"path": "pages/tabbar/hour/index",
-		// 	"style": {
-		// 		"navigationBarTitleText": "工时列表",
-		// 		"enablePullDownRefresh": true
-		// 	}
-		// },
-		// {
-		// 	"path": "pages/tabbar/stats/stats",
-		// 	"style": {
-		// 		"navigationBarTitleText": "工时统计",
-		// 		"enablePullDownRefresh": true
-		// 	}
-		// },
-		{
-			"path": "pages/about/index",
+			"path": "pages/me/index",
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
@@ -146,72 +125,6 @@
 				// 	}
 				// }
 			]
-		},
-		// 工地模块分包
-		{
-			"root": "pages/site",
-			"pages": [
-				{
-					"path": "add",
-					"style": {
-						"navigationBarTitleText": "添加工地"
-					}
-				},
-				{
-					"path": "detail",
-					"style": {
-						"navigationBarTitleText": "工地详情"
-					}
-				},
-				{
-					"path": "workers",
-					"style": {
-						"navigationBarTitleText": "工人管理"
-					}
-				}
-			]
-		},
-		// 工人模块分包
-		{
-			"root": "pages/worker",
-			"pages": [
-				{
-					"path": "add",
-					"style": {
-						"navigationBarTitleText": "添加工人"
-					}
-				},
-				{
-					"path": "detail",
-					"style": {
-						"navigationBarTitleText": "工人详情"
-					}
-				}
-			]
-		},
-		// 工时模块分包
-		{
-			"root": "pages/worker-hour",
-			"pages": [
-				{
-					"path": "add",
-					"style": {
-						"navigationBarTitleText": "记工时"
-					}
-				},
-				{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "工时列表"
-					}
-				},
-				{
-					"path": "stats",
-					"style": {
-						"navigationBarTitleText": "工时统计"
-					}
-				}
-			]
 		}
 	],
 	"tabBar": {
@@ -220,38 +133,14 @@
 		"borderStyle": "black",
 		"backgroundColor": "#ffffff",
 		"list": [
-			// {
-			// 	"pagePath": "pages/index/index",
-			// 	"text": "首页",
-			// 	"iconPath": "/static/images/tabbar/manage.png",
-			// 	"selectedIconPath": "/static/images/tabbar/manage_select.png"
-			// },
 			{
-				"pagePath": "pages/tabbar/site/index",
-				"text": "工地管理",
-				"iconPath": "/static/images/tabbar/site.png",
-				"selectedIconPath": "/static/images/tabbar/site-active.png"
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "/static/images/tabbar/me.png",
+				"selectedIconPath": "/static/images/tabbar/me-active.png"
 			},
 			{
-				"pagePath": "pages/tabbar/worker/index",
-				"text": "工人管理",
-				"iconPath": "/static/images/tabbar/worker.png",
-				"selectedIconPath": "/static/images/tabbar/worker-active.png"
-			},
-			// {
-			// 	"pagePath": "pages/tabbar/hour/index",
-			// 	"text": "工时列表",
-			// 	"iconPath": "/static/images/tabbar/hour.png",
-			// 	"selectedIconPath": "/static/images/tabbar/hour-active.png"
-			// },
-			// {
-			// 	"pagePath": "pages/tabbar/stats/stats",
-			// 	"text": "工时统计",
-			// 	"iconPath": "/static/images/tabbar/stats.png",
-			// 	"selectedIconPath": "/static/images/tabbar/stats-active.png"
-			// },
-			{
-				"pagePath": "pages/about/index",
+				"pagePath": "pages/me/index",
 				"text": "我的",
 				"iconPath": "/static/images/tabbar/me.png",
 				"selectedIconPath": "/static/images/tabbar/me-active.png"
@@ -260,7 +149,7 @@
 	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
+		"navigationBarTitleText": "小小菜谱",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},

@@ -63,15 +63,6 @@
 	overflow: hidden;
 }
 
-.text-center {
-	text-align: center;
-}
-.text-left {
-	text-align: left;
-}
-.text-right {
-	text-align: right;
-}
 .w-full {
 	width: 100%;
 }
@@ -86,26 +77,26 @@
 .blue,
 .theme,
 .primary {
-	color: $u-type-primary;
+	color: $u-primary;
 }
 
 .warning {
-	color: $u-type-warning;
+	color: $u-warning;
 }
 
 .green,
 .success {
-	color: $u-type-success;
+	color: $u-success;
 }
 
 .info,
 .gray {
-	color: $u-type-info;
+	color: $u-info;
 }
 
 .red,
 .error {
-	color: $u-type-error;
+	color: $u-error;
 }
 
 /**********************************************************
@@ -114,10 +105,9 @@
 .common-page-container {
 	width: 100%;
 	height: 100%;
-	// padding: 48rpx 32rpx;
-	background-color: #f7f8fa;
+	padding: 48rpx 32rpx;
 	&.has-btm-btn {
-		padding-bottom: 124rpx;
+		padding-bottom: 236rpx;
 		overflow-x: hidden;
 		overflow-y: auto;
 	}
@@ -132,110 +122,15 @@
 	position: fixed;
 	bottom: 0;
 	left: 0;
-	padding: 30rpx 32rpx 70rpx 32rpx;
+	padding: 70rpx 32rpx;
 	z-index: 100;
 	display: flex;
 	background: #f7f9fb;
 
-	u-button {
+	button {
 		flex: 1;
 		&:nth-of-type(2) {
 			margin-left: 32rpx;
 		}
 	}
 }
-
-.common-add-btn {
-	position: fixed;
-	right: 40rpx;
-	bottom: 60rpx;
-	z-index: 9;
-
-	::v-deep .u-btn {
-		width: 100rpx;
-		height: 100rpx;
-		box-shadow: 0 8rpx 24rpx rgba(24, 144, 255, 0.4);
-	}
-}
-
-.common-avatar-box {
-	margin-right: 24rpx;
-	::v-deep .u-avatar {
-		text {
-			font-size: 24rpx !important;
-			color: #fff;
-		}
-	}
-}
-
-// 字体大小 f12 --> f48
-// @mixin font($i) {
-// 	@if $i <= 48 {
-// 		.f#{$i} {
-// 			font-size: $i + 0rpx;
-// 		}
-// 		@include font($i + 2);
-// 	}
-// }
-
-// @include font(12);
-
-// // 通用 margin 混合宏
-// @mixin margin($type, $i) {
-// 	@if $i <= 200 {
-// 		@if $type == top {
-// 			.mt-#{$i} {
-// 				margin-top: $i + 0rpx;
-// 			}
-// 		} @else if $type == bottom {
-// 			.mb-#{$i} {
-// 				margin-bottom: $i + 0rpx;
-// 			}
-// 		} @else if $type == left {
-// 			.ml-#{$i} {
-// 				margin-left: $i + 0rpx;
-// 			}
-// 		} @else if $type == right {
-// 			.mr-#{$i} {
-// 				margin-right: $i + 0rpx;
-// 			}
-// 		}
-// 		@include margin($type, $i + 2);
-// 	}
-// }
-
-// // 生成各种边距类
-// @include margin(top, 12);
-// @include margin(bottom, 12);
-// @include margin(left, 12);
-// @include margin(right, 12);
-
-// // 通用 padding 混合宏
-// @mixin padding($type, $i) {
-// 	@if $i <= 200 {
-// 		@if $type == top {
-// 			.pt-#{$i} {
-// 				padding-top: $i + 0rpx;
-// 			}
-// 		} @else if $type == bottom {
-// 			.pb-#{$i} {
-// 				padding-bottom: $i + 0rpx;
-// 			}
-// 		} @else if $type == left {
-// 			.pl-#{$i} {
-// 				padding-left: $i + 0rpx;
-// 			}
-// 		} @else if $type == right {
-// 			.pr-#{$i} {
-// 				padding-right: $i + 0rpx;
-// 			}
-// 		}
-// 		@include padding($type, $i + 2);
-// 	}
-// }
-
-// // 生成各种边距类
-// @include padding(top, 12);
-// @include padding(bottom, 12);
-// @include padding(left, 12);
-// @include padding(right, 12);
