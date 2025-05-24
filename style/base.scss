@@ -1,3 +1,5 @@
+@import './uview.theme.scss';
+
 // @font-face {
 //   font-family: SourceHanSansCN;
 //   src: url(../font/KaiGenGothicSC-Regular.woff2);
@@ -70,13 +72,13 @@ button {
 	font-weight: 400;
 
 	&[type='primary'] {
-		background-color: #17a1ff !important;
+		background-color: $u-primary !important;
 	}
 
 	&[type='warn'] {
-		color: #ee0a24;
+		color: $u-error;
 		background-color: #ffffff;
-		border: 1px solid #ee0a24;
+		border: 1px solid $u-error;
 	}
 
 	// &:active {

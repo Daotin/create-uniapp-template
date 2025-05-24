@@ -136,8 +136,8 @@
 			{
 				"pagePath": "pages/index/index",
 				"text": "首页",
-				"iconPath": "/static/images/tabbar/me.png",
-				"selectedIconPath": "/static/images/tabbar/me-active.png"
+				"iconPath": "/static/images/tabbar/home.png",
+				"selectedIconPath": "/static/images/tabbar/home-active.png"
 			},
 			{
 				"pagePath": "pages/me/index",
