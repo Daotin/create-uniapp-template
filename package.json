@@ -10,7 +10,6 @@
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
-		"better-mock": "^0.3.7",
 		"dayjs": "^1.11.13",
 		"uview-ui": "^1.8.8",
 		"vuex-persistedstate": "^4.1.0"
